@@ -16,16 +16,26 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 
 ## Current Status
 
-**Phase:** Pre-build. Technical spec complete, architecture locked in, API research done. Ready to scaffold and start coding.
+**Phase:** Phase 1 — in progress. Scaffold complete, DoorDash queries captured, core UI working end-to-end with seeded data.
 
-**What's been done (in planning conversations):**
+**What's been done:**
 - Full competitive landscape research (MealMe pivoted to B2B API, FoodBoss is superficial — consumer "Kayak for food delivery" opportunity is unoccupied)
 - Reverse-engineered API feasibility confirmed for all three platforms
 - Technical spec written (see SPEC.md in this repo)
 - Architecture, data model, adapter interface, and build phases defined
 - Business model validated: average $2-3 savings per order makes $10/month a clear win at 5+ orders/month
+- Full project scaffold: React + Express + PostgreSQL + Playwright (2026-03-31)
+- Railway Postgres provisioned and all 4 migrations applied (restaurants, menus, menu_items, orders)
+- DoorDash GraphQL queries captured from HAR file — 28 unique operations including homePageFacetFeed (search), storepageFeed (menu), addCartItem (cart)
+- Frontend working: address search → restaurant list → unified menu view → cart builder
+- Seeded one restaurant (Grandma's Home, 72 items) for local testing
 
-**What's next:** Scaffold project structure, get PostgreSQL running on Railway, implement DoorDash adapter first.
+**What's next:**
+1. Capture Seamless/Grubhub API endpoints via HAR file (same process as DoorDash)
+2. Wire DoorDash adapter to make live API calls using captured GraphQL queries
+3. Wire Seamless adapter (test direct HTTP first, Playwright fallback)
+4. Implement comparison engine with real-time fee fetching
+5. Build deduplication pipeline to match restaurants across platforms
 
 ## Architecture Decisions
 
@@ -84,7 +94,11 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `CLAUDE.md` | This file. Living project context for Claude Code sessions. Update as project evolves. |
 | `SPEC.md` | Full technical specification with data model, adapter interface, API endpoints, project structure, and definition of done. Reference during implementation. |
 | `server/src/adapters/types.ts` | Platform adapter interface. All platform adapters implement this contract. |
-| `server/src/adapters/doordash/queries/` | Captured GraphQL query files for DoorDash API |
+| `server/src/adapters/doordash/queries/` | Captured GraphQL queries + response samples (28 operations from HAR capture) |
+| `server/src/adapters/doordash/queries/_manifest.json` | Index of all captured DoorDash operations with call counts |
+| `server/src/scripts/parse-har.ts` | Script to extract GraphQL queries from Chrome HAR files — reuse for Seamless |
+| `server/src/scripts/seed-from-har.ts` | Seed DB with restaurant/menu data from captured responses |
+| `server/src/db/migrations/` | SQL migration files (001-004), run via `npm run migrate` from server/ |
 
 ## Competitive Landscape
 
@@ -103,9 +117,15 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 ## Development Environment
 
 - **Desktop repo path:** C:\Users\ozend\dev\project-kortana
-- **GitHub:** github.com/ozendaniel (to be created for this project)
-- **Other repos at C:\Users\ozend\dev\:** cool-habits, quartr_transcripts
+- **GitHub:** github.com/ozendaniel/project-kortana
+- **Node.js:** v24.14.0
+- **Database:** Railway Postgres (connection string in .env, not committed)
+- **Other repos at C:\Users\ozend\dev\:** cool-habits, danaibot-email-agent, investment-banker-outreach
 - **Tools:** Claude Code, VS Code, Git, npm
+- **Run locally:** `npm run dev` from root (starts server on :3001 + client on :5173), or `cd server && npx tsx src/index.ts` and `cd client && npx vite` separately
+- **Run migrations:** `cd server && npm run migrate`
+- **Seed test data:** `cd server && npx tsx src/scripts/seed-from-har.ts`
+- **Capture DoorDash queries:** Have user export HAR from Chrome DevTools, then `cd server && npx tsx src/scripts/parse-har.ts <path-to-har>`
 - **Letta (Claude Subconscious):** Running as a passive observer across Claude Code sessions to build persistent cross-session context. `.letta/` directory is gitignored — local runtime only, configure separately per machine.
 
 ## Conventions

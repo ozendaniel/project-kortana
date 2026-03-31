@@ -1,0 +1,10 @@
+# DoorDash place order mutation (Phase 2)
+# TODO: Capture actual mutation from DevTools
+#
+# Steps to capture:
+# 1. Open doordash.com with DevTools Network tab
+# 2. Proceed through checkout
+# 3. Copy the createOrderFromCart mutation from the request payload
+#
+# Expected variables: { cartId, paymentMethodId, ... }
+# Expected response: order confirmation with ID, ETA, total

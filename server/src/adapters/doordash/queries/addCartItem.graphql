@@ -1,0 +1,10 @@
+# DoorDash add item to cart mutation
+# TODO: Capture actual mutation from DevTools (Phase 2)
+#
+# Steps to capture:
+# 1. Open doordash.com with DevTools Network tab
+# 2. Add an item to your cart
+# 3. Copy the addCartItem mutation from the request payload
+#
+# Expected variables: { storeId, itemId, quantity, modifiers }
+# Expected response: updated cart state with fees

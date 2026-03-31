@@ -1,0 +1,11 @@
+# DoorDash restaurant search query
+# TODO: Capture actual query from DevTools or fork from doordash-mcp repos
+#
+# Steps to capture:
+# 1. Open doordash.com with DevTools Network tab (filter: graphql)
+# 2. Set a delivery address
+# 3. Browse/search restaurants
+# 4. Copy the query from the request payload
+#
+# Expected variables: { address, lat, lng, query, ... }
+# Expected response: list of restaurants with basic info, delivery time, fee

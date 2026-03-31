@@ -12,7 +12,7 @@ Personal tool first. Public subscription product ($10/month after 20 free orders
 
 ## Owner
 
-Dan Ozenne — building solo with Claude Code. PE background (O3 Industries). NYC-based.
+Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-based.
 
 ## Current Status
 

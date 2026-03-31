@@ -106,6 +106,7 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - **GitHub:** github.com/ozendaniel (to be created for this project)
 - **Other repos at C:\Users\ozend\dev\:** cool-habits, quartr_transcripts
 - **Tools:** Claude Code, VS Code, Git, npm
+- **Letta (Claude Subconscious):** Running as a passive observer across Claude Code sessions to build persistent cross-session context. `.letta/` directory is gitignored — local runtime only, configure separately per machine.
 
 ## Conventions
 

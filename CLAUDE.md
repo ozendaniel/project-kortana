@@ -81,9 +81,11 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 
 ### Seamless / Grubhub
 - **Type:** REST API at api-gtm.grubhub.com
-- **Auth:** Email + password → session cookie
+- **Auth:** Google OAuth (or email/password) → auth token stored in localStorage (`grub-api:authenticatedSession` → `sessionHandle.accessToken`). API calls require `Authorization: Bearer <token>` header.
 - **Protection:** PerimeterX bot detection — must use browser-based fetch (page.evaluate) to inherit cookies and bypass detection. Direct Node.js fetch does NOT work.
-- **Key endpoints (confirmed):** /restaurants/search (search), /restaurants/{id}/menu_items (menu), /carts (create cart), /carts/{id}/lines (add items), /carts/{id}/bill (fee breakdown)
+- **Browser approach:** Must use real Chrome via `spawn` + Playwright `connectOverCDP` — NOT `launchPersistentContext`. Playwright-managed Chromium triggers Google's "browser not secure" block during OAuth, and Chrome's "controlled by automated software" banner. CDP connection avoids both issues.
+- **Key endpoints (confirmed):** /restaurants/search (search), /restaurants/{id}/menu_items (menu), /carts (create cart), /carts/{id}/lines (add items), /carts/{id}/delivery_info (set address — requires administrative_area, locality, postal_code, coordinates as strings, plus email/phone), /carts/{id}/bill (fee breakdown)
+- **Session persistence:** ~/.kortana/seamless-profile/ (Chrome user data dir, survives restarts)
 - **Note:** Grubhub acquired by Wonder (Marc Lore) in 2024 for $650M. API surface may evolve.
 - **Full endpoint catalog:** See `server/src/adapters/seamless/endpoints/_manifest.json` for all 40+ captured endpoints
 

@@ -12,6 +12,7 @@ import ordersRouter from './routes/orders.js';
 import savingsRouter from './routes/savings.js';
 import { scheduleDailySync } from './services/sync.js';
 import type { PlatformAdapter } from './adapters/types.js';
+import { SeamlessAdapter } from './adapters/seamless/adapter.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -36,14 +37,29 @@ app.use('/api/savings', savingsRouter);
 const adapters = new Map<string, PlatformAdapter>();
 
 async function start(): Promise<void> {
-  // TODO: Initialize platform adapters
+  // Initialize platform adapters
+  // DoorDash: requires manual OTP login — enable when ready
   // const doordash = new DoorDashAdapter();
   // await doordash.initialize({ email: process.env.DOORDASH_EMAIL! });
   // adapters.set('doordash', doordash);
-  //
-  // const seamless = new SeamlessAdapter();
-  // await seamless.initialize({ email: process.env.SEAMLESS_EMAIL!, password: process.env.SEAMLESS_PASSWORD });
-  // adapters.set('seamless', seamless);
+
+  // Seamless: email/password auth
+  if (process.env.SEAMLESS_EMAIL) {
+    try {
+      const seamless = new SeamlessAdapter();
+      await seamless.initialize({
+        email: process.env.SEAMLESS_EMAIL,
+        password: process.env.SEAMLESS_PASSWORD,
+      });
+      adapters.set('seamless', seamless);
+      console.log('[Kortana] Seamless adapter registered.');
+    } catch (err) {
+      console.error('[Kortana] Seamless adapter failed to initialize:', err);
+      console.log('[Kortana] Continuing without Seamless live adapter (will use DB estimates).');
+    }
+  } else {
+    console.log('[Kortana] SEAMLESS_EMAIL not set — skipping Seamless adapter.');
+  }
 
   // Inject adapters into comparison route
   setAdapters(adapters);

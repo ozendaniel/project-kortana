@@ -16,7 +16,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 
 ## Current Status
 
-**Phase:** Phase 1 — in progress. Scaffold complete, DoorDash queries captured, core UI working end-to-end with seeded data.
+**Phase:** Phase 1 — in progress. Both adapters implemented, comparison engine working end-to-end with seeded data and DB-based fee estimation.
 
 **What's been done:**
 - Full competitive landscape research (MealMe pivoted to B2B API, FoodBoss is superficial — consumer "Kayak for food delivery" opportunity is unoccupied)
@@ -27,15 +27,19 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Full project scaffold: React + Express + PostgreSQL + Playwright (2026-03-31)
 - Railway Postgres provisioned and all 4 migrations applied (restaurants, menus, menu_items, orders)
 - DoorDash GraphQL queries captured from HAR file — 28 unique operations including homePageFacetFeed (search), storepageFeed (menu), addCartItem (cart)
-- Frontend working: address search → restaurant list → unified menu view → cart builder
-- Seeded one restaurant (Grandma's Home, 72 items) for local testing
+- Seamless/Grubhub REST API endpoints captured from HAR — 40+ endpoints cataloged with request/response samples in `server/src/adapters/seamless/endpoints/`
+- DoorDash adapter implemented: searchRestaurants (GraphQL homePageFacetFeed), getMenu (storepageFeed), getFees (addCartItem + cart parsing)
+- Seamless adapter implemented: searchRestaurants, getMenu, getFees via REST API with browser-based fetch (page.evaluate) to bypass PerimeterX bot detection
+- Comparison engine working: DB-based fallback calculates prices from seeded menu data + estimated fees (DoorDash 15% service, Seamless 22% service) when no live adapters are running. Live adapter path ready for when sessions are configured.
+- Frontend working: address search → geocoded location stored in cart → restaurant list → unified menu view → cart builder → comparison view with default address fallback
+- Seeded one restaurant (Grandma's Home 外婆家) with 72 DoorDash items + 29 Seamless items, cross-platform matched via matched_item_id
 
 **What's next:**
-1. Capture Seamless/Grubhub API endpoints via HAR file (same process as DoorDash)
-2. Wire DoorDash adapter to make live API calls using captured GraphQL queries
-3. Wire Seamless adapter (test direct HTTP first, Playwright fallback)
-4. Implement comparison engine with real-time fee fetching
-5. Build deduplication pipeline to match restaurants across platforms
+1. Build automated deduplication pipeline (fuzzy matching restaurants + menu items across platforms)
+2. Test live DoorDash adapter with real session (requires manual OTP login in Playwright browser)
+3. Test live Seamless adapter with real session (email/password login)
+4. Seed more restaurants for broader NYC coverage
+5. Implement savings tracking (log comparisons/orders to DB)
 
 ## Architecture Decisions
 
@@ -76,11 +80,12 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - **Session persistence:** ~/.kortana/doordash-profile/
 
 ### Seamless / Grubhub
-- **Type:** REST API (conventional endpoints)
+- **Type:** REST API at api-gtm.grubhub.com
 - **Auth:** Email + password → session cookie
-- **Key endpoints (capture via DevTools):** /restaurants/search, /restaurant/{id}/menu, /cart/add, /cart/checkout_summary
+- **Protection:** PerimeterX bot detection — must use browser-based fetch (page.evaluate) to inherit cookies and bypass detection. Direct Node.js fetch does NOT work.
+- **Key endpoints (confirmed):** /restaurants/search (search), /restaurants/{id}/menu_items (menu), /carts (create cart), /carts/{id}/lines (add items), /carts/{id}/bill (fee breakdown)
 - **Note:** Grubhub acquired by Wonder (Marc Lore) in 2024 for $650M. API surface may evolve.
-- **May not need Playwright:** If REST calls work with just session cookie, direct Node.js fetch is lighter
+- **Full endpoint catalog:** See `server/src/adapters/seamless/endpoints/_manifest.json` for all 40+ captured endpoints
 
 ### Uber Eats (Phase 3)
 - **Type:** GraphQL at uber.com
@@ -96,8 +101,12 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `server/src/adapters/types.ts` | Platform adapter interface. All platform adapters implement this contract. |
 | `server/src/adapters/doordash/queries/` | Captured GraphQL queries + response samples (28 operations from HAR capture) |
 | `server/src/adapters/doordash/queries/_manifest.json` | Index of all captured DoorDash operations with call counts |
-| `server/src/scripts/parse-har.ts` | Script to extract GraphQL queries from Chrome HAR files — reuse for Seamless |
-| `server/src/scripts/seed-from-har.ts` | Seed DB with restaurant/menu data from captured responses |
+| `server/src/adapters/seamless/endpoints/` | Captured Seamless/Grubhub REST API endpoint samples (40+ request/response pairs) |
+| `server/src/adapters/seamless/endpoints/_manifest.json` | Index of all captured Seamless API endpoints |
+| `server/src/scripts/parse-har.ts` | Script to extract GraphQL queries from Chrome HAR files (DoorDash) |
+| `server/src/scripts/parse-seamless-har.ts` | Script to extract REST endpoints from Chrome HAR files (Seamless) |
+| `server/src/scripts/seed-from-har.ts` | Seed DB with DoorDash restaurant/menu data from captured responses |
+| `server/src/scripts/seed-seamless-from-har.ts` | Seed DB with Seamless menu data from captured responses |
 | `server/src/db/migrations/` | SQL migration files (001-004), run via `npm run migrate` from server/ |
 
 ## Competitive Landscape

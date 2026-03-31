@@ -14,21 +14,31 @@ export class SeamlessAdapter implements PlatformAdapter {
   private browser = new SeamlessBrowser();
   private sessionCookie = '';
   private perimeterXToken = '';
+  private authToken = '';
 
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
     const loggedIn = await this.browser.isLoggedIn();
 
     if (!loggedIn) {
-      console.log('[Seamless] Session expired or not found. Please log in manually in browser window.');
+      console.log('[Seamless] Session expired or not found. Please log in manually in the browser window.');
+      console.log('[Seamless] Waiting up to 2 minutes for login...');
       await this.browser.navigateHome();
+      const success = await this.browser.waitForLogin(120000);
+      if (!success) {
+        console.error('[Seamless] Login timed out after 2 minutes. Adapter will not be available.');
+        return;
+      }
+      console.log('[Seamless] Login detected!');
     } else {
       console.log('[Seamless] Existing session found and valid.');
     }
 
-    // Extract session cookies and perimeter-x token for direct HTTP calls
+    // Extract auth token from localStorage and session cookies
+    this.authToken = await this.browser.getAuthToken();
     this.sessionCookie = await this.browser.getSessionCookies();
     this.perimeterXToken = await this.browser.getPerimeterXToken();
+    console.log(`[Seamless] Adapter initialized successfully. Auth token: ${this.authToken ? 'found' : 'missing'}`);
   }
 
   async isSessionValid(): Promise<boolean> {
@@ -43,6 +53,7 @@ export class SeamlessAdapter implements PlatformAdapter {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'origin': 'https://www.seamless.com',
+      ...(this.authToken ? { 'Authorization': `Bearer ${this.authToken}` } : {}),
       ...(this.perimeterXToken ? { 'perimeter-x': this.perimeterXToken } : {}),
       ...(options.headers as Record<string, string> || {}),
     };
@@ -57,10 +68,11 @@ export class SeamlessAdapter implements PlatformAdapter {
           body: body || undefined,
           credentials: 'include',
         });
+        const text = await response.text();
         if (!response.ok) {
-          throw new Error(`API ${response.status}: ${response.statusText}`);
+          throw new Error(`API ${response.status}: ${text.substring(0, 500)}`);
         }
-        return response.json();
+        return text ? JSON.parse(text) : null;
       },
       {
         url: `${API_BASE}${endpoint}`,
@@ -246,16 +258,27 @@ export class SeamlessAdapter implements PlatformAdapter {
 
       const cartId = cart.id;
 
-      // 2. Set delivery info
+      // 2. Set delivery info — Grubhub requires structured address fields
+      const streetAddress = params.deliveryAddress.address.split(',')[0]?.trim() || params.deliveryAddress.address;
       await this.apiCall(`/carts/${cartId}/delivery_info`, {
         method: 'PUT',
         body: JSON.stringify({
           address: {
-            address_lines: [params.deliveryAddress.address],
             region_code: 'US',
+            address_lines: [streetAddress],
+            coordinates: {
+              latitude: String(params.deliveryAddress.lat),
+              longitude: String(params.deliveryAddress.lng),
+            },
+            administrative_area: 'NY',
+            locality: 'NEW YORK',
+            postal_code: '10010',
           },
-          latitude: params.deliveryAddress.lat,
-          longitude: params.deliveryAddress.lng,
+          green_indicated: false,
+          handoff_options: [],
+          delivery_instructions: '',
+          email: 'ozen.daniel@gmail.com',
+          phone: '8187301347',
         }),
       });
 

@@ -8,15 +8,18 @@ export default function ComparisonView() {
   const navigate = useNavigate();
   const { restaurantId, restaurantName, items, deliveryAddress } = useCartStore();
 
+  // Use delivery address or a default NYC location for Phase 1
+  const effectiveAddress = deliveryAddress || { lat: 40.7359, lng: -73.9911, address: 'New York, NY' };
+
   const { data: comparison, isLoading, error } = useQuery({
     queryKey: ['compare', restaurantId, items],
     queryFn: () =>
       compareOrder(
         restaurantId!,
-        deliveryAddress!,
+        effectiveAddress,
         items.map((i) => ({ itemId: i.itemId, quantity: i.quantity }))
       ),
-    enabled: !!restaurantId && items.length > 0 && !!deliveryAddress,
+    enabled: !!restaurantId && items.length > 0,
   });
 
   if (!restaurantId || items.length === 0) {

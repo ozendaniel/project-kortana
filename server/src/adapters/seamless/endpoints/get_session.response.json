@@ -1,0 +1,117 @@
+{
+  "credential": {
+    "email": "ozen.daniel@gmail.com",
+    "gh_login_id": "10584140",
+    "first_name": "Daniel",
+    "last_name": "Ozen",
+    "brand": "SEAMLESS",
+    "phone": null,
+    "phone_type": null,
+    "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+    "created_date": 1343733120000,
+    "disable_password": false,
+    "disabled": false,
+    "disable_date": null,
+    "last_login_date": 1774989186485,
+    "email_verification_date": null,
+    "phone_verification_date": null,
+    "first_cross_over_at": "2025-10-08T16:53:16.250Z",
+    "silo_id": null,
+    "user_details": null,
+    "created_ip_address": null,
+    "last_login_ip_address": "158.106.192.186",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+    "email_last_updated": null,
+    "phone_last_updated": null
+  },
+  "claims": [
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "88",
+      "claim": "application_id",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "Umami Seamless",
+      "claim": "application_name",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "1.0",
+      "claim": "application_version",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "SEAMLESS",
+      "claim": "brand",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "1",
+      "claim": "channel_id",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "beta_seamless_ayNyuFxxVQYefSAhFYCryvXBPQc",
+      "claim": "client_id",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "google",
+      "claim": "connection_provider",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "-1690405915",
+      "claim": "device_id",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim": "diner",
+      "claim_type": "permanent"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "10584140",
+      "claim": "gh_login_id",
+      "claim_type": "permanent"
+    },
+    {
+      "ud_id": "55b04735-c969-e211-8d00-5cf3fc94f584",
+      "claim_id": "5c8e5c5f-b4a8-402c-8772-abfbf445264c",
+      "claim": "gh_token",
+      "claim_type": "temporary"
+    }
+  ],
+  "session_handle": {
+    "access_token": "e5228a76-2080-4c7c-b2e5-cfb481de5c45",
+    "token_type": null,
+    "expire_in": 60,
+    "refresh_token": "8772031b-a495-4bdf-8f7c-d697a10da860",
+    "refresh_expire_in": 43200,
+    "token_created": "2026-03-31T20:33:06.496Z",
+    "refresh_token_created": "2026-03-31T20:33:06.496Z",
+    "grubhub_token": null,
+    "token_created_time": 1774989186496,
+    "refresh_token_created_time": 1774989186496,
+    "token_expire_time": 1774992786496,
+    "refresh_token_expire_time": 1777581186496,
+    "tracking_id": "b390c6f6-8345-4cde-8c88-ee8df6c0e330",
+    "last_login_time": "2026-03-31T20:33:06.496Z",
+    "login_session_id": "907c23e9-c2f3-4ef0-9ea5-8f075ba41749",
+    "disabled": false,
+    "refresh_token_remaining_secs": 2591998,
+    "token_remaining_secs": 3598,
+    "idle_timeout_mins": null,
+    "last_login_ip_address": "158.106.192.186"
+  }
+}

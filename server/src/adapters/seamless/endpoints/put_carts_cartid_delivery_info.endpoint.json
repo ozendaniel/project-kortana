@@ -1,0 +1,36 @@
+{
+  "endpoint": "PUT /carts/{cartId}/delivery_info",
+  "method": "PUT",
+  "exampleUrl": "https://api-gtm.grubhub.com/carts/MjfVAC1BEfGVAdvzCzc-tQ/delivery_info",
+  "queryParams": {},
+  "requestBody": {
+    "address": {
+      "region_code": "US",
+      "address_lines": [
+        "341 W 11th St"
+      ],
+      "coordinates": {
+        "latitude": "40.73571395",
+        "longitude": "-74.00809479"
+      },
+      "administrative_area": "NY",
+      "locality": "NEW YORK",
+      "postal_code": "10014",
+      "cross_streets": "11th Street and Washington"
+    },
+    "green_indicated": false,
+    "handoff_options": [],
+    "delivery_instructions": "",
+    "name": "Daniel Ozen",
+    "email": "ozen.daniel@gmail.com",
+    "phone": "8187301347"
+  },
+  "responseStatus": 204,
+  "headers": {
+    "content-type": "application/json",
+    "perimeter-x": "eyJ1IjoiYmFlZDgwODAtMmQ0MC0xMWYxLTkwNWUtZTM0MDZkOTgxYzVjIiwidiI6ImJiMjQ0ZmRkLTJkNDAtMTFmMS04MGUzLTNhNDk3ZGUzN2JmYyIsInQiOjE3NzQ5ODk2NDc0NTAsImgiOiI0N2QwNTk3YmYzNjdkY2M3MjQzNzQ1NGY1MTJiYjJmNDRjODQwZDJhOTc0MDYyZTJmMmJkYTM1ODM0NWFkODNhIn0=",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;60=10014;"
+  },
+  "capturedAt": "2026-03-31T20:35:46.400Z",
+  "callCount": 1
+}

@@ -58,11 +58,16 @@ export interface SavingsData {
 }
 
 // API functions
-export async function searchRestaurants(address: string, query?: string): Promise<Restaurant[]> {
+export interface SearchResult {
+  restaurants: Restaurant[];
+  location: { lat: number; lng: number; formattedAddress: string };
+}
+
+export async function searchRestaurants(address: string, query?: string): Promise<SearchResult> {
   const params = new URLSearchParams({ address });
   if (query) params.set('q', query);
   const { data } = await api.get(`/restaurants/search?${params}`);
-  return data.restaurants;
+  return { restaurants: data.restaurants, location: data.location };
 }
 
 export async function getMenu(restaurantId: string): Promise<{ restaurant: { id: string; name: string; address: string }; menu: MenuCategory[] }> {

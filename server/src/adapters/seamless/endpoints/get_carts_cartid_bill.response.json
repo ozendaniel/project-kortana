@@ -1,0 +1,412 @@
+{
+  "id": "MjfVAC1BEfGVAdvzCzc-tQ",
+  "diner_id": "VbBHNclp4hGNAFzz_JT1hA",
+  "group_id": "MjfVAi1BEfGVA9vzCzc-tQ",
+  "when_for": "2026-03-31T21:11:00.000Z",
+  "group_type": null,
+  "group_payment_mode": null,
+  "currency": "USD",
+  "fulfillment_info": {
+    "type": "DELIVERY",
+    "delivery_info": {
+      "id": null,
+      "coordinate_id": null,
+      "address": {
+        "region_code": "US",
+        "address_lines": [
+          "341 W 11th St"
+        ],
+        "cross_streets": "11th Street and Washington",
+        "locality": "NEW YORK",
+        "sublocality": null,
+        "neighborhood": null,
+        "administrative_area": "NY",
+        "postal_code": "10014",
+        "sorting_code": null,
+        "coordinates": {
+          "latitude": 40.73571395,
+          "longitude": -74.00809479
+        },
+        "organization_name": null,
+        "detailed_pin_coordinates": null
+      },
+      "delivery_instructions": "",
+      "name": "Daniel Ozen",
+      "phone": "8187301347",
+      "email": "ozen.daniel@gmail.com",
+      "green_indicated": false,
+      "delivery_eta_type": "STANDARD_DELIVERY",
+      "handoff_options": [],
+      "latitude": "40.73571395",
+      "longitude": "-74.00809479",
+      "street_address1": "341 W 11th St",
+      "cross_streets": "11th Street and Washington",
+      "street_address2": null,
+      "address_locality": "NEW YORK",
+      "address_region": "NY",
+      "postal_code": "10014",
+      "address_country": "US"
+    },
+    "pickup_info": null,
+    "incomplete_delivery": null,
+    "incomplete_pickup": null,
+    "individual_info": null
+  },
+  "notification_preferences": null,
+  "experiments": [
+    "ADDING_PAYMENT_ADJUSTMENT",
+    "CALCULATOR_WORKFLOW_AUTHORITY",
+    "CALCULATOR_WORKFLOW_REVERSE_SHADOW",
+    "CONSOLIDATE_MERCHANT_SOURCED_FEE_TAX_CALCULATION",
+    "CONSUME_ORDER_REQUEST_VIA_KAFKA",
+    "CONSUME_STATUS_UPDATE_VIA_KAFKA",
+    "DIRECT_CARTS_ENABLED",
+    "DMP_ENABLED_V2",
+    "DMP_PAYMENTS_WITH_PAYMENT_ATTRIBUTION",
+    "DO_NOT_ADD_SERVICE_FEE_TO_MERCHANT_TOTAL",
+    "DRONE_DELIVERY",
+    "ENABLE_ADD_DELIVERY_INFO_VIA_GATEWAY",
+    "ENABLE_ADD_INCOMPLETE_DELIVERY_VIA_GATEWAY",
+    "ENABLE_AUTONOMOUS_DELIVERY",
+    "ENABLE_BUNDLED_ORDER_PAYMENTS",
+    "ENABLE_MMO_SUBTOTALS_FOR_ALL_CARTS",
+    "ENABLE_ORDER_PART_ALCOHOL_ATTRIBUTE_POPULATION",
+    "ENABLE_POSTCHECKOUT_PUBLISHING",
+    "ENABLE_REMOVE_ADD_ON_VIA_GATEWAY",
+    "ENABLE_REMOVE_PAYMENT_VIA_GATEWAY",
+    "ENABLE_TAX_ENGINE_FOR_PAYMENT_REFRESH",
+    "ENABLE_UPDATE_WHEN_FOR_VIA_GATEWAY",
+    "FEE_ATTRIBUTION_POWERED",
+    "FEE_SAVINGS_POPULATION",
+    "FLEXIBLE_FEES",
+    "GROUP_ORDER_ENABLE_MULTI_PAYER_CARTS",
+    "IGNORE_MINIMUM_TIP_REQUIREMENT",
+    "INCLUDE_TIP_IN_MINIMUM",
+    "INHERIT_PARENT_TAX_CATEGORY",
+    "INTEGRATE_TAX_ENGINE_FEES",
+    "LINEOPTION_ENHANCEMENTS",
+    "MAS_USE_64BIT_REST_ID",
+    "MULTIPLE_ORDER_PART_SHARED_CART",
+    "ORDERS_DAPI_UPDATE_POST_CONFIRMED",
+    "ORDERS_QUEUE_MIGRATION_MAS_ADJUSTMENT_PUBLISH",
+    "ORDERS_QUEUE_MIGRATION_MAS_STATUSUPDATE_PUBLISH",
+    "ORDER_UUID_AS_GROUP_IDENTIFIER",
+    "POS_VALIDATION_USE_CONTEXT",
+    "PRESERVE_LINE_FORMAT_TO_TAX_ENGINE",
+    "PUBLISH_CARTING_TAX_EVENT",
+    "PUBLISH_ORDER_REQUEST_V2_VIA_KAFKA",
+    "PUBLISH_STATUS_UPDATE_VIA_KAFKA",
+    "ROBOT_DELIVERY",
+    "SAVING_DETAILS_BREAKDOWN",
+    "SEND_ALL_ENTITLEMENTS_AT_ONCE_ON_GROUP_PAYMENT_UPDATE",
+    "TAX_ENGINE_SOURCE_OF_TRUTH",
+    "USE_ADDRESS_MAPPER_FOR_GROUP_FEES",
+    "USE_CONTENT_VAR_ID_PREFIX",
+    "USE_NEW_FEE_TAXABLE_AMOUNT_LOGIC",
+    "VALIDATE_DELIVERY_AT_CHECKOUT",
+    "WRITE_LATEST_ORDER_REQUEST_TO_LOOKUP"
+  ],
+  "cart_attributes": [],
+  "charges": {
+    "lines": {
+      "diner_total": 2860,
+      "line_items": [
+        {
+          "id": "MohmAC1BEfGmAbeAiVJyNQ",
+          "menu_item_id": "306076054632",
+          "menu_category_id": "297617383008",
+          "name": "Sweet and Sour Pork 糖醋里脊",
+          "price": 2860,
+          "display_price": null,
+          "quantity": 1,
+          "weight": null,
+          "requested_weight": null,
+          "measurement_unit": null,
+          "diner_total": 2860,
+          "options": [],
+          "special_instructions": null,
+          "restaurant_id": "8023448",
+          "badges": [],
+          "item_coupon": false,
+          "combinable_with_coupons": false,
+          "adjustments": null,
+          "item_tags": [],
+          "packaging_options": [],
+          "images": [
+            {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "jghdpmwgmaul2kmkpec1",
+              "format": "jpg",
+              "tags": [
+                "food",
+                "primary"
+              ],
+              "image_title": null,
+              "scale_mode": "FILL"
+            }
+          ]
+        }
+      ]
+    },
+    "diner_subtotal": 2860,
+    "fees": {
+      "total": 828,
+      "delivery": 199,
+      "service": 629,
+      "fee_items": [
+        {
+          "calculated_amount": 199,
+          "non_adjusted_amount": 199,
+          "potential_adjusted_amount": 199,
+          "fee_adjustment_category": "NONE",
+          "group": "DELIVERY",
+          "type": "DELIVERY",
+          "id": "eyJhIjoxOTksIm5hIjoxOTksInBhYSI6MTk5LCJnIjoxLCJmZyI6IkRFTElWRVJZIiwibyI6MCwib3AiOjEsIm0iOjE5OSwibG8iOnsib3MiOlt7Im9wIjoxLCJtIjoxOTl9XX0sInRhIjp0cnVlLCJ0IjoxLCJmdCI6IkRFTElWRVJZIiwibiI6IkRlbGl2ZXJ5IGZlZSIsImZhYyI6Ik5PTkUiLCJmZWVBdHRyaWJ1dGlvbiI6MH0=",
+          "name": "Delivery fee",
+          "fee_attribution": "DEFAULT"
+        },
+        {
+          "calculated_amount": 429,
+          "non_adjusted_amount": 429,
+          "potential_adjusted_amount": 429,
+          "fee_adjustment_category": "NON_SUBSCRIPTION",
+          "group": "SERVICE",
+          "type": "CHAIN_SERVICE_FEE",
+          "id": "eyJhIjo0MjksIm5hIjo0MjksInBhYSI6NDI5LCJnIjowLCJmZyI6IlNFUlZJQ0UiLCJvIjowLCJvcCI6MCwibSI6MTUuMDAsImxvIjp7Im9zIjpbeyJvcCI6MCwibSI6MTUuMDB9XX0sInRhIjp0cnVlLCJ0IjoyLCJmdCI6IlNFUlZJQ0UiLCJuIjoiU2VydmljZSBmZWUiLCJmYWMiOiJOT05fU1VCU0NSSVBUSU9OIiwiZmVlQXR0cmlidXRpb24iOjB9",
+          "name": "Service fee",
+          "fee_attribution": "DEFAULT"
+        },
+        {
+          "calculated_amount": 200,
+          "non_adjusted_amount": 200,
+          "potential_adjusted_amount": 200,
+          "fee_adjustment_category": "NONE",
+          "group": "SERVICE",
+          "type": "SERVICE_TOLL",
+          "id": "eyJhIjoyMDAsIm5hIjoyMDAsInBhYSI6MjAwLCJnIjowLCJmZyI6IlNFUlZJQ0UiLCJvIjowLCJvcCI6MSwibSI6MjAwLCJsbyI6eyJvcyI6W3sib3AiOjEsIm0iOjIwMH1dfSwidGEiOnRydWUsInQiOjUsImZ0IjoiVE9MTCIsIm4iOiJPdGhlciBmZWVzIiwiZmFjIjoiTk9ORSIsImZlZUF0dHJpYnV0aW9uIjowfQ==",
+          "name": "Other fees",
+          "fee_attribution": "DEFAULT"
+        }
+      ],
+      "fee_amount_saved_if_pickup": 828,
+      "promotion_infos": []
+    },
+    "donations": null,
+    "taxes": {
+      "total": 328,
+      "delivery": 18,
+      "sales": 254,
+      "service": 56,
+      "fee_tax_items": [
+        {
+          "calculated_amount": 18,
+          "fee_type": "DELIVERY"
+        },
+        {
+          "calculated_amount": 38,
+          "fee_type": "CHAIN_SERVICE_FEE"
+        },
+        {
+          "calculated_amount": 18,
+          "fee_type": "SERVICE_TOLL"
+        }
+      ]
+    },
+    "exempted_taxes": null,
+    "tip": {
+      "amount": 321,
+      "type": "INCLUDE_IN_BILL"
+    },
+    "diner_grand_total": 4337,
+    "adjustments": null,
+    "add_ons": []
+  },
+  "payments": {
+    "CREDIT_CARD": [
+      {
+        "id": "43c64ef0-2d41-11f1-8ef1-35631e8f091a",
+        "payment_id": "XktjLB8HTfag4iOo_KLXHg",
+        "amount": 4337,
+        "diner_id": "VbBHNclp4hGNAFzz_JT1hA",
+        "metadata": {
+          "FORTER_TOKEN": "0151d37086e040fb8995bd58fa11f571_1774989146198__UDF43-m4_14ck__tt",
+          "ACCERTIFY_DEVICE_TRANSACTION_ID": "MjfVAC1BEfGVAdvzCzc-tQ",
+          "ACCERTIFY_UBA_EVENTS": "eyJ0cyI6MTc3NDk4OTM3NTE2OSwicGF5cyI6WyJleUowY3lJNk1UYzNORGs0T1RNM05ERTVNQ3dpY0dGNUlqb2lTbFJXUTBwVVpFTktWRWw1WWtjNWFrcFVTWGxLVkU1Q1NsUkplV0ZJVWpCalNFMXNUVEJGYkUxcldXeE5hMW96WkROamRXTXlWbWhpVjNoc1l6Tk5kVmt5T1hSS1ZFcEhXVEpvYkZreWRIWmtXRkZzVFd0YVRtRnRXbGRSVlUxNFVXdFdiVkl4V2tKYVNGbzJVVE53YWt4WVVsSktWRXBIWTIxV01tRlhWak5LVkVsNVNsUktSRXBVU1hsalIyeHJTbFJKZVVwVVRrSk5lbWMxVFdwSk1VNVVTVE5OZWxFMFRucE5NVTFEVlhsUmVWVjVUVzVPY0ZwRFZYbE5hVlY2VVZOVmVVMXRTWHBQVkVKcVRtMVpNa3hVWjNwT1JGVjBUa2RPYTFwVE1EUlplbWMwVEZkV2JFOUhVbTFPYlUxM1dsUk5lazFEVlhsTmFWVjVVWGxWZVUxdFNucGhWMUZzVFdwSmJFMHdSV3hOYWtreldsZFZORmx0UlhoT1ZHTXdUMVJGZWs1SFRtbE5WR2N3VGtkWk1VMHlSbWhPYWsxNFRrUmtiVTV0VFRCTmFsbHNUV3BKYkUxclRXeE5ha293WTNsVmVVMXBWWHBSVkVVelRucFJOVTlFYTNwT2VsRjRUbFJOYkUxclRXeE5ha293WlZoQ2JFcFVTWGxLVkU1Q1NsUkplV05JVW5WaFUxVjVUV2xWZVZGNVZYbE5ia0pvWlZOVmVVMXBWWHBSVTFVelVXbFZlVTF1VVd4TmFrbHNUVEJGZUU1Nll6QlBWR2MxVFhwak1FMVVWWHBLVkVwRVNsUkplVnBJWTJ4TmFrbHNUVEJGZVUxRVFURktWRXBFU2xSSmVWcEhaMnhOYWtsc1RUQkZlRTFxWTNoS1ZFcEVTbFJKZVdRelkyeE5ha2xzVFRCRmVVMUVRVEZLVkVwRVNsUkplV1F5WjJ4TmFrbHNUVEJGZUUxcVkzaEtWRXBFU2xSSmVXTXlkMnhOYWtsc1RUQkZkMHBVU2tSS1ZFbDVZek5SYkUxcVNXeE5NRVYzU2xSS1JFcFVTWGxqU0Vsc1RXcEpiRTB3UlhoS1ZFcEVTbFJKZVdOdFZtMUtWRWw1U2xST1FrcFVTWGxoU0ZJd1kwaE5iRTB3Uld4TmExbHNUV3RhTTJRelkzVmpNbFpvWWxkNGJHTXpUWFZaTWpsMFNsUktSMWt5YUd4Wk1uUjJaRmhSYkUxcldrNWhiVnBYVVZWTmVGRnJWbTFTTVZwQ1draGFObEV6Y0dwTVdGSlNTbFJLUjJOdFZqSmhWMVl6U2xSSmVVcFVTa1JLVkVsNVpFZHNNRXBVU1hsS1ZFNUNTbFJKZVZVeVZtaGlWM2hzWXpOTmJFMXFRV3hPTUUxc1RXcENSMkl5T1d0S1ZFbDNVa2RXYzJGWVdteGpibXRzVFdwQ2JXTnRPWFJLVkVsM1ZXMVdlbVJIUmpGamJVWjFaRWhOYkUxcVFrOWFWMFo1U2xSSmQxZFhPVEZLVkVsM1ptbFZlVTFGT1hsYVIxWjVTbFJKZDFReU5YTmhWelZzU2xSSmVVcFVTa1JLVkVsNVkwaENjRnBEVlhsTmFWVjZVVk5WZVUxcVRUUlBWRWw1VGxSVmVVNTZUVEJQUkdONlRsUkJiRTFxU1d4T01GRnNUV3ROYkUxcVNuTlpiV3hyU2xSSmVVcFVUa0ppYmxaellrTlZNMUpEVlhsUmVWVXpVV2xWZVUxdGVIWlplVlY1VFdsVmVsRlRWWGxOYldnd1pFaENla3BVVGtKS1ZFcEhTbFJLUjJRelpETk1iazVzV1ZjeGMxcFlUbnBNYlU1MllsTlZlVkp0VG05YVYwNXlZak5XTUVwVVNrZFVWM0J0Vm10R1JFMVZTa1phYTJSWFVWZFNNbVZyVGpaWmVURXdWVk5WZVZKdVNteGtiV3hzWkhsVmVVMXBWWGxSZVZWNVRXNUNjRnBEVlhsTmFWVjZVVlJOTkU5VVNYbE9WRlY1VG5wTk1FOUVZM3BPVkVGc1RXdE5iRTFxU25waFYxRnNUV3BKYkUwd1JXeE5ha3BwVFhwcmQxbDZXbTFPYVRBMFRYcFJNVXhVVW1wYVIxVjBUMGROTkU5RE1XeGFWR2hyV21wYWFrMUhWWHBOZWtGc1RXcEpiRTFyVFd4TmFrcHBZekpzYTBwVVNYbEtWRTVDU2xSSmVVNHlWbXhQUjBwb1RWUlZNMDVFYTNoTmVsSnFXV3BGTkU1RVVtMU9WRTVvV1ZSWmVrMVVVVE5hYWxwcVRrUkpNa3BVU1hsS1ZFcEVTbFJKZVdSSVRXeE5ha2xzVFRCRmVFNTZZekJQVkdjMVRYcGpNRTFVWnpWS1ZFcEVTbFJKZVdSSWJIZGFVMVY1VFdsVmVsRlRWWGxOYmtJd1ltMDRiRTFxU1d4TmEwMXNUV3BLZDFsWWEyeE5ha2xzVFRCRmJFNHdTV3hOYWtvd1NsUkplVXBVVGtKTmVsbHNUV3ROYkUxcVNtdGtlVlY1VFdsVmVsRlVTWGROUkZWc1RXdE5iRTFxU210aFExVjVUV2xWZWxGVVJYbE9la1ZzVFd0TmJFMXFTak5rZVZWNVRXbFZlbEZVU1hkTlJGVnNUV3ROYkUxcVNqTmhRMVY1VFdsVmVsRlVSWGxPZWtWc1RXdE5iRTFxU25waVExVjVUV2xWZWxGVVFXeE5hMDFzVFdwS2VtUkRWWGxOYVZWNlVWUkJiRTFyVFd4TmFrcDNZMmxWZVUxcFZYcFJWRVZzVFd0TmJFMXFTbmxhVjFsc1RXcEpiRTB3Uld4TmFrcHZaRWhTZDJONVZYcFJVMVY1VW1sVmVWSnVaRE5rZVRWNldsZEdkR0pIVm5wamVUVnFZakl3YkUxcldtcGhSMVpxWVRJNU1XUkRWWGxTYXpGeFdteGFRbEY2UmtOU1YxcElWbXRHYTJSdWNFUmxiVTEwWkVaRmJFMXJXbmxhV0Zwd1dsaGpiRTFxU1d4TmEwMXNUV3BLTUdGWVVXeE5ha2xzVFRCRmJFMXFTbFJhVjBaMFlrZFdlbU41VlhsTlExVXpVWGxWZVUxRlduWmlNbEZzVFdwQ1JWcFhlSEJrYlZaNVpWTlZlVTFIV25saU1qQnNUV3BDVTFwWVRqQlpXRlo1V1ZjMU1HTjVWWGxOUlRWc1dWaEpiRTFxUWxwaU0xVnNUV3BDSzBwVVNYZFVNMHByV2xoSmJFMXFRbEJpYlhod1ltMVZiRTFxU1d4TmEwMXNUV3BLZDJOSGJHdEtWRWw1U2xST1FrcFVTWGxOZW1jMVRXcEpNVTVVU1ROTmVsRTBUbnBOTVUxRFZYbE5hVlV6VWtOVmVWRjVWWGxOYlhocFlWZFJiRTFxU1d4Tk1FWjFaRmQ0YzBwVVpFVktWRlpGSW4wPSIsImV5SjBjeUk2TVRjM05EazRPVE0zTlRFeE1Dd2ljR0Y1SWpvaVNsUldRMHBVWkVOS1ZFbDVZa2M1YWtwVVNYbEtWRTVDU2xSSmVXRklVakJqU0Uxc1RUQkZiRTFyV1d4TmExb3paRE5qZFdNeVZtaGlWM2hzWXpOTmRWa3lPWFJLVkVwSFdUSm9iRmt5ZEhaa1dGRnNUV3RhVG1GdFdsZFJWVTE0VVd0V2JWSXhXa0phU0ZvMlVUTndha3hZVWxKS1ZFcEhZMjFXTW1GWFZqTktWRWw1U2xSS1JFcFVTWGxqUjJ4clNsUkplVXBVVGtKTmVtYzFUV3BKTVU1VVNUTk5lbEUwVG5wTk1VMURWWGxSZVZWNVRXNU9jRnBEVlhsTmFWVjZVVk5WZVUxdFNYcFBWRUpxVG0xWk1reFVaM3BPUkZWMFRrZE9hMXBUTURSWmVtYzBURmRXYkU5SFVtMU9iVTEzV2xSTmVrMURWWGxOYVZWNVVYbFZlVTF0U25waFYxRnNUV3BKYkUwd1JXeE5ha2t6V2xkVk5GbHRSWGhPVkdNd1QxUkZlazVIVG1sTlZHY3dUa2RaTVUweVJtaE9hazE0VGtSa2JVNXRUVEJOYWxsc1RXcEpiRTFyVFd4TmFrb3dZM2xWZVUxcFZYcFJWRVV6VG5wUk5VOUVhM3BPZWxGNFQxUkZiRTFyVFd4TmFrb3daVmhDYkVwVVNYbEtWRTVDU2xSSmVXTklVblZoVTFWNVRXbFZlVkY1VlhsTmJrSm9aVk5WZVUxcFZYcFJVMVV6VVdsVmVVMXVVV3hOYWtsc1RUQkZlRTU2WXpCUFZHYzFUWHBqTUUxVWEzaEtWRXBFU2xSSmVWcElZMnhOYWtsc1RUQkZlVTFFUVRGS1ZFcEVTbFJKZVZwSFoyeE5ha2xzVFRCRmVFMXFZM2hLVkVwRVNsUkplV1F6WTJ4TmFrbHNUVEJGZVUxRVFURktWRXBFU2xSSmVXUXlaMnhOYWtsc1RUQkZlRTFxWTNoS1ZFcEVTbFJKZVdNeWQyeE5ha2xzVFRCRmQwcFVTa1JLVkVsNVl6TlJiRTFxU1d4Tk1FVjNTbFJLUkVwVVNYbGpTRWxzVFdwSmJFMHdSWGhLVkVwRVNsUkplV050Vm0xS1ZFbDVTbFJPUWtwVVNYbGhTRkl3WTBoTmJFMHdSV3hOYTFsc1RXdGFNMlF6WTNWak1sWm9ZbGQ0YkdNelRYVlpNamwwU2xSS1Ixa3lhR3haTW5SMlpGaFJiRTFyV2s1aGJWcFhVVlZOZUZGclZtMVNNVnBDV2toYU5sRXpjR3BNV0ZKU1NsUktSMk50VmpKaFYxWXpTbFJKZVVwVVNrUktWRWw1WkVkc01FcFVTWGxLVkU1Q1NsUkplVkV5YUd4Wk1uUjJaRmhSYkUxcVFXeE9NRTFzVFdwQ1ZGcFhSblJpUjFaNlkzbFZlVTFwVlhsUmVWVjVUVzVDZDJGWFVXeE5ha2xzVFRCRmJFMXFTWHBQUkd0NVRXcFZNVTFxWTNwT1JHY3pUWHBWZDBwVVNYbEtWR1JGU2xSS1JFcFVTWGxpUjBwd1drTlZlVTFwVlhwUlZ6VXhZa2QzYkU0d1VXeE5hMDFzVGpCSmJFMXFTbk5pTWsxc1RXcEpiRTB3Uld4TmFrcHZaRWhTZDJONVZYcFJVMVY1VW1sVmVWSnVaRE5rZVRWNldsZEdkR0pIVm5wamVUVnFZakl3YkUxcldtcGhSMVpxWVRJNU1XUkRWWGxTYXpGeFdteGFRbEY2UmtOU1YxcElWbXRHYTJSdWNFUmxiVTEwWkVaRmJFMXJXbmxhV0Zwd1dsaGpiRTFxU1d4TmEwMXNUV3BLZDJGWFVXeE5ha2xzVFRCRmVrOUVhM2xOYWxVeFRXcGplazVFWnpOTmVsVjNTbFJLUkVwVVNYbGpNbXhyU2xSSmVVcFVUa0pLVkVsNVdXcE5OVTFIVFRKYWFsbDBUMFJOTUU1VE1EQlpNbEpzVEZSb2FrOUVaM1JhVjFVMFdrZFpNbGw2UW14TmVrMTNTbFJKZVVwVVNrUktWRWw1V1c1T2NGcERWWGxOYVZWNlVWTlZlVTFxWkd4YVZHaHBXVlJGTVU1NlVUVk5WRTB3V1RKSmVFOUVVVEJhYWxWNldWZEZNazE2UlRCT01sa3lXWHBSZVU1cFZYbE5hVlY1VVhsVmVVMXVVbnBLVkVsNVNsUk9RazFVWXpOT1JHczBUMVJOTTA1RVRUTk9RMVY1VVhsVmVVMXVValZqUjFWc1RXcEpiRTB3Uld4TmFrcDBaRWhLY2twVVNYbEtWRXBFU2xSSmVXTkhSalZLVkVsNVNsUk9Ra3BVWkVOS1ZFbDVaRU5WZVUxcFZYcFJWRVV6VG5wUk5VOUVhM3BPZWxGNlRucFJiRTFyVFd4TmFrcHRXa05WZVUxcFZYcFJWRVV3VEdwck1VcFVTa1JLVkVsNVl6SlJiRTFxU1d4Tk1FVjZTbFJLUkVwVVNYbFpiVWxzVFdwSmJFMHdSV3hPVlVsNFRrUlZlRXBVU2tST1ZFMHpTbFJLUkUxVVVUSk5lVlY1VVhwVk1FMTVWVEZTUTFWNVVYbFZlVTF1VFd4TmFrbHNUVEJGYkU1VlNXeE9NRWxzVFdwS01FcFVTWGxLVkU1Q1RVTlZlVkY1VlhsTmJtZHNUV3BKYkUwd1JYaE9SRmw2U2xSS1JFcFVTWGxsVTFWNVRXbFZlbEZVVlRCTmVWVjVVWGxWZVUxdFdtdEtWRWw1U2xST1FrMURWWGxSZVZWNVRXNU9hMHBVU1hsS1ZFNUNUVU5WZVZGNVZYbE5iVTFzVFdwSmJFMHdSWGhLVkVwRVNsUkplVmxUVlhsTmFWVjZVVlJCYkUxclRXeE5ha3AwWlVOVmVVMXBWWHBSVkVGc1RXdE5iRTFxU25SaWFWVjVUV2xWZWxGVVFXeE9NRkZzVFd0TmJFNHdTV3hOYWtvd1NsUkplVXBVVGtKTmVtc3hTbFJLUkVwVVNYbGxRMVY1VFdsVmVsRlVSVEJPYWtGc1RXdE5iRTFxU2pWS1ZFbDVTbFJPUWs1VVVYcEtWRXBFU2xSSmVWcHRVV3hOYWtsc1RUQkZla3BVU2tSS1ZFbDVZekpSYkUxcVNXeE5NRVY2U2xSS1JFcFVTWGxaZVZWNVRXbFZlbEZVVFd4TmEwMXNUV3BLYUVwVVNYbEtWRTVDVGxScmRVOUVZMnhOYTAxc1RXcEtkR1ZEVlhsTmFWVjZVVlJGZDAxRFZYbFJlVlY1VFcweGRVcFVTWGxLVkU1Q1RXazBNazlUVlROU1ExVXhVa05WZVZGNVZYbE5iVTFzVFdwSmJFMHdSVFJLVkVwRVNsUkplV015VFd4TmFrbHNUVEJGZVVwVVpFVktWRXBFU2xSSmVXSkhTbkJhUTFWNVRXbFZlbEZYTlRGaVIzZHNUakJSYkUxclRXeE9NRWxzVFdwS2MySXlUV3hOYWtsc1RUQkZiRTFxU205a1NGSjNZM2xWZWxGVFZYbFNhVlY1VW01a00yUjVOWHBhVjBaMFlrZFdlbU41TldwaU1qQnNUV3RhYW1GSFZtcGhNamt4WkVOVmVWSnJNWEZhYkZwQ1VYcEdRMUpYV2toV2EwWnJaRzV3UkdWdFRYUmtSa1ZzVFd0YWVWcFlXbkJhV0dOc1RXcEpiRTFyVFd4TmFrcDNZVmRSYkUxcVNXeE5NRVY2VDBScmVVMXFWVEZOYW1ONlRrUm5NMDE2VlhkS1ZFcEVTbFJKZVdNeWJHdEtWRWw1U2xST1FrcFVTWGxaYWswMVRVZE5NbHBxV1hSUFJFMHdUbE13TUZreVVteE1WR2hxVDBSbmRGcFhWVFJhUjFreVdYcENiRTE2VFhkS1ZFbDVTbFJLUkVwVVNYbFpiazV3V2tOVmVVMXBWWHBSVTFWNVRXcGtiRnBVYUdsWlZFVXhUbnBSTlUxVVRUQlpNa2w0VDBSUk1GcHFWWHBaVjBVeVRYcEZNRTR5V1RKWmVsRjVUbWxWZVUxcFZYbFJlVlY1VFc1U2VrcFVTWGxLVkU1Q1RWUmpNMDVFYXpSUFZFMHpUbFJCTlU5VFZYbFJlVlY1VFc1U05XTkhWV3hOYWtsc1RUQkZiRTFxU25ka1J6VjJTbFJKZVVwVVNrUktWRWw1WTBkR05VcFVTWGxLVkU1Q1NsUmtRMHBVU1hsa1ExVjVUV2xWZWxGVWEzZFBRMVY1VVhsVmVVMXRVak5LVkVsNVNsUk9RazFxUVhkT1UxVjVVWGxWZVUxdFVtOUtWRWw1U2xST1FrMVVTVE5OVTFWNVVYbFZlVTF1WkROS1ZFbDVTbFJPUWsxcVFYZE9VMVY1VVhsVmVVMXVaRzlLVkVsNVNsUk9RazFVU1ROTlUxVjVVWGxWZVUxdVRuTktWRWw1U2xST1FrMURWWGxSZVZWNVRXNU9NRXBVU1hsS1ZFNUNUVU5WZVZGNVZYbE5ia0o1U2xSSmVVcFVUa0pOVTFWNVVYbFZlVTF1U214YWFWVjVUV2xWZWxGVFZYbE5iV2d3WkVoQ2VrcFVUa0pLVkVwSFNsUktSMlF6WkROTWJrNXNXVmN4YzFwWVRucE1iVTUyWWxOVmVWSnRUbTlhVjA1eVlqTldNRXBVU2tkVVYzQnRWbXRHUkUxVlNrWmFhMlJYVVZkU01tVnJUalpaZVRFd1ZWTlZlVkp1U214a2JXeHNaSGxWZVUxcFZYbFJlVlY1VFc1U2NHUkRWWGxOYVZWNlVWTlZlVTFyVG05YVYwNXlZak5XTUVwVVNYZEtWR1JFU2xSSmQxVXlWbWhpVjNoc1l6Tk5iRTFxU1d4TmEwMXNUV3BLZDJOSGJHdEtWRWw1U2xST1FrcFVTWGxOZW1jMVRXcEpNVTVVU1ROTmVsRTBUbnBOTVUxRFZYbE5hVlV6VWtOVmVWRjVWWGxOYlhocFlWZFJiRTFxU1d4Tk1FWjFaRmQ0YzBwVVpFVktWRlpGSW4wPSIsImV5SjBjeUk2TVRjM05EazRPVE0zTlRFMk9Dd2ljR0Y1SWpvaVNsUldRMHBVWkVOS1ZFbDVZa2M1YWtwVVNYbEtWRTVDU2xSSmVXRklVakJqU0Uxc1RUQkZiRTFyV1d4TmExb3paRE5qZFdNeVZtaGlWM2hzWXpOTmRWa3lPWFJLVkVwSFdUSm9iRmt5ZEhaa1dGRnNUV3RhVG1GdFdsZFJWVTE0VVd0V2JWSXhXa0phU0ZvMlVUTndha3hZVWxKS1ZFcEhZMjFXTW1GWFZqTktWRWw1U2xSS1JFcFVTWGxqUjJ4clNsUkplVXBVVGtKTmVtYzFUV3BKTVU1VVNUTk5lbEUwVG5wTk1VMURWWGxSZVZWNVRXNU9jRnBEVlhsTmFWVjZVVk5WZVUxdFNYcFBWRUpxVG0xWk1reFVaM3BPUkZWMFRrZE9hMXBUTURSWmVtYzBURmRXYkU5SFVtMU9iVTEzV2xSTmVrMURWWGxOYVZWNVVYbFZlVTF0U25waFYxRnNUV3BKYkUwd1JXeE5ha2t6V2xkVk5GbHRSWGhPVkdNd1QxUkZlazVIVG1sTlZHY3dUa2RaTVUweVJtaE9hazE0VGtSa2JVNXRUVEJOYWxsc1RXcEpiRTFyVFd4TmFrb3dZM2xWZVUxcFZYcFJWRVV6VG5wUk5VOUVhM3BPZWxWNFRWUkZiRTFyVFd4TmFrb3daVmhDYkVwVVNYbEtWRTVDU2xSSmVXTklVblZoVTFWNVRXbFZlVkY1VlhsTmJrSm9aVk5WZVUxcFZYcFJVMVV6VVdsVmVVMXVVV3hOYWtsc1RUQkZlRTU2WXpCUFZHYzFUWHBqTVUxVVJYaEtWRXBFU2xSSmVWcElZMnhOYWtsc1RUQkZlVTFFUVRGS1ZFcEVTbFJKZVZwSFoyeE5ha2xzVFRCRmVFMXFZM2hLVkVwRVNsUkplV1F6WTJ4TmFrbHNUVEJGZVUxRVFURktWRXBFU2xSSmVXUXlaMnhOYWtsc1RUQkZlRTFxWTNoS1ZFcEVTbFJKZVdNeWQyeE5ha2xzVFRCRmQwcFVTa1JLVkVsNVl6TlJiRTFxU1d4Tk1FVjNTbFJLUkVwVVNYbGpTRWxzVFdwSmJFMHdSWGhLVkVwRVNsUkplV050Vm0xS1ZFbDVTbFJPUWtwVVNYbGhTRkl3WTBoTmJFMHdSV3hOYTFsc1RXdGFNMlF6WTNWak1sWm9ZbGQ0YkdNelRYVlpNamwwU2xSS1Ixa3lhR3haTW5SMlpGaFJiRTFyV2s1aGJWcFhVVlZOZUZGclZtMVNNVnBDV2toYU5sRXpjR3BNV0ZKU1NsUktSMk50VmpKaFYxWXpTbFJKZVVwVVNrUktWRWw1WkVkc01FcFVTWGxLVkU1Q1NsUkplVlZ0VmpKaFYxWXpTbFJKZDFsWE5XdEtWRWwzWTBkNGFGa3lWV3hOYWtKcldsZDRjR1J0Vm5sbFUxVjVUVWM1ZVZwSFZubEtWRWw1U2xSS1JFcFVTWGxqU0VKd1drTlZlVTFwVlhwUlUxVjVUV3BOTkU5VVNYbE9WRlY1VG5wTk1FOUVZM3BPVkVGc1RXcEpiRTR3VVd4TmEwMXNUV3BLYzFsdGJHdEtWRWw1U2xST1FtSnVWbk5pUTFVelVrTlZlVkY1VlROUmFWVjVUVzE0ZGxsNVZYbE5hVlY2VVZOVmVVMXRhREJrU0VKNlNsUk9Ra3BVU2tkS1ZFcEhaRE5rTTB4dVRteFpWekZ6V2xoT2VreHRUblppVTFWNVVtMU9iMXBYVG5KaU0xWXdTbFJLUjFSWGNHMVdhMFpFVFZWS1JscHJaRmRSVjFJeVpXdE9ObGw1TVRCVlUxVjVVbTVLYkdSdGJHeGtlVlY1VFdsVmVWRjVWWGxOYmtKd1drTlZlVTFwVlhwUlZFMDBUMVJKZVU1VVZYbE9lazB3VDBSamVrNVVRV3hOYTAxc1RXcEtlbUZYVVd4TmFrbHNUVEJGYkUxcVNtbE5lbXQzV1hwYWJVNXBNRFJOZWxFeFRGUlNhbHBIVlhSUFIwMDBUME14YkZwVWFHdGFhbHBxVFVkVmVrMTZRV3hOYWtsc1RXdE5iRTFxU21sak1teHJTbFJKZVVwVVRrSktWRWw1VGpKV2JFOUhTbWhOVkZVelRrUnJlRTE2VW1wWmFrVTBUa1JTYlU1VVRtaFpWRmw2VFZSUk0xcHFXbXBPUkVreVNsUkplVXBVU2tSS1ZFbDVaRWhOYkUxcVNXeE5NRVY0VG5wak1FOVVaelZOZW1NeFRWUkZNa3BVU2tSS1ZFbDVaRWhzZDFwVFZYbE5hVlY2VVZOVmVVMXRNVEJqYlhOc1RXcEpiRTFyVFd4TmFrcDNXVmhyYkUxcVNXeE5NRVZzVGpCSmJFMXFTakJLVkVsNVNsUk9RazFVWXpOT1JHczBUMVJOTTA1VVJYaE9hVlY1VVhsVmVVMXRXbXRLVkVsNVNsUk9RazFEVlhsUmVWVjVUVzVPYTBwVVNYbEtWRTVDVFVOVmVWRjVWWGxOYlVwcFNsUkplVXBVVGtKS1ZGWkRUVlJSTUU1VFZYbFJlbFY0VDFOVmVWRjZSVEJPUkZWc1RXdE5NVTFVYTJ4T1ZWRnNUV3ROYkUxcVNucEtWRWw1U2xST1FrcFVWa05LVkdSRFNsUkplV1JEVlhsTmFWVjZVVlJCYkUxclRXeE5ha28wU2xSSmVVcFVUa0pOVkZFd1RsTlZlVkY1VlhsTmJtdHNUV3BKYkUwd1JURk5WR3RzVFd0TmJFMXFTbTFhUTFWNVRXbFZlbEZVUVd4TmEwMXNUV3BLZWxwRFZYbE5hVlY2VVZSQmJFMXJUV3hOYWtwcVNsUkplVXBVVGtKTlUxVjVVWGxWZVUxdFJXeE5ha2xzVFRCRmQwcFVTa1JLVkVsNVlsaG5iRTFxU1d4Tk1FVjNTbFJLUkVwVVNYbGlWelJzVFdwSmJFMHdSWGRLVkdSRlNsUldSVXBVU2tSS1ZFbDVXWGxWZVUxcFZYcFJWRVZzVFd0TmJFMXFTbnBaZVZWNVRXbFZlbEZVUld4T01GRnNUV3ROYkUxcVNuTlpiV3hyU2xSSmVVcFVUa0ppYmxaellrTlZNMUpEVlRGU1FUMDlJbjA9Il19",
+          "ACCERTIFY_PAGE_ID": "6305313521702108",
+          "ACCERTIFY_SESSION_ID": "b390c6f6-8345-4cde-8c88-ee8df6c0e330",
+          "ACCERTIFY_UBA_SESSION_ID": "7ee8ba15749134cb1844f53aa63147f6c426",
+          "ACCERTIFY_UBA_ID": "147850f2d45d5c657ab46cb3a4a7b24b577d"
+        },
+        "encoded_id": "Q8ZO8C1BEfGO8TVjHo8JGg"
+      }
+    ]
+  },
+  "savings_breakdown": {
+    "total_savings": 0,
+    "savings_details": {
+      "gh_plus": 0,
+      "amazon_gh_plus": 0,
+      "delivery_savings": 0,
+      "service_savings": 0
+    },
+    "fee_savings": {}
+  },
+  "restaurant_ids": [
+    "8023448"
+  ],
+  "restaurants": [
+    {
+      "id": "8023448",
+      "name": "Grandma's Home 外婆家",
+      "badges": [],
+      "managed_delivery": true
+    }
+  ],
+  "affiliate": null,
+  "time_placed": null,
+  "recommended_tip_settings": {
+    "minimum_tip_amount": 286,
+    "minimum_tip_percentage": 10
+  },
+  "catering_info": null,
+  "edit_window_close": null,
+  "ordering_info": {
+    "type": "STANDARD",
+    "tiers": [],
+    "eta": "2026-03-31T21:11:00.000Z",
+    "estimate_range": {
+      "minimum": 35,
+      "maximum": 50
+    },
+    "real_time_eta": {
+      "estimate_range": {
+        "start_time": "2026-03-31T21:11:00.000Z",
+        "end_time": "2026-03-31T21:26:00.000Z",
+        "single_estimate_time": "2026-03-31T21:11:00.000Z",
+        "start_time_minutes": 35,
+        "end_time_minutes": 50,
+        "single_estimate_minutes": 35,
+        "eta_notation": "RANGE_DURATION"
+      },
+      "eta_options": [
+        {
+          "eta_type": "STANDARD_DELIVERY",
+          "estimate_range": {
+            "start_time": "2026-03-31T21:11:00.000Z",
+            "end_time": "2026-03-31T21:26:00.000Z",
+            "single_estimate_time": "2026-03-31T21:11:00.000Z",
+            "start_time_minutes": 35,
+            "end_time_minutes": 50,
+            "single_estimate_minutes": 35,
+            "eta_notation": "RANGE_DURATION"
+          },
+          "delivery_fee": null
+        }
+      ]
+    }
+  },
+  "action_messages": {},
+  "update_metadata": null,
+  "adjustments": null,
+  "action_messages_metadata": {
+    "chain_small_order_fee": null,
+    "free_menu_item": null,
+    "free_menu_category": null,
+    "subscription_validation_parts": null
+  },
+  "submission_time": null,
+  "pnp_substitution_rule": null,
+  "order_request_uuid": "Xboio_MGPqaf--NAy2l3JQ",
+  "silo_id": null,
+  "available_payment_types": [
+    "VENMO_PAY",
+    "AMAZON_PAY",
+    "APPLE_PAY",
+    "PAYPAL_EXPRESS",
+    "CASH_APP",
+    "PROMO_CODE",
+    "GIFT_CARD",
+    "UNIFIED_REWARD"
+  ],
+  "allowed_payment_types": [
+    {
+      "type": "VENMO_PAY",
+      "detail_url": null
+    },
+    {
+      "type": "AMAZON_PAY",
+      "detail_url": null
+    },
+    {
+      "type": "APPLE_PAY",
+      "detail_url": null
+    },
+    {
+      "type": "PAYPAL_EXPRESS",
+      "detail_url": "/payments/VbBHNclp4hGNAFzz_JT1hA/paypal_express"
+    },
+    {
+      "type": "CASH_APP",
+      "detail_url": null
+    },
+    {
+      "type": "PROMO_CODE",
+      "detail_url": null
+    },
+    {
+      "type": "GIFT_CARD",
+      "detail_url": "/codes/vault/VbBHNclp4hGNAFzz_JT1hA/giftcards"
+    },
+    {
+      "type": "UNIFIED_REWARD",
+      "detail_url": null
+    }
+  ],
+  "active_payment_types": [
+    {
+      "type": "VENMO_PAY",
+      "detail_url": null
+    },
+    {
+      "type": "CREDIT_CARD",
+      "detail_url": "/payments/VbBHNclp4hGNAFzz_JT1hA/credit_card"
+    },
+    {
+      "type": "AMAZON_PAY",
+      "detail_url": null
+    },
+    {
+      "type": "APPLE_PAY",
+      "detail_url": null
+    },
+    {
+      "type": "PAYPAL_EXPRESS",
+      "detail_url": "/payments/VbBHNclp4hGNAFzz_JT1hA/paypal_express"
+    },
+    {
+      "type": "CASH_APP",
+      "detail_url": null
+    },
+    {
+      "type": "PROMO_CODE",
+      "detail_url": null
+    },
+    {
+      "type": "GIFT_CARD",
+      "detail_url": "/codes/vault/VbBHNclp4hGNAFzz_JT1hA/giftcards"
+    },
+    {
+      "type": "UNIFIED_REWARD",
+      "detail_url": null
+    }
+  ],
+  "balance": 0,
+  "state": "READY_FOR_CHECKOUT",
+  "checkout_token": "1921babf8e9c2565df3b800f7e6b8dad",
+  "validation_errors": [],
+  "payment_selection_list": null,
+  "asap": true,
+  "anchor": false,
+  "group_admin": false,
+  "multi_part_shared_cart_enabled": true
+}

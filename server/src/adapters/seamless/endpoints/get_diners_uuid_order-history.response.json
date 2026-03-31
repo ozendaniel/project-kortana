@@ -1,0 +1,108 @@
+{
+  "search_id": "ffc2fc2a-4a2b-405d-93a1-1988c3766a2f",
+  "search_result": {
+    "stats": {
+      "total_results": 0,
+      "result_count": 0,
+      "page_size": 1
+    },
+    "bread_crumb": {
+      "sort": "default",
+      "crumb_list": []
+    },
+    "sorts": [
+      {
+        "sort_id": "default",
+        "field": "Most Recent",
+        "pretty_name": "Most Recent",
+        "fragment": "sorts=default"
+      },
+      {
+        "sort_id": "rating",
+        "field": "Ratings",
+        "pretty_name": "Ratings",
+        "fragment": "sorts=rating"
+      },
+      {
+        "sort_id": "relevance",
+        "field": "Relevance",
+        "pretty_name": "Relevance",
+        "fragment": "sorts=relevance"
+      },
+      {
+        "sort_id": "restaurant_name",
+        "field": "Restaurant (A-Z)",
+        "pretty_name": "Restaurant (A-Z)",
+        "fragment": "sorts=restaurant_name"
+      },
+      {
+        "sort_id": "restaurant_name_desc",
+        "field": "Restaurant (Z-A)",
+        "pretty_name": "Restaurant (Z-A)",
+        "fragment": "sorts=restaurant_name_desc"
+      }
+    ],
+    "pager": {
+      "total_pages": 0,
+      "current_page": 1
+    },
+    "results": [],
+    "facet_list": [
+      {
+        "id": "restaurant",
+        "name": "Restaurant",
+        "values": [],
+        "multi": false,
+        "sequence": 0
+      },
+      {
+        "id": "time",
+        "name": "Time",
+        "values": [
+          {
+            "value": "afternoon",
+            "count": 0,
+            "link_fragment": "facet=time%3Aafternoon"
+          },
+          {
+            "value": "lunch",
+            "count": 0,
+            "link_fragment": "facet=time%3Alunch"
+          },
+          {
+            "value": "noon",
+            "count": 0,
+            "link_fragment": "facet=time%3Anoon"
+          },
+          {
+            "value": "night",
+            "count": 0,
+            "link_fragment": "facet=time%3Anight"
+          },
+          {
+            "value": "lateNight",
+            "count": 0,
+            "link_fragment": "facet=time%3AlateNight"
+          },
+          {
+            "value": "breakfast",
+            "count": 0,
+            "link_fragment": "facet=time%3Abreakfast"
+          },
+          {
+            "value": "dinner",
+            "count": 0,
+            "link_fragment": "facet=time%3Adinner"
+          },
+          {
+            "value": "morning",
+            "count": 0,
+            "link_fragment": "facet=time%3Amorning"
+          }
+        ],
+        "multi": false,
+        "sequence": 1
+      }
+    ]
+  }
+}

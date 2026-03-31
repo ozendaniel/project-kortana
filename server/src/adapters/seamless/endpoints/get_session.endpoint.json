@@ -1,0 +1,14 @@
+{
+  "endpoint": "GET /session",
+  "method": "GET",
+  "exampleUrl": "https://api-gtm.grubhub.com/session",
+  "queryParams": {},
+  "requestBody": null,
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/json",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;"
+  },
+  "capturedAt": "2026-03-31T20:33:06.995Z",
+  "callCount": 3
+}

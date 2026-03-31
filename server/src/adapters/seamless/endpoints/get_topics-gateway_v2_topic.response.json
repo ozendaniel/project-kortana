@@ -1,0 +1,1714 @@
+{
+  "object": {
+    "request_id": "164c4f60-2d41-11f1-8f61-7fd7ede93d63",
+    "operation_id": "a310e6e7-9c27-4e68-84ed-fe6ff5cee2e6",
+    "data": [
+      {
+        "topic_description": {
+          "id": "17dfb54c-ae33-4a59-8466-ea1a73421607",
+          "name": "Grubhub Wallet",
+          "ranking_alias": "Grubhub Wallet",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "banner",
+            "data": "banner",
+            "attributes": {},
+            "display_title": false,
+            "display_favorite": false,
+            "divider": false
+          },
+          "data_type": "WALLET",
+          "source": "recommender/credit_balance",
+          "parameters": [
+            {
+              "id": "timezoneOffset",
+              "default_value": null,
+              "json_schema": {
+                "type": "integer"
+              },
+              "required": true
+            }
+          ],
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "18ee0adb-0e3e-4958-b205-359500e877ad",
+          "name": "Category Ribbon",
+          "ranking_alias": "Category Ribbon",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "expandable_carousel",
+            "data": "ribbon_card",
+            "attributes": {},
+            "display_title": false,
+            "display_favorite": false,
+            "divider": false,
+            "two_line_breakpoint": 5
+          },
+          "data_type": "NAVIGATION",
+          "source": "topics/navigation_ribbon",
+          "parameters": [],
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "c58b7d40-f5a7-4825-b141-252b7e41c501",
+          "name": "Announcement Carousel Braze Content Cards",
+          "ranking_alias": "Announcement Carousel Braze Content Cards",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "card",
+            "attributes": {
+              "should_call_content": "false",
+              "announcement_carousel": {
+                "use_auto_rotation": true,
+                "auto_rotation_interval": 10000,
+                "num_slides_per_page": 2,
+                "hide_arrows": false,
+                "arrow_size": "xs",
+                "arrow_class_names": "transparent-carousel-arrow",
+                "imf_wrapper_ids": [
+                  "announcementBanner1",
+                  "announcementBanner2",
+                  "announcementBanner3",
+                  "announcementBanner4",
+                  "announcementBanner5",
+                  "announcementBanner6",
+                  "announcementBanner7",
+                  "announcementBanner8",
+                  "announcementBanner9",
+                  "announcementBanner10",
+                  "announcementBanner11",
+                  "announcementBanner12",
+                  "announcementBanner13",
+                  "announcementBanner14",
+                  "announcementBanner15",
+                  "announcementBanner16",
+                  "announcementBanner17",
+                  "announcementBanner18",
+                  "announcementBanner19",
+                  "announcementBanner20",
+                  "announcementBanner21",
+                  "announcementBanner22",
+                  "announcementBanner23",
+                  "announcementBanner24",
+                  "announcementBanner25",
+                  "announcementBanner26",
+                  "announcementBanner27",
+                  "announcementBanner28",
+                  "announcementBanner29",
+                  "announcementBanner30",
+                  "announcementBanner31",
+                  "announcementBanner32",
+                  "announcementBanner33",
+                  "announcementBanner34",
+                  "announcementBanner35",
+                  "announcementBanner36",
+                  "announcementBanner37",
+                  "announcementBanner38",
+                  "announcementBanner39",
+                  "announcementBanner40",
+                  "announcementBanner41",
+                  "announcementBanner42",
+                  "announcementBanner43",
+                  "announcementBanner44",
+                  "announcementBanner45",
+                  "announcementBanner46",
+                  "announcementBanner47",
+                  "announcementBanner48",
+                  "announcementBanner49",
+                  "announcementBanner50",
+                  "announcementBanner51",
+                  "announcementBanner52",
+                  "announcementBanner53",
+                  "announcementBanner54",
+                  "announcementBanner55",
+                  "announcementBanner56",
+                  "announcementBanner57",
+                  "announcementBanner58",
+                  "announcementBanner59",
+                  "announcementBanner60",
+                  "announcementBanner61",
+                  "announcementBanner62",
+                  "announcementBanner63",
+                  "announcementBanner64",
+                  "announcementBanner65",
+                  "announcementBanner66",
+                  "announcementBanner67",
+                  "announcementBanner68",
+                  "announcementBanner69",
+                  "announcementBanner70",
+                  "announcementBanner71",
+                  "announcementBanner72",
+                  "announcementBanner73",
+                  "announcementBanner74",
+                  "announcementBanner75",
+                  "announcementBanner76",
+                  "announcementBanner77",
+                  "announcementBanner78",
+                  "announcementBanner79",
+                  "announcementBanner80",
+                  "announcementBanner81",
+                  "announcementBanner82",
+                  "announcementBanner83",
+                  "announcementBanner84",
+                  "announcementBanner85",
+                  "announcementBanner86",
+                  "announcementBanner87",
+                  "announcementBanner88",
+                  "announcementBanner89",
+                  "announcementBanner90",
+                  "announcementBanner91",
+                  "announcementBanner92",
+                  "announcementBanner93",
+                  "announcementBanner94",
+                  "announcementBanner95",
+                  "announcementBanner96",
+                  "announcementBanner97",
+                  "announcementBanner98",
+                  "announcementBanner99",
+                  "announcementBanner100"
+                ]
+              }
+            },
+            "display_title": false,
+            "display_favorite": false,
+            "divider": false
+          },
+          "data_type": "ANNOUNCEMENT",
+          "source": "recommender/get_announcements",
+          "parameters": [],
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "a4f339c5-c0c0-418d-b084-64ddd7f2287c",
+          "name": "New and Noteworthy",
+          "ranking_alias": "New and Noteworthy",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "search_request_id",
+              "default_value": {},
+              "json_schema": {
+                "type": "string",
+                "nullable": true
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "New and Noteworthy",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": false
+      },
+      {
+        "topic_description": {
+          "id": "bfecb585-4279-4678-9fff-6b11fb7d8c1c",
+          "name": "Instacart Grocery",
+          "ranking_alias": "Instacart Grocery",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "partner_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "DETAILED_MERCHANT",
+          "source": "search/detailed_listing",
+          "parameters": [
+            {
+              "id": "search_request_id",
+              "default_value": {},
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            }
+          ],
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "228404c6-1d70-4ac2-a41b-88142be66360",
+          "name": "Gotos Topic",
+          "ranking_alias": "Gotos Topic",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "recommender/go-to",
+          "parameters": [
+            {
+              "id": "search_request_id",
+              "default_value": {},
+              "json_schema": {
+                "type": "string",
+                "nullable": true
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "In Your Rotation",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": false
+      },
+      {
+        "topic_description": {
+          "id": "956540d6-2a59-4784-86e1-a7daf42fd039",
+          "name": "Wonder",
+          "ranking_alias": "Wonder",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "spotlight",
+            "data": "title_and_image",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": false
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "326111",
+                  "8865080",
+                  "8868112",
+                  "13022672",
+                  "8868088",
+                  "8863688",
+                  "8860280",
+                  "13456392"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "167311d0-2d41-11f1-b9dd-6d549512d856"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "1661acae-2d41-11f1-b9dd-750bf6bb1c50"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Wonder Stores",
+            "subtitle": "From BBQ to salads and more, try every flavor you're craving.",
+            "palette": {
+              "background": "#F9F9F9",
+              "accent": "#044123",
+              "title_font": "LIGHT"
+            },
+            "spotlight_type": "SPOTLIGHT_IMAGE_AND_TITLE",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "54aad404-f0c1-4260-a8e0-573f330e257f",
+          "name": "Reorder your favorites",
+          "ranking_alias": "Reorder your favorites",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "STACKED_ORDER_AVAILABILITY",
+          "source": "order_history_availability/stacked",
+          "parameters": [
+            {
+              "id": "address",
+              "default_value": null,
+              "json_schema": {
+                "type": "string"
+              },
+              "required": true
+            }
+          ],
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "bbbcc9b6-067d-4a2e-9dbb-ed216afaf9c0",
+          "name": "Local Gems",
+          "ranking_alias": "Local Gems",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "534928",
+                  "272494",
+                  "13344808",
+                  "64210",
+                  "506039",
+                  "7076760",
+                  "375984",
+                  "309601"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "16777e2c-2d41-11f1-96ac-657f01907c2f"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16622168-2d41-11f1-96ac-2f11766d67fa"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Local Gems",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "19b117b9-234d-465c-a4b8-f05cc625abb3",
+          "name": "critically acclaimed",
+          "ranking_alias": "critically acclaimed",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "1105547",
+                  "296696",
+                  "316074",
+                  "465956",
+                  "9520440",
+                  "2196591",
+                  "295181",
+                  "309601"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "1677cd2b-2d41-11f1-a9b2-0590d25fd885"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16624955-2d41-11f1-a9b2-59566d8e732a"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Spotted by Food Editors",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "01f2a5dc-26d5-4df8-9537-0cb4706cb924",
+          "name": "Local Favorites",
+          "ranking_alias": "Local Favorites",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "7076760",
+                  "2196591",
+                  "375984",
+                  "2028369",
+                  "2103404",
+                  "2206",
+                  "64094",
+                  "1069947"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "167de725-2d41-11f1-be21-5d3665f2d82c"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "166248d3-2d41-11f1-be21-db5a01694293"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Independent Stores You'll Like",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "ce5b760e-75b6-4bdf-80f9-9f53fa20d849",
+          "name": "Saved Restaurants Near You",
+          "ranking_alias": "Saved Restaurants Near You",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "recommender/get_diner_favorite",
+          "parameters": [],
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "49b12f41-6334-4d00-8519-e532c31aaa77",
+          "name": "Taco Tuesday",
+          "ranking_alias": "Taco Tuesday",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "sponsored_restaurant_ids",
+              "default_value": {
+                "value": [
+                  "1406869"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "2870425",
+                  "13760216",
+                  "11006032",
+                  "84466",
+                  "6348488",
+                  "914172",
+                  "305573"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "166862e9-2d41-11f1-aa64-1fec39ae446d"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16618517-2d41-11f1-aa64-e938437800dd"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Taco Tuesday 🌮",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "373d8e58-204b-463b-80a7-0e166d7fba7f",
+          "name": "Just Added In Your Neighborhood",
+          "ranking_alias": "Just Added In Your Neighborhood",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "address",
+              "default_value": null,
+              "json_schema": {
+                "type": "string"
+              },
+              "required": true
+            },
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "708479",
+                  "13344808",
+                  "13669832",
+                  "13765720",
+                  "14070840",
+                  "6974512",
+                  "13760216"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "1668d8e3-2d41-11f1-a701-65329f4e6e3b"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "sponsored_restaurant_ids",
+              "default_value": {
+                "value": [
+                  "13660832"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16624931-2d41-11f1-a701-cb34678f4ff7"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "LOCAL_NEIGHBORHOOD",
+            "title": "Added Near Meatpacking",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "5eef65ad-c59d-47f9-b7e3-05c67738a35b",
+          "name": "Featured Finds",
+          "ranking_alias": "Featured Finds",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/ads",
+          "parameters": [
+            {
+              "id": "sponsored_restaurant_ids",
+              "default_value": {
+                "value": [
+                  "320498",
+                  "74715",
+                  "3237376",
+                  "344989",
+                  "267853",
+                  "6993336",
+                  "1299660",
+                  "1251210"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": "4"
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "1667edcd-2d41-11f1-bbb7-b3d2f0007ab7"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16626f89-2d41-11f1-bbb7-57d8ff30cc47"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Featured Finds",
+            "subtitle": "Sponsored",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "c39fd45b-6f8d-4d5a-9bc6-1c3579e1477a",
+          "name": "Try something new",
+          "ranking_alias": "Try something new",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/discover_something_new",
+          "parameters": [
+            {
+              "id": "sponsored_restaurant_ids",
+              "default_value": {
+                "value": [
+                  "765416"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "296696",
+                  "375984",
+                  "3118704",
+                  "2028369",
+                  "298383",
+                  "2103404",
+                  "2206"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "166b494a-2d41-11f1-8964-b780e798222f"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16644468-2d41-11f1-8964-4d43f8cb038b"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Try Something New",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "efa76486-be6e-4a00-94df-e7b4846399af",
+          "name": "High Protein",
+          "ranking_alias": "High Protein",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "7076760",
+                  "375984",
+                  "1303970",
+                  "1945715",
+                  "9521976",
+                  "11006032",
+                  "2034931",
+                  "8568080"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "167a3d62-2d41-11f1-8853-75a50e68d8df"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16630bdf-2d41-11f1-8853-6bd6fcea8fe5"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "High Protein",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "2060046b-829e-47a5-a72c-2e73ac451be8",
+          "name": "Budget Friendly Restaurants",
+          "ranking_alias": "Budget Friendly Restaurants",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "sponsored_restaurant_ids",
+              "default_value": {
+                "value": [
+                  "304207"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "708479",
+                  "8789688",
+                  "1945764",
+                  "2124387",
+                  "1182392",
+                  "4526960",
+                  "6738056"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "16688a9a-2d41-11f1-b716-d79c51312bfd"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "16627018-2d41-11f1-b716-d9a7ef117b0f"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Don't Break the Bank",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "14c2cabd-9b30-483d-8855-8df3e9968cf1",
+          "name": "bodega",
+          "ranking_alias": "bodega",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "534928",
+                  "3268620",
+                  "1964169",
+                  "12479216",
+                  "1046180",
+                  "2191680",
+                  "622555",
+                  "5853296"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "167a8c1a-2d41-11f1-89de-6f9988262e5f"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "1662e567-2d41-11f1-89de-bb55c6ce9e46"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Bodegas",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "5fca006a-ffbe-466c-92bf-ddc6e5f73d73",
+          "name": "salads",
+          "ranking_alias": "salads",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "11765848",
+                  "9331920",
+                  "9520440",
+                  "789592",
+                  "8371112",
+                  "9682120",
+                  "2201915",
+                  "3246071"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "167ef864-2d41-11f1-88df-4d9eb15be2ab"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "1663a832-2d41-11f1-88df-47e1b04e1119"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Leafy Greens",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "7dde2861-b008-4339-bb1a-7b87595036a0",
+          "name": "Your Offers",
+          "ranking_alias": "Your Offers",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "sponsored_restaurant_ids",
+              "default_value": {
+                "value": [
+                  "320498"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "296696",
+                  "2196591",
+                  "298383",
+                  "2103404",
+                  "2206",
+                  "340689",
+                  "2201894"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "1668ff71-2d41-11f1-8adb-3f08ac582d67"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "1663a83d-2d41-11f1-8adb-a94504d83c47"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "Your Offers",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "e6d458ee-03e2-4232-aa4b-a0d7f9d4cd45",
+          "name": "National Picks",
+          "ranking_alias": "National Picks",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "carousel",
+            "data": "extended_browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": true,
+            "divider": true
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "sponsored_restaurant_ids",
+              "default_value": {
+                "value": [
+                  "12866856"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "restaurant_ids",
+              "default_value": {
+                "value": [
+                  "1945764",
+                  "4987280",
+                  "742971",
+                  "2124387",
+                  "1182392",
+                  "3317616",
+                  "4814136"
+                ]
+              },
+              "json_schema": {
+                "type": "array"
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            },
+            {
+              "id": "sponsored_request_id",
+              "default_value": {
+                "value": "166aad8a-2d41-11f1-91aa-93717852f8af"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            },
+            {
+              "id": "search_request_id",
+              "default_value": {
+                "value": "1663cfb8-2d41-11f1-91aa-c10632747702"
+              },
+              "json_schema": {
+                "type": "string"
+              },
+              "required": false
+            }
+          ],
+          "header": {
+            "header_content": "HOME_DEFAULT",
+            "title": "National Picks",
+            "type": "HOME"
+          },
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      },
+      {
+        "topic_description": {
+          "id": "c5f60fca-0e53-471c-bfeb-892e00789c36",
+          "name": "All Restaurants",
+          "ranking_alias": "All Restaurants",
+          "hide_view_all_threshold": 6,
+          "representation": {
+            "layout": "grid",
+            "data": "browse_card",
+            "attributes": {},
+            "display_title": true,
+            "display_favorite": false,
+            "divider": false
+          },
+          "data_type": "RESTAURANT",
+          "source": "search/listing",
+          "parameters": [
+            {
+              "id": "search_request_id",
+              "default_value": {},
+              "json_schema": {
+                "type": "string",
+                "nullable": true
+              },
+              "required": false
+            },
+            {
+              "id": "radius",
+              "default_value": {
+                "value": 4
+              },
+              "json_schema": null,
+              "required": false
+            }
+          ],
+          "type": "default",
+          "description": ""
+        },
+        "fetch_content": true
+      }
+    ],
+    "debug_info": [
+      {
+        "selection_decision": "SELECTION_DCP",
+        "flow_name": "Topics-unified-experiment",
+        "routing_group_name": "seed1-be-hp-variant2-1",
+        "variations": [
+          "unified-control"
+        ],
+        "ensemble": "topics_ranking_dl_business_v3_LATEST",
+        "group_properties": {
+          "deduplicate_results": "true",
+          "enable_koddi_active_query": "true",
+          "pin_entities_ids": "a4f339c5-c0c0-418d-b084-64ddd7f2287c",
+          "deduplication_columns": "1",
+          "ranking_postprocessing_model_name": "search_rank_postprocessing_rand_insert_v1.1",
+          "ads_call_enabled": "false"
+        },
+        "total_removed_duplicate_items": 0,
+        "total_removed_duplicate_ads": 0,
+        "total_duplicate_ads": 0,
+        "total_ad_backfill_attempts": 0,
+        "total_successful_ad_backfills": 0,
+        "deduplication_enabled": false,
+        "deduplication_active": false,
+        "deduplication_neighbor_rules_active": false,
+        "neighbor_row_rule": 0,
+        "neighbor_column_rule": 0,
+        "average_row_distance": 0,
+        "average_column_distance": 0,
+        "content_zoning_enabled": false
+      },
+      {
+        "selection_decision": "SELECTION_DCP",
+        "flow_name": "Sponsored-Topics-Core4-Default-Search",
+        "routing_group_name": "seed1-be-hp-variant2-1",
+        "variations": [
+          "sponsored_ads_poc"
+        ],
+        "ensemble": "topics_ranking_dl_business_v3_LATEST",
+        "group_properties": {
+          "ads_call_enabled": "false",
+          "ads_enable_es_relevance": "true",
+          "enable_position_placement": "true",
+          "enable_ads_candidate_rank": "false",
+          "override_ads_call_enabled": "true",
+          "enable_koddi_active_query": "true",
+          "enable_ads_platform": "true",
+          "show_sponsored_results": "true",
+          "enable_sponsored_intentful_dedupe": "true",
+          "enable_provider_layer_candidates_inventory_provider": "false"
+        },
+        "total_removed_duplicate_items": 0,
+        "total_removed_duplicate_ads": 0,
+        "total_duplicate_ads": 0,
+        "total_ad_backfill_attempts": 0,
+        "total_successful_ad_backfills": 0,
+        "deduplication_enabled": false,
+        "deduplication_active": false,
+        "deduplication_neighbor_rules_active": false,
+        "neighbor_row_rule": 0,
+        "neighbor_column_rule": 0,
+        "average_row_distance": 0,
+        "average_column_distance": 0,
+        "content_zoning_enabled": false
+      },
+      {
+        "selection_decision": "SELECTION_DCP",
+        "flow_name": "TopicsRandomization-Default",
+        "routing_group_name": "standard_rank",
+        "variations": [
+          "standard_rank"
+        ],
+        "ensemble": "topics_ensemble_indentity_ranker",
+        "group_properties": {
+          "override_ensemble": "false",
+          "override_variation": "false",
+          "randomization_enabled": "false"
+        },
+        "total_removed_duplicate_items": 0,
+        "total_removed_duplicate_ads": 0,
+        "total_duplicate_ads": 0,
+        "total_ad_backfill_attempts": 0,
+        "total_successful_ad_backfills": 0,
+        "deduplication_enabled": false,
+        "deduplication_active": false,
+        "deduplication_neighbor_rules_active": false,
+        "neighbor_row_rule": 0,
+        "neighbor_column_rule": 0,
+        "average_row_distance": 0,
+        "average_column_distance": 0,
+        "content_zoning_enabled": false
+      },
+      {
+        "selection_decision": "SELECTION_DCP",
+        "flow_name": "Topics-unified-experiment",
+        "routing_group_name": "seed1-be-hp-variant2-1",
+        "variations": [
+          "unified-control"
+        ],
+        "ensemble": "topics_ranking_dl_business_v3_LATEST",
+        "group_properties": {
+          "deduplicate_results": "true",
+          "enable_koddi_active_query": "true",
+          "pin_entities_ids": "a4f339c5-c0c0-418d-b084-64ddd7f2287c",
+          "deduplication_columns": "1",
+          "ranking_postprocessing_model_name": "search_rank_postprocessing_rand_insert_v1.1",
+          "ads_call_enabled": "false"
+        },
+        "total_removed_duplicate_items": 0,
+        "total_removed_duplicate_ads": 0,
+        "total_duplicate_ads": 0,
+        "total_ad_backfill_attempts": 0,
+        "total_successful_ad_backfills": 0,
+        "deduplication_enabled": false,
+        "deduplication_active": false,
+        "deduplication_neighbor_rules_active": false,
+        "neighbor_row_rule": 0,
+        "neighbor_column_rule": 0,
+        "average_row_distance": 0,
+        "average_column_distance": 0,
+        "content_zoning_enabled": false
+      },
+      {
+        "removed_duplicate_items_by_topic_name": {
+          "Taco Tuesday": 2,
+          "critically acclaimed": 1,
+          "Local Favorites": 1
+        },
+        "removed_duplicate_ads_by_topic_name": {},
+        "removed_entity_ids_by_topic_name": {
+          "Taco Tuesday": [
+            "7076760",
+            "375984"
+          ],
+          "critically acclaimed": [
+            "272494"
+          ],
+          "Local Favorites": [
+            "296696"
+          ]
+        },
+        "removed_entity_ads_ids_by_topic_name": {},
+        "backfilled_ads_ids_by_topic_name": {},
+        "eliminated_duplicate_topics": [],
+        "total_removed_duplicate_items": 4,
+        "total_removed_duplicate_ads": 0,
+        "total_duplicate_ads": 0,
+        "total_ad_backfill_attempts": 0,
+        "total_successful_ad_backfills": 0,
+        "deduplication_enabled": true,
+        "deduplication_active": true,
+        "deduplication_neighbor_rules_active": true,
+        "neighbor_row_rule": 4,
+        "neighbor_column_rule": 4,
+        "average_row_distance": 3.8,
+        "average_column_distance": 0.6,
+        "content_zoning_enabled": false
+      }
+    ],
+    "topics_state": {
+      "favorite_restaurants": {
+        "data": []
+      },
+      "show_gh_upsell_banner": false
+    }
+  },
+  "status": "SUCCESS"
+}

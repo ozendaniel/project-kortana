@@ -1,0 +1,259 @@
+{
+  "availability_summaries": [
+    {
+      "restaurant_id": "8023448",
+      "restaurant_hash": "143fc535b7afb5181ce7db8ec7bb5ebf",
+      "merchant_uuid": "8W4xkO4nEe6xkWfojwGWNA",
+      "premium": true,
+      "package_state_type_id": 2,
+      "open": true,
+      "open_delivery": true,
+      "open_pickup": true,
+      "available_for_delivery": true,
+      "available_for_pickup": true,
+      "delivery_offered_to_diner_location": false,
+      "delivery_fee_taxable": true,
+      "delivery_fee_as_percentage": 0,
+      "restaurant_name": "Grandma's Home 外婆家",
+      "address": {
+        "locality": "New York",
+        "region": "NY",
+        "postal_code": "10010-5812",
+        "zip": "10010",
+        "street_address": "56 W 22nd St",
+        "country": "USA",
+        "time_zone_id": "America/New_York",
+        "phone_number_for_delivery": "6463296770",
+        "latitude": "40.74184036",
+        "longitude": "-73.99288178"
+      },
+      "decimal_distance_in_miles": 28.36,
+      "just_in_time_orders_transmission_meters": null,
+      "logo": "https://media-cdn.grubhub.com/image/upload/v1752277236/uksi9izqgkpqyqt3i39t.jpg",
+      "restaurant_cdn_image_url": "http://s1.seamless.com/-/ri/gh/8023448",
+      "media_image": {
+        "base_url": "https://media-cdn.grubhub.com/image/upload/",
+        "public_id": "uksi9izqgkpqyqt3i39t",
+        "format": "jpg",
+        "tag": "logo",
+        "tags": null,
+        "image_source": null,
+        "uploader_details": null,
+        "image_description": null,
+        "image_title": null,
+        "scale_mode": "FILL"
+      },
+      "future_order_info": null,
+      "next_open_closed_info": {
+        "next_order_send_time_delivery": "2026-03-31T20:35:11.698Z",
+        "next_order_send_time_pickup": "2026-03-31T20:35:11.698Z",
+        "next_delivery_time": "2026-03-31T22:00:11.698Z",
+        "next_pickup_time": "2026-03-31T20:45:11.698Z",
+        "next_cutoff_order_send_time_delivery": "2026-04-01T01:15:00.000Z",
+        "next_cutoff_order_send_time_pickup": "2026-04-01T01:00:00.000Z",
+        "order_tiers": [
+          {
+            "threshold_type": "ORDER_AMOUNT_CENTS",
+            "threshold": 15000,
+            "additional_prep_time_minutes": 20,
+            "next_delivery_time": "2026-03-31T22:20:11.698Z",
+            "next_order_send_time_delivery": "2026-03-31T20:35:11.698Z",
+            "next_pickup_time": "2026-03-31T21:05:11.698Z",
+            "next_order_send_time_pickup": "2026-03-31T20:35:11.698Z"
+          }
+        ]
+      },
+      "catering_info": {
+        "catering_sibling_id": null,
+        "order_thresholds": {
+          "currency": "USD",
+          "order_price_bucket_list": [
+            {
+              "amount": 250,
+              "buffer_minutes": 30
+            }
+          ]
+        },
+        "catering": false
+      },
+      "cuisines": [
+        "Soup",
+        "Vegetarian",
+        "Dim Sum",
+        "Seafood",
+        "Chinese",
+        "Asian"
+      ],
+      "price_rating": null,
+      "delivery_estimate": 85,
+      "pickup_estimate": 10,
+      "order_minimum": {
+        "amount": 0,
+        "currency": "USD",
+        "styled_text": null
+      },
+      "delivery_fee": {
+        "amount": 399,
+        "currency": "USD",
+        "styled_text": null
+      },
+      "delivery_fee_without_discounts": {
+        "amount": 399,
+        "currency": "USD",
+        "styled_text": null
+      },
+      "rating": {},
+      "rating_data": {
+        "review_data": {
+          "total_count": 0,
+          "valid_count": 0,
+          "top_review": null
+        },
+        "faceted_rating_list": [],
+        "faceted_rating_too_few": false
+      },
+      "delivery_cutoff": 15,
+      "pickup_cutoff": 30,
+      "additional_media_images": {
+        "LOGO_HOME_PAGE": {
+          "base_url": "https://media-cdn.grubhub.com/image/upload/",
+          "public_id": "uksi9izqgkpqyqt3i39t",
+          "format": "jpg",
+          "tag": "logo",
+          "tags": null,
+          "image_source": null,
+          "uploader_details": null,
+          "image_description": null,
+          "image_title": null,
+          "scale_mode": "FILL"
+        },
+        "MENU_PAGE": {
+          "base_url": "https://media-cdn.grubhub.com/image/upload/",
+          "public_id": "uksi9izqgkpqyqt3i39t",
+          "format": "jpg",
+          "tag": "logo",
+          "tags": null,
+          "image_source": null,
+          "uploader_details": null,
+          "image_description": null,
+          "image_title": null,
+          "scale_mode": "FILL"
+        },
+        "SEARCH_HOME_PAGE": {
+          "base_url": "https://media-cdn.grubhub.com/image/upload/",
+          "public_id": "jymnj7e5ajnhnaxomjih",
+          "format": "jpg",
+          "tag": "search",
+          "tags": null,
+          "image_source": null,
+          "uploader_details": null,
+          "image_description": null,
+          "image_title": null,
+          "scale_mode": "FILL"
+        },
+        "SEARCH_RESULTS_PAGE": {
+          "base_url": "https://media-cdn.grubhub.com/image/upload/",
+          "public_id": "jymnj7e5ajnhnaxomjih",
+          "format": "jpg",
+          "tag": "search",
+          "tags": null,
+          "image_source": null,
+          "uploader_details": null,
+          "image_description": null,
+          "image_title": null,
+          "scale_mode": "FILL"
+        },
+        "HEADER_BACKGROUND": {
+          "base_url": "https://media-cdn.grubhub.com/image/upload/",
+          "public_id": "rdeld8ehfvxkpuqcxoel",
+          "format": "jpg",
+          "tag": "header_background",
+          "tags": null,
+          "image_source": null,
+          "uploader_details": null,
+          "image_description": null,
+          "image_title": null,
+          "scale_mode": "FILL"
+        }
+      },
+      "available_hours": null,
+      "available_hours_pickup": null,
+      "future_order_available_hours_delivery": null,
+      "future_order_available_hours_pickup": null,
+      "allowable_order_types": [
+        "standard"
+      ],
+      "order_type_settings": {
+        "service_fee": {
+          "name": "Service fee",
+          "description": "A service fee of 15.0% for delivery orders will be charged with Grandma's Home 外婆家.",
+          "delivery_fee": {
+            "fee_type": "PERCENT",
+            "percent_value": 15,
+            "maximum_amount_for_percent": {
+              "amount": 1200,
+              "currency": "USD",
+              "styled_text": null
+            }
+          },
+          "delivery_service_fee_allocation_info": {
+            "attribution": "GRUBHUB"
+          },
+          "fee_allocation_info": {
+            "fee_allocation_type": "GRUBHUB"
+          }
+        },
+        "small_order_fee": {
+          "name": "Small order delivery fee",
+          "description": "A small order delivery fee applies to your Grandma's Home 外婆家 subtotal of $8.69 or less.",
+          "minimum_order_value_cents": 1000,
+          "fee": {
+            "fee_type": "FLAT",
+            "flat_cents_value": {
+              "amount": 200,
+              "currency": "USD",
+              "styled_text": null
+            }
+          },
+          "fee_allocation_info": {
+            "attribution": "GRUBHUB"
+          }
+        },
+        "merchant_status": {
+          "category": "ACTIVE",
+          "category_description": "Active",
+          "description": "Premium",
+          "requires_attrition_reason": false,
+          "status": "PREMIUM"
+        },
+        "delivery_estimate_minutes": 30,
+        "pickup_estimate_minutes": 10
+      },
+      "chain_id": null,
+      "brand_id": null,
+      "grouped_overrides_availability": {
+        "delivery_blacked_out": false,
+        "pickup_blacked_out": false,
+        "delivery_soft_blacked_out": false,
+        "pickup_soft_blacked_out": false,
+        "delivery_estimate_in_minutes": null,
+        "order_minimum_increase_in_cents": 0,
+        "inundated": false
+      },
+      "menu_item_features": [
+        "CHOICE_CATEGORY_QUANTITIES",
+        "CHOICE_OPTION_QUANTITIES"
+      ],
+      "variation_id": null,
+      "tag_list": [],
+      "restaurant_tags": [
+        "BASIC"
+      ],
+      "cutoff_for_delivery": false,
+      "cutoff_for_pickup": false,
+      "white_in": false,
+      "inundated": false,
+      "blacked_out": false
+    }
+  ]
+}

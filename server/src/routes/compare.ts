@@ -25,7 +25,8 @@ router.post('/', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await compareOrder(restaurantId, items, address, adapters);
+    // Pass adapters if available, otherwise comparison falls back to DB-based pricing
+    const result = await compareOrder(restaurantId, items, address, adapters || undefined);
 
     res.json({ comparison: result });
   } catch (err) {

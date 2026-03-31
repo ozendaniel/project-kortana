@@ -26,12 +26,13 @@ interface ComparisonResult {
 
 /**
  * Compare prices across platforms for a given cart at a restaurant.
+ * Uses live adapters when available, falls back to DB-based price calculation.
  */
 export async function compareOrder(
   restaurantId: string,
   items: CartItem[],
   deliveryAddress: { lat: number; lng: number; address: string },
-  adapters: Map<string, PlatformAdapter>
+  adapters?: Map<string, PlatformAdapter>
 ): Promise<ComparisonResult> {
   // 1. Get restaurant with platform IDs
   const restaurant = await db.query(
@@ -47,49 +48,32 @@ export async function compareOrder(
   const result: ComparisonResult = { cheapest: null, savingsCents: 0 };
   const totals: Array<{ platform: string; total: number }> = [];
 
-  // 2. For each platform where this restaurant exists
-  for (const [platform, adapter] of adapters) {
-    const platformId = rest[`${platform}_id`];
-    if (!platformId) continue;
+  // Determine which platforms have this restaurant
+  const platforms: string[] = [];
+  if (rest.doordash_id) platforms.push('doordash');
+  if (rest.seamless_id) platforms.push('seamless');
+  if (rest.ubereats_id) platforms.push('ubereats');
+
+  for (const platform of platforms) {
+    const adapter = adapters?.get(platform);
 
     try {
-      // Map cart items to platform-specific item IDs
-      const platformItems = await mapItemsToPlatform(items, restaurantId, platform);
-      const missingItems = platformItems.filter((i) => !i.platformItemId);
+      let comparison: PlatformComparison;
 
-      if (platformItems.every((i) => !i.platformItemId)) {
-        // No items available on this platform
-        continue;
+      if (adapter) {
+        // Live adapter: fetch real-time fees via API
+        comparison = await fetchLiveFees(adapter, rest, items, restaurantId, platform, deliveryAddress);
+      } else {
+        // DB-based: calculate from seeded menu data + estimated fees
+        comparison = await calculateFromDB(rest, items, restaurantId, platform);
       }
 
-      const availableItems = platformItems.filter((i) => i.platformItemId);
-
-      // Fetch real-time fees
-      const fees = await adapter.getFees({
-        platformRestaurantId: platformId,
-        items: availableItems.map((i) => ({
-          platformItemId: i.platformItemId!,
-          quantity: i.quantity,
-        })),
-        deliveryAddress,
-      });
-
-      const comparison: PlatformComparison = {
-        available: missingItems.length === 0,
-        itemSubtotalCents: fees.subtotalCents,
-        deliveryFeeCents: fees.deliveryFeeCents,
-        serviceFeeCents: fees.serviceFeeCents,
-        smallOrderFeeCents: fees.smallOrderFeeCents,
-        totalCents: fees.totalCents,
-        estimatedDeliveryTime: fees.estimatedDeliveryTime,
-        missingItems: missingItems.map((i) => i.name),
-        orderUrl: rest[`${platform}_url`] || '',
-      };
-
       result[platform] = comparison;
-      totals.push({ platform, total: fees.totalCents });
+      if (comparison.available && comparison.totalCents > 0) {
+        totals.push({ platform, total: comparison.totalCents });
+      }
     } catch (err) {
-      console.error(`[Compare] Error fetching fees from ${platform}:`, err);
+      console.error(`[Compare] Error for ${platform}:`, err);
     }
   }
 
@@ -101,6 +85,130 @@ export async function compareOrder(
   }
 
   return result;
+}
+
+/**
+ * Fetch real-time fees from a live adapter (Playwright-based).
+ */
+async function fetchLiveFees(
+  adapter: PlatformAdapter,
+  rest: Record<string, any>,
+  items: CartItem[],
+  restaurantId: string,
+  platform: string,
+  deliveryAddress: { lat: number; lng: number; address: string }
+): Promise<PlatformComparison> {
+  const platformId = rest[`${platform}_id`];
+  const platformItems = await mapItemsToPlatform(items, restaurantId, platform);
+  const missingItems = platformItems.filter((i) => !i.platformItemId);
+  const availableItems = platformItems.filter((i) => i.platformItemId);
+
+  if (availableItems.length === 0) {
+    return {
+      available: false,
+      itemSubtotalCents: 0,
+      deliveryFeeCents: 0,
+      serviceFeeCents: 0,
+      smallOrderFeeCents: 0,
+      totalCents: 0,
+      missingItems: missingItems.map((i) => i.name),
+      orderUrl: rest[`${platform}_url`] || '',
+    };
+  }
+
+  const fees = await adapter.getFees({
+    platformRestaurantId: platformId,
+    items: availableItems.map((i) => ({
+      platformItemId: i.platformItemId!,
+      quantity: i.quantity,
+    })),
+    deliveryAddress,
+  });
+
+  return {
+    available: missingItems.length === 0,
+    itemSubtotalCents: fees.subtotalCents,
+    deliveryFeeCents: fees.deliveryFeeCents,
+    serviceFeeCents: fees.serviceFeeCents,
+    smallOrderFeeCents: fees.smallOrderFeeCents,
+    totalCents: fees.totalCents,
+    estimatedDeliveryTime: fees.estimatedDeliveryTime,
+    missingItems: missingItems.map((i) => i.name),
+    orderUrl: rest[`${platform}_url`] || '',
+  };
+}
+
+/**
+ * Calculate comparison from DB-seeded menu data + estimated fees.
+ * Used in Phase 1 before live adapters are running.
+ */
+async function calculateFromDB(
+  rest: Record<string, any>,
+  items: CartItem[],
+  restaurantId: string,
+  platform: string
+): Promise<PlatformComparison> {
+  const platformItems = await mapItemsToPlatform(items, restaurantId, platform);
+  const missingItems = platformItems.filter((i) => !i.platformItemId);
+  const availableItems = platformItems.filter((i) => i.platformItemId);
+
+  if (availableItems.length === 0) {
+    return {
+      available: false,
+      itemSubtotalCents: 0,
+      deliveryFeeCents: 0,
+      serviceFeeCents: 0,
+      smallOrderFeeCents: 0,
+      totalCents: 0,
+      missingItems: missingItems.map((i) => i.name),
+      orderUrl: rest[`${platform}_url`] || '',
+    };
+  }
+
+  // Calculate subtotal from DB prices
+  let subtotalCents = 0;
+  for (const item of availableItems) {
+    const priceResult = await db.query(
+      `SELECT price_cents FROM menu_items
+       WHERE restaurant_id = $1 AND platform = $2 AND platform_item_id = $3
+       LIMIT 1`,
+      [restaurantId, platform, item.platformItemId]
+    );
+    if (priceResult.rows[0]) {
+      subtotalCents += priceResult.rows[0].price_cents * item.quantity;
+    }
+  }
+
+  // Estimate fees from captured data
+  // DoorDash: $1.99 delivery + 15% service (from their fee disclosure)
+  // Seamless: $1.99 delivery + ~22% service (from our captured bill data: $6.29 service on $28.60 subtotal)
+  let deliveryFeeCents: number;
+  let serviceFeeCents: number;
+  let smallOrderFeeCents = 0;
+
+  if (platform === 'doordash') {
+    deliveryFeeCents = 199; // $1.99
+    serviceFeeCents = Math.round(subtotalCents * 0.15); // 15% service
+    if (subtotalCents < 1000) smallOrderFeeCents = 200; // $2 small order fee estimate
+  } else {
+    // Seamless
+    deliveryFeeCents = 199; // $1.99
+    serviceFeeCents = Math.round(subtotalCents * 0.22); // ~22% service
+    if (subtotalCents < 1000) smallOrderFeeCents = 250; // $2.50 small order fee estimate
+  }
+
+  const totalCents = subtotalCents + deliveryFeeCents + serviceFeeCents + smallOrderFeeCents;
+
+  return {
+    available: missingItems.length === 0,
+    itemSubtotalCents: subtotalCents,
+    deliveryFeeCents,
+    serviceFeeCents,
+    smallOrderFeeCents,
+    totalCents,
+    missingItems: missingItems.map((i) => i.name),
+    orderUrl: rest[`${platform}_url`] || '',
+  };
 }
 
 async function mapItemsToPlatform(

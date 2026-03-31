@@ -1,0 +1,20 @@
+{
+  "endpoint": "GET /recommendations/v1/cross_sell/merchant/{id}/menu_item",
+  "method": "GET",
+  "exampleUrl": "https://api-gtm.grubhub.com/recommendations/v1/cross_sell/merchant/8023448/menu_item?menuItemIdsInCart=306076054632&dinerLocation=POINT(-74.00809479%2040.73571395)&applicationId=web&applicationVersion=4.6.5264",
+  "queryParams": {
+    "menuItemIdsInCart": "306076054632",
+    "dinerLocation": "POINT(-74.00809479 40.73571395)",
+    "applicationId": "web",
+    "applicationVersion": "4.6.5264"
+  },
+  "requestBody": null,
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/json",
+    "perimeter-x": "eyJ1IjoiYmFlZDgwODAtMmQ0MC0xMWYxLTkwNWUtZTM0MDZkOTgxYzVjIiwidiI6ImJiMjQ0ZmRkLTJkNDAtMTFmMS04MGUzLTNhNDk3ZGUzN2JmYyIsInQiOjE3NzQ5ODk2NDc0NTAsImgiOiI0N2QwNTk3YmYzNjdkY2M3MjQzNzQ1NGY1MTJiYjJmNDRjODQwZDJhOTc0MDYyZTJmMmJkYTM1ODM0NWFkODNhIn0=",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;60=10014;"
+  },
+  "capturedAt": "2026-03-31T20:36:07.385Z",
+  "callCount": 1
+}

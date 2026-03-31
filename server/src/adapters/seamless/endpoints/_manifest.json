@@ -1,0 +1,209 @@
+{
+  "platform": "seamless",
+  "apiBase": "https://api-gtm.grubhub.com",
+  "capturedAt": "2026-03-31T20:42:42.984Z",
+  "totalRequests": 127,
+  "endpoints": [
+    {
+      "name": "GET /autocomplete",
+      "count": 9
+    },
+    {
+      "name": "GET /browse/abc-pages/lets-eat",
+      "count": 1
+    },
+    {
+      "name": "GET /browse/restaurants/{id}",
+      "count": 1
+    },
+    {
+      "name": "GET /carts/{cartId}",
+      "count": 2
+    },
+    {
+      "name": "GET /carts/{cartId}/bill",
+      "count": 3
+    },
+    {
+      "name": "GET /codes/vault/{uuid}/giftcards",
+      "count": 1
+    },
+    {
+      "name": "GET /credentials/{uuid}",
+      "count": 2
+    },
+    {
+      "name": "GET /diners/{uuid}/addresses",
+      "count": 1
+    },
+    {
+      "name": "GET /diners/{uuid}/details",
+      "count": 3
+    },
+    {
+      "name": "GET /diners/{uuid}/favorites/restaurants",
+      "count": 1
+    },
+    {
+      "name": "GET /diners/{uuid}/order-history",
+      "count": 1
+    },
+    {
+      "name": "GET /diners/{uuid}/order-history/group/restaurant",
+      "count": 1
+    },
+    {
+      "name": "GET /diners/{uuid}/restaurant/{id}/previously-ordered",
+      "count": 1
+    },
+    {
+      "name": "GET /diners/{uuid}/search_listing",
+      "count": 2
+    },
+    {
+      "name": "GET /grubcash/{uuid}/list",
+      "count": 1
+    },
+    {
+      "name": "GET /offers/availability/{id}",
+      "count": 4
+    },
+    {
+      "name": "GET /payments/{uuid}/payments",
+      "count": 2
+    },
+    {
+      "name": "GET /pricing/display_settings/v1",
+      "count": 1
+    },
+    {
+      "name": "GET /ratings/search/restaurant/{id}",
+      "count": 1
+    },
+    {
+      "name": "GET /recommendations/v1/cross_sell/merchant/{id}/menu_item",
+      "count": 1
+    },
+    {
+      "name": "GET /recommendations/v1/cross_sell/multi_merchant/{cartId}/merchant",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurant_gateway/feed/{id}/{id}",
+      "count": 7
+    },
+    {
+      "name": "GET /restaurant_gateway/feed/{id}/{uuid}",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurant_gateway/feed/{id}/None",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurant_gateway/info/menu_item/volatile/{id}/{id}",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurant_gateway/info/nonvolatile/{id}",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurant_gateway/info/volatile/{id}",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurants/{cartId}",
+      "count": 3
+    },
+    {
+      "name": "GET /restaurants/{id}",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurants/{id}/menu_items/",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurants/{id}/menu_items/{id}",
+      "count": 1
+    },
+    {
+      "name": "GET /restaurants/search",
+      "count": 2
+    },
+    {
+      "name": "GET /session",
+      "count": 3
+    },
+    {
+      "name": "GET /subscription/all",
+      "count": 6
+    },
+    {
+      "name": "GET /topics-gateway/v1/info",
+      "count": 2
+    },
+    {
+      "name": "GET /topics-gateway/v1/topic/content",
+      "count": 41
+    },
+    {
+      "name": "GET /topics-gateway/v2/topic",
+      "count": 4
+    },
+    {
+      "name": "POST /auth/anon",
+      "count": 1
+    },
+    {
+      "name": "POST /auth/login",
+      "count": 2
+    },
+    {
+      "name": "POST /carts",
+      "count": 1
+    },
+    {
+      "name": "POST /carts/{cartId}/lines",
+      "count": 1
+    },
+    {
+      "name": "POST /carts/{cartId}/payments",
+      "count": 1
+    },
+    {
+      "name": "POST /carts/{cartId}/tip",
+      "count": 1
+    },
+    {
+      "name": "POST /menubff/bff/menubff.v1.HeaderRequest",
+      "count": 1
+    },
+    {
+      "name": "POST /ratings/orders/state",
+      "count": 2
+    },
+    {
+      "name": "PUT /carts/{cartId}/delivery_info",
+      "count": 1
+    }
+  ],
+  "keyEndpoints": {
+    "search": "GET /restaurants/search",
+    "restaurant": "GET /restaurants/{id}",
+    "menuFeed": "GET /restaurant_gateway/feed/{id}/{categoryId}",
+    "menuInfo": "GET /restaurant_gateway/info/nonvolatile/{id}",
+    "menuItems": "GET /restaurants/{id}/menu_items/",
+    "singleItem": "GET /restaurants/{id}/menu_items/{itemId}",
+    "createCart": "POST /carts",
+    "addToCart": "POST /carts/{cartId}/lines",
+    "cartBill": "GET /carts/{cartId}/bill",
+    "deliveryInfo": "PUT /carts/{cartId}/delivery_info",
+    "fees": "GET /restaurant_gateway/info/volatile/{id}"
+  },
+  "authMechanism": {
+    "type": "cookie + perimeter-x token",
+    "note": "Auth via session cookies. perimeter-x header required for bot protection. No Bearer token — uses cookie-based sessions."
+  }
+}

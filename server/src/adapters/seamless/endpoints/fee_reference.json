@@ -1,0 +1,43 @@
+{
+  "capturedAt": "2026-03-31T20:44:40.174Z",
+  "restaurantId": "8023448",
+  "deliveryFeeCents": 199,
+  "serviceFeeCents": 629,
+  "totalFeeCents": 828,
+  "feeItems": [
+    {
+      "calculated_amount": 199,
+      "non_adjusted_amount": 199,
+      "potential_adjusted_amount": 199,
+      "fee_adjustment_category": "NONE",
+      "group": "DELIVERY",
+      "type": "DELIVERY",
+      "id": "eyJhIjoxOTksIm5hIjoxOTksInBhYSI6MTk5LCJnIjoxLCJmZyI6IkRFTElWRVJZIiwibyI6MCwib3AiOjEsIm0iOjE5OSwibG8iOnsib3MiOlt7Im9wIjoxLCJtIjoxOTl9XX0sInRhIjp0cnVlLCJ0IjoxLCJmdCI6IkRFTElWRVJZIiwibiI6IkRlbGl2ZXJ5IGZlZSIsImZhYyI6Ik5PTkUiLCJmZWVBdHRyaWJ1dGlvbiI6MH0=",
+      "name": "Delivery fee",
+      "fee_attribution": "DEFAULT"
+    },
+    {
+      "calculated_amount": 429,
+      "non_adjusted_amount": 429,
+      "potential_adjusted_amount": 429,
+      "fee_adjustment_category": "NON_SUBSCRIPTION",
+      "group": "SERVICE",
+      "type": "CHAIN_SERVICE_FEE",
+      "id": "eyJhIjo0MjksIm5hIjo0MjksInBhYSI6NDI5LCJnIjowLCJmZyI6IlNFUlZJQ0UiLCJvIjowLCJvcCI6MCwibSI6MTUuMDAsImxvIjp7Im9zIjpbeyJvcCI6MCwibSI6MTUuMDB9XX0sInRhIjp0cnVlLCJ0IjoyLCJmdCI6IlNFUlZJQ0UiLCJuIjoiU2VydmljZSBmZWUiLCJmYWMiOiJOT05fU1VCU0NSSVBUSU9OIiwiZmVlQXR0cmlidXRpb24iOjB9",
+      "name": "Service fee",
+      "fee_attribution": "DEFAULT"
+    },
+    {
+      "calculated_amount": 200,
+      "non_adjusted_amount": 200,
+      "potential_adjusted_amount": 200,
+      "fee_adjustment_category": "NONE",
+      "group": "SERVICE",
+      "type": "SERVICE_TOLL",
+      "id": "eyJhIjoyMDAsIm5hIjoyMDAsInBhYSI6MjAwLCJnIjowLCJmZyI6IlNFUlZJQ0UiLCJvIjowLCJvcCI6MSwibSI6MjAwLCJsbyI6eyJvcyI6W3sib3AiOjEsIm0iOjIwMH1dfSwidGEiOnRydWUsInQiOjUsImZ0IjoiVE9MTCIsIm4iOiJPdGhlciBmZWVzIiwiZmFjIjoiTk9ORSIsImZlZUF0dHJpYnV0aW9uIjowfQ==",
+      "name": "Other fees",
+      "fee_attribution": "DEFAULT"
+    }
+  ],
+  "subtotalCents": 2860
+}

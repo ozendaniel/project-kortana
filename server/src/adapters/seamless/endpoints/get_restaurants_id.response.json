@@ -1,0 +1,979 @@
+{
+  "restaurant_availability": {
+    "restaurant_id": "8023448",
+    "delivery_fee": {
+      "amount": 199,
+      "currency": "USD",
+      "styled_text": null
+    },
+    "delivery_fee_without_discounts": {
+      "amount": 199,
+      "currency": "USD",
+      "styled_text": null
+    },
+    "delivery_fee_estimate": {
+      "amount": 199,
+      "currency": "USD",
+      "styled_text": null
+    },
+    "delivery_fee_as_percentage": 0,
+    "delivery_fee_taxable": true,
+    "delivery_fee_allocation_info": {
+      "attribution": "GRUBHUB"
+    },
+    "order_minimum": {
+      "amount": 0,
+      "currency": "USD",
+      "styled_text": null
+    },
+    "sales_tax": 8.88,
+    "delivery_offered_to_diner_location": true,
+    "open": true,
+    "open_delivery": true,
+    "open_pickup": true,
+    "available_for_delivery": true,
+    "available_for_pickup": true,
+    "delivery_estimate": 35,
+    "delivery_estimate_range": "{\"maximum\":51,\"minimum\":36}",
+    "delivery_estimate_range_v2": {
+      "maximum": 51,
+      "minimum": 36
+    },
+    "pickup_estimate": 10,
+    "pickup_estimate_range": "{\"maximum\":20,\"minimum\":10}",
+    "pickup_estimate_range_v2": {
+      "maximum": 20,
+      "minimum": 10
+    },
+    "cash_accepted": false,
+    "credit_card_accepted": true,
+    "paypal_accepted": false,
+    "time_zone_id": "America/New_York",
+    "time_zone_offset": -14400000,
+    "tracker": true,
+    "distance_in_miles": 90,
+    "decimal_distance_in_miles": 0.9,
+    "delivery_cutoff": 15,
+    "pickup_cutoff": 30,
+    "delivery_type": "GRUBHUB",
+    "available_hours": [
+      {
+        "day_of_week": 1,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 2,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 3,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 4,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 5,
+        "time_ranges": [
+          "15:30-02:00"
+        ]
+      },
+      {
+        "day_of_week": 6,
+        "time_ranges": [
+          "15:30-02:00"
+        ]
+      },
+      {
+        "day_of_week": 7,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      }
+    ],
+    "available_hours_pickup": [
+      {
+        "day_of_week": 1,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 2,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 3,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 4,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      },
+      {
+        "day_of_week": 5,
+        "time_ranges": [
+          "15:30-02:00"
+        ]
+      },
+      {
+        "day_of_week": 6,
+        "time_ranges": [
+          "15:30-02:00"
+        ]
+      },
+      {
+        "day_of_week": 7,
+        "time_ranges": [
+          "15:30-01:30"
+        ]
+      }
+    ],
+    "future_order_available_hours_delivery": [
+      {
+        "day_of_week": 1,
+        "time_ranges": [
+          "16:06-02:06"
+        ]
+      },
+      {
+        "day_of_week": 2,
+        "time_ranges": [
+          "16:06-02:06"
+        ]
+      },
+      {
+        "day_of_week": 3,
+        "time_ranges": [
+          "16:06-02:06"
+        ]
+      },
+      {
+        "day_of_week": 4,
+        "time_ranges": [
+          "16:06-02:06"
+        ]
+      },
+      {
+        "day_of_week": 5,
+        "time_ranges": [
+          "16:06-02:36"
+        ]
+      },
+      {
+        "day_of_week": 6,
+        "time_ranges": [
+          "16:06-02:36"
+        ]
+      },
+      {
+        "day_of_week": 7,
+        "time_ranges": [
+          "16:06-02:06"
+        ]
+      }
+    ],
+    "future_order_available_hours_pickup": [
+      {
+        "day_of_week": 1,
+        "time_ranges": [
+          "15:40-01:40"
+        ]
+      },
+      {
+        "day_of_week": 2,
+        "time_ranges": [
+          "15:40-01:40"
+        ]
+      },
+      {
+        "day_of_week": 3,
+        "time_ranges": [
+          "15:40-01:40"
+        ]
+      },
+      {
+        "day_of_week": 4,
+        "time_ranges": [
+          "15:40-01:40"
+        ]
+      },
+      {
+        "day_of_week": 5,
+        "time_ranges": [
+          "15:40-02:10"
+        ]
+      },
+      {
+        "day_of_week": 6,
+        "time_ranges": [
+          "15:40-02:10"
+        ]
+      },
+      {
+        "day_of_week": 7,
+        "time_ranges": [
+          "15:40-01:40"
+        ]
+      }
+    ],
+    "min_delivery_fee": {
+      "amount": 199,
+      "currency": "USD",
+      "styled_text": null
+    },
+    "catering_info": {
+      "catering_sibling_id": null,
+      "order_thresholds": {
+        "currency": "USD",
+        "order_price_bucket_list": [
+          {
+            "amount": 250,
+            "buffer_minutes": 30
+          }
+        ]
+      },
+      "catering": false
+    },
+    "next_open_closed_info": {
+      "next_order_send_time_delivery": "2026-03-31T20:37:10.437Z",
+      "next_order_send_time_pickup": "2026-03-31T20:37:10.437Z",
+      "next_delivery_time": "2026-03-31T21:13:10.437Z",
+      "next_pickup_time": "2026-03-31T20:47:10.437Z",
+      "next_cutoff_order_send_time_delivery": "2026-04-01T01:15:00.000Z",
+      "next_cutoff_order_send_time_pickup": "2026-04-01T01:00:00.000Z",
+      "order_tiers": [
+        {
+          "threshold_type": "ORDER_AMOUNT_CENTS",
+          "threshold": 15000,
+          "additional_prep_time_minutes": 20,
+          "next_delivery_time": "2026-03-31T21:33:10.437Z",
+          "next_order_send_time_delivery": "2026-03-31T20:37:10.437Z",
+          "next_pickup_time": "2026-03-31T21:07:10.437Z",
+          "next_order_send_time_pickup": "2026-03-31T20:37:10.437Z"
+        }
+      ]
+    },
+    "allowable_order_types": [
+      "standard"
+    ],
+    "service_fee": {
+      "name": "Service fee",
+      "description": "A service fee of 15.0% for delivery orders will be charged with Grandma's Home 外婆家.",
+      "delivery_fee": {
+        "fee_type": "PERCENT",
+        "percent_value": 15,
+        "maximum_amount_for_percent": {
+          "amount": 1200,
+          "currency": "USD",
+          "styled_text": null
+        }
+      },
+      "delivery_service_fee_allocation_info": {
+        "attribution": "GRUBHUB"
+      },
+      "fee_allocation_info": {
+        "fee_allocation_type": "GRUBHUB"
+      }
+    },
+    "small_order_fee": {
+      "name": "Small order delivery fee",
+      "description": "A small order delivery fee applies to your Grandma's Home 外婆家 subtotal of $8.69 or less.",
+      "minimum_order_value_cents": 1000,
+      "fee": {
+        "fee_type": "FLAT",
+        "flat_cents_value": {
+          "amount": 200,
+          "currency": "USD",
+          "styled_text": null
+        }
+      },
+      "fee_allocation_info": {
+        "attribution": "GRUBHUB"
+      }
+    },
+    "service_toll_fee": {
+      "name": "Service Toll Fee",
+      "description": "A toll fee that applies to your Grandma's Home 外婆家 order.",
+      "fee": {
+        "fee_type": "FLAT",
+        "flat_cents_value": {
+          "amount": 200,
+          "currency": "USD",
+          "styled_text": null
+        }
+      },
+      "fee_allocation_info": {
+        "attribution": "GRUBHUB"
+      }
+    },
+    "fee_display_setting": {
+      "search_display_setting": null,
+      "menu_display_setting": {
+        "id": "UniversalControl",
+        "subtitle_fee_styled_text": {
+          "text": "$1.99 delivery",
+          "text_style": "DEFAULT"
+        },
+        "disclaimer": null
+      }
+    },
+    "grouped_overrides_availability": {
+      "delivery_blacked_out": false,
+      "pickup_blacked_out": false,
+      "delivery_soft_blacked_out": false,
+      "pickup_soft_blacked_out": false,
+      "delivery_estimate_in_minutes": null,
+      "order_minimum_increase_in_cents": 0,
+      "inundated": false
+    },
+    "contact_free_required": false,
+    "delivery_fees": [
+      {
+        "fee_name": "DELIVERY",
+        "type": "DELIVERY",
+        "operand": "FLAT",
+        "amount": 199,
+        "non_adjusted_amount": null,
+        "adjustment": null,
+        "threshold": null,
+        "potential_adjustment": null,
+        "non_adjusted_values": {
+          "amount": 199,
+          "maximum": null,
+          "minimum": null
+        },
+        "potential_adjustment_values": {
+          "amount": 199,
+          "maximum": null,
+          "minimum": null
+        },
+        "applicable_hours": null,
+        "applicable_days_of_the_week": null,
+        "attribution": "GRUBHUB",
+        "fee_attribution": "DEFAULT",
+        "fee_adjustment_category": "NONE",
+        "has_campus_subscription_specific_requirements": false,
+        "spend_based_promotion": null,
+        "campaign_info": null,
+        "applied_discount_types": []
+      },
+      {
+        "fee_name": "DRIVER_BENEFITS_FEE",
+        "type": "DRIVER_BENEFITS_FEE",
+        "operand": "FLAT",
+        "amount": 0,
+        "non_adjusted_amount": null,
+        "adjustment": null,
+        "threshold": null,
+        "potential_adjustment": null,
+        "non_adjusted_values": {
+          "amount": 0,
+          "maximum": null,
+          "minimum": null
+        },
+        "potential_adjustment_values": {
+          "amount": 0,
+          "maximum": null,
+          "minimum": null
+        },
+        "applicable_hours": null,
+        "applicable_days_of_the_week": null,
+        "attribution": "GRUBHUB",
+        "fee_attribution": "DEFAULT",
+        "fee_adjustment_category": "NONE",
+        "has_campus_subscription_specific_requirements": false,
+        "spend_based_promotion": null,
+        "campaign_info": null,
+        "applied_discount_types": []
+      },
+      {
+        "fee_name": "PRIORITY_DELIVERY",
+        "type": "PRIORITY_DELIVERY",
+        "operand": "FLAT",
+        "amount": 299,
+        "non_adjusted_amount": null,
+        "adjustment": null,
+        "threshold": {},
+        "potential_adjustment": null,
+        "non_adjusted_values": {
+          "amount": 299,
+          "maximum": null,
+          "minimum": null
+        },
+        "potential_adjustment_values": {
+          "amount": 299,
+          "maximum": null,
+          "minimum": null
+        },
+        "applicable_hours": null,
+        "applicable_days_of_the_week": null,
+        "attribution": "GRUBHUB",
+        "fee_attribution": "DEFAULT",
+        "fee_adjustment_category": "NONE",
+        "has_campus_subscription_specific_requirements": false,
+        "spend_based_promotion": null,
+        "campaign_info": null,
+        "applied_discount_types": []
+      },
+      {
+        "fee_name": "SERVICE",
+        "type": "SERVICE",
+        "operand": "PERCENT",
+        "amount": 1500,
+        "non_adjusted_amount": 1500,
+        "adjustment": {
+          "maximum_amount_for_percentage": 1200,
+          "minimum_amount_for_percentage": 249
+        },
+        "threshold": {
+          "maximum_amount_for_percentage": 1200
+        },
+        "potential_adjustment": {
+          "amount": 800,
+          "maximum": null,
+          "minimum": null
+        },
+        "non_adjusted_values": {
+          "amount": 1500,
+          "maximum": null,
+          "minimum": null
+        },
+        "potential_adjustment_values": {
+          "amount": 800,
+          "maximum": null,
+          "minimum": null
+        },
+        "applicable_hours": null,
+        "applicable_days_of_the_week": null,
+        "attribution": "GRUBHUB",
+        "fee_attribution": "DEFAULT",
+        "fee_adjustment_category": "NON_SUBSCRIPTION",
+        "has_campus_subscription_specific_requirements": false,
+        "spend_based_promotion": null,
+        "campaign_info": null,
+        "applied_discount_types": []
+      },
+      {
+        "fee_name": "SMALL",
+        "type": "SMALL",
+        "operand": "FLAT",
+        "amount": 200,
+        "non_adjusted_amount": null,
+        "adjustment": null,
+        "threshold": {
+          "threshold": 1000
+        },
+        "potential_adjustment": null,
+        "non_adjusted_values": {
+          "amount": 200,
+          "maximum": null,
+          "minimum": null
+        },
+        "potential_adjustment_values": {
+          "amount": 200,
+          "maximum": null,
+          "minimum": null
+        },
+        "applicable_hours": null,
+        "applicable_days_of_the_week": null,
+        "attribution": "GRUBHUB",
+        "fee_attribution": "DEFAULT",
+        "fee_adjustment_category": "NONE",
+        "has_campus_subscription_specific_requirements": false,
+        "spend_based_promotion": null,
+        "campaign_info": null,
+        "applied_discount_types": []
+      },
+      {
+        "fee_name": "TOLL",
+        "type": "TOLL",
+        "operand": "FLAT",
+        "amount": 200,
+        "non_adjusted_amount": null,
+        "adjustment": null,
+        "threshold": {},
+        "potential_adjustment": null,
+        "non_adjusted_values": {
+          "amount": 200,
+          "maximum": null,
+          "minimum": null
+        },
+        "potential_adjustment_values": {
+          "amount": 200,
+          "maximum": null,
+          "minimum": null
+        },
+        "applicable_hours": null,
+        "applicable_days_of_the_week": null,
+        "attribution": "GRUBHUB",
+        "fee_attribution": "DEFAULT",
+        "fee_adjustment_category": "NONE",
+        "has_campus_subscription_specific_requirements": false,
+        "spend_based_promotion": null,
+        "campaign_info": null,
+        "applied_discount_types": []
+      }
+    ],
+    "pickup_fees": [],
+    "real_time_eta": {
+      "delivery_estimate_range": {
+        "start_time": "2026-03-31T21:11:00.000Z",
+        "end_time": "2026-03-31T21:26:00.000Z",
+        "single_estimate_time": "2026-03-31T21:11:00.000Z",
+        "start_time_seconds": null,
+        "end_time_seconds": null,
+        "single_estimate_seconds": null,
+        "start_time_minutes": 36,
+        "end_time_minutes": 51,
+        "single_estimate_minutes": 36,
+        "eta_notation": "RANGE_DURATION"
+      },
+      "pickup_estimate_range": null,
+      "pickup_drive_time_in_minutes": 9,
+      "pickup_drive_time_distance_in_miles": 1.34,
+      "eta_options": [
+        {
+          "eta_type": "STANDARD_DELIVERY",
+          "estimate_range": {
+            "start_time": "2026-03-31T21:11:00.000Z",
+            "end_time": "2026-03-31T21:26:00.000Z",
+            "single_estimate_time": "2026-03-31T21:11:00.000Z",
+            "start_time_seconds": 2160,
+            "end_time_seconds": 3060,
+            "single_estimate_seconds": 2160,
+            "start_time_minutes": 36,
+            "end_time_minutes": 51,
+            "single_estimate_minutes": 36,
+            "eta_notation": "RANGE_DURATION"
+          },
+          "delivery_fee": null
+        }
+      ],
+      "merchant_eta_options": {}
+    },
+    "promotions": [],
+    "cutoff_for_delivery": false,
+    "cutoff_for_pickup": false,
+    "white_in": false,
+    "inundated": false,
+    "blacked_out": false
+  },
+  "restaurant": {
+    "id": "8023448",
+    "restaurant_hash": "143fc535b7afb5181ce7db8ec7bb5ebf",
+    "merchant_uuid": "8W4xkO4nEe6xkWfojwGWNA",
+    "package_state_type_id": 2,
+    "available_restaurant_features": [],
+    "disclaimers": [],
+    "duplicate": false,
+    "name": "Grandma's Home 外婆家",
+    "address": {
+      "locality": "New York",
+      "region": "NY",
+      "postal_code": "10010-5812",
+      "zip": "10010",
+      "street_address": "56 W 22nd St",
+      "country": "USA",
+      "time_zone_id": "America/New_York",
+      "phone_number_for_delivery": null,
+      "latitude": null,
+      "longitude": null
+    },
+    "cross_street_required": false,
+    "premium": true,
+    "online_ordering_available": true,
+    "pickup_offered": true,
+    "phone_ordering_available": true,
+    "phone_number_for_delivery": "6463296770",
+    "suppress_diner_phone_contact": false,
+    "latitude": "40.74184036",
+    "longitude": "-73.99288178",
+    "city_id": 283,
+    "managed_delivery": true,
+    "delivery_mode": "FULL_GHD",
+    "minimum_tip_percent": 10,
+    "default_tip_percent": 20,
+    "minimum_tip": {
+      "amount": 200,
+      "currency": "USD",
+      "styled_text": null
+    },
+    "logo": "https://media-cdn.grubhub.com/image/upload/v1752277236/uksi9izqgkpqyqt3i39t.jpg",
+    "group_ids": [
+      "pauseByPartner:f47e1570-aae1-11ec-92b4-bfd1158d5dfb-partner-grp:GENERIC_GROUP_IDS",
+      "a213d9d3-78ac-4025-a9d3-6a00304f344c:polygon:GENERIC_GROUP_IDS",
+      "pauseByPartner:24146550-aae2-11ec-b80b-51df7fd088f1-partner-grp:GENERIC_GROUP_IDS"
+    ],
+    "has_coupons": false,
+    "is_new": true,
+    "cuisines": [
+      "Asian",
+      "Chinese",
+      "Dim Sum",
+      "Dinner",
+      "Seafood",
+      "Soup",
+      "Vegetarian"
+    ],
+    "restaurant_coupons": [],
+    "just_in_time_orders": false,
+    "restaurant_cdn_image_url": "http://s1.seamless.com/-/ri/gh/8023448",
+    "media_image": {
+      "base_url": "https://media-cdn.grubhub.com/image/upload/",
+      "public_id": "uksi9izqgkpqyqt3i39t",
+      "format": "jpg",
+      "tag": "logo",
+      "tags": [
+        "primary_logo"
+      ],
+      "image_source": null,
+      "uploader_details": null,
+      "image_description": null,
+      "image_title": null,
+      "scale_mode": "FILL"
+    },
+    "rating": {
+      "rating_count": "165",
+      "rating_value": "5"
+    },
+    "price_rating": "3",
+    "rating_bayesian_half_point": {
+      "rating_count": "165",
+      "rating_value": "4.5"
+    },
+    "rating_bayesian10_point": {
+      "rating_count": "165",
+      "rating_value": "4.6"
+    },
+    "restaurant_managed_hours_list_v2": [
+      {
+        "day": "Monday",
+        "hours": "12:00 AM - 12:00 AM",
+        "start_time": "00:00:00.000",
+        "end_time": "23:59:59.000"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "12:00 AM - 12:00 AM",
+        "start_time": "00:00:00.000",
+        "end_time": "23:59:59.000"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "12:00 AM - 12:00 AM",
+        "start_time": "00:00:00.000",
+        "end_time": "23:59:59.000"
+      },
+      {
+        "day": "Thursday",
+        "hours": "12:00 AM - 12:00 AM",
+        "start_time": "00:00:00.000",
+        "end_time": "23:59:59.000"
+      },
+      {
+        "day": "Friday",
+        "hours": "12:00 AM - 12:00 AM",
+        "start_time": "00:00:00.000",
+        "end_time": "23:59:59.000"
+      },
+      {
+        "day": "Saturday",
+        "hours": "12:00 AM - 12:00 AM",
+        "start_time": "00:00:00.000",
+        "end_time": "23:59:59.000"
+      },
+      {
+        "day": "Sunday",
+        "hours": "12:00 AM - 12:00 AM",
+        "start_time": "00:00:00.000",
+        "end_time": "23:59:59.000"
+      }
+    ],
+    "restaurant_intersected_managed_hours_list": [
+      {
+        "day": "Monday",
+        "hours": "11:30 AM - 9:30 PM",
+        "start_time": "11:30:00.000",
+        "end_time": "21:30:00.000"
+      },
+      {
+        "day": "Tuesday",
+        "hours": "11:30 AM - 9:30 PM",
+        "start_time": "11:30:00.000",
+        "end_time": "21:30:00.000"
+      },
+      {
+        "day": "Wednesday",
+        "hours": "11:30 AM - 9:30 PM",
+        "start_time": "11:30:00.000",
+        "end_time": "21:30:00.000"
+      },
+      {
+        "day": "Thursday",
+        "hours": "11:30 AM - 9:30 PM",
+        "start_time": "11:30:00.000",
+        "end_time": "21:30:00.000"
+      },
+      {
+        "day": "Friday",
+        "hours": "11:30 AM - 10:00 PM",
+        "start_time": "11:30:00.000",
+        "end_time": "22:00:00.000"
+      },
+      {
+        "day": "Saturday",
+        "hours": "11:30 AM - 10:00 PM",
+        "start_time": "11:30:00.000",
+        "end_time": "22:00:00.000"
+      },
+      {
+        "day": "Sunday",
+        "hours": "11:30 AM - 9:30 PM",
+        "start_time": "11:30:00.000",
+        "end_time": "21:30:00.000"
+      }
+    ],
+    "managed_delivery_settings": {
+      "order_minimum": null
+    },
+    "order_fulfillment_methods": {
+      "MANAGED_DELIVERY": {
+        "allowable_order_types": [
+          "standard"
+        ],
+        "fulfillment_tags": []
+      },
+      "ORDER_BASED_ON_DEMAND_DELIVERY": {
+        "allowable_order_types": null,
+        "fulfillment_tags": []
+      },
+      "SELF_DELIVERY": {
+        "allowable_order_types": null,
+        "fulfillment_tags": []
+      },
+      "PICKUP": {
+        "allowable_order_types": [
+          "standard"
+        ],
+        "fulfillment_tags": []
+      }
+    },
+    "alcohol_enabled": false,
+    "alcohol_market_status": "DISABLED",
+    "faceted_rating_data": {
+      "review_data": {
+        "total_count": 6,
+        "valid_count": 6,
+        "top_review": {
+          "rating_value": 3,
+          "review_text": "Food was great when I've had it before and service is always friendly but today the rice was cold and the food was extremely salty",
+          "reviewer_display_name": "Jade",
+          "time_created": null
+        }
+      },
+      "faceted_rating_list": [
+        {
+          "facet_name": "Delivery Speed",
+          "facet_type": "delivery_speed",
+          "response_count": 19,
+          "positive_response_count": 17,
+          "positive_response_percentage": 0.8947368421052632
+        },
+        {
+          "facet_name": "Order Accuracy",
+          "facet_type": "order_accuracy",
+          "response_count": 53,
+          "positive_response_count": 52,
+          "positive_response_percentage": 0.9811320754716981
+        },
+        {
+          "facet_name": "Food Quality",
+          "facet_type": "food_quality",
+          "response_count": 53,
+          "positive_response_count": 47,
+          "positive_response_percentage": 0.8867924528301887
+        }
+      ],
+      "faceted_rating_too_few": false
+    },
+    "additional_media_images": {
+      "LOGO_HOME_PAGE": {
+        "base_url": "https://media-cdn.grubhub.com/image/upload/",
+        "public_id": "uksi9izqgkpqyqt3i39t",
+        "format": "jpg",
+        "tag": "logo",
+        "tags": [
+          "primary_logo"
+        ],
+        "image_source": null,
+        "uploader_details": null,
+        "image_description": null,
+        "image_title": null,
+        "scale_mode": "FILL"
+      },
+      "MENU_PAGE": {
+        "base_url": "https://media-cdn.grubhub.com/image/upload/",
+        "public_id": "uksi9izqgkpqyqt3i39t",
+        "format": "jpg",
+        "tag": "logo",
+        "tags": [
+          "primary_logo"
+        ],
+        "image_source": null,
+        "uploader_details": null,
+        "image_description": null,
+        "image_title": null,
+        "scale_mode": "FILL"
+      },
+      "SEARCH_HOME_PAGE": {
+        "base_url": "https://media-cdn.grubhub.com/image/upload/",
+        "public_id": "jymnj7e5ajnhnaxomjih",
+        "format": "jpg",
+        "tag": "search",
+        "tags": [
+          "primary_search"
+        ],
+        "image_source": null,
+        "uploader_details": null,
+        "image_description": null,
+        "image_title": null,
+        "scale_mode": "FILL"
+      },
+      "SEARCH_RESULTS_PAGE": {
+        "base_url": "https://media-cdn.grubhub.com/image/upload/",
+        "public_id": "jymnj7e5ajnhnaxomjih",
+        "format": "jpg",
+        "tag": "search",
+        "tags": [
+          "primary_search"
+        ],
+        "image_source": null,
+        "uploader_details": null,
+        "image_description": null,
+        "image_title": null,
+        "scale_mode": "FILL"
+      },
+      "HEADER_BACKGROUND": {
+        "base_url": "https://media-cdn.grubhub.com/image/upload/",
+        "public_id": "rdeld8ehfvxkpuqcxoel",
+        "format": "jpg",
+        "tag": "header_background",
+        "tags": [
+          "primary_header"
+        ],
+        "image_source": null,
+        "uploader_details": null,
+        "image_description": null,
+        "image_title": null,
+        "scale_mode": "FILL"
+      }
+    },
+    "tag_list": [],
+    "available_promo_codes": [],
+    "available_offers": [],
+    "available_progress_campaigns": [],
+    "merchant_url_path": "grandmas-home--56-w-22nd-st-new-york",
+    "order_type_settings": {
+      "service_fee": {
+        "name": "Service fee",
+        "description": "A service fee of 15.0% for delivery orders will be charged with Grandma's Home 外婆家.",
+        "delivery_fee": {
+          "fee_type": "PERCENT",
+          "percent_value": 15,
+          "maximum_amount_for_percent": {
+            "amount": 1200,
+            "currency": "USD",
+            "styled_text": null
+          }
+        },
+        "delivery_service_fee_allocation_info": {
+          "attribution": "GRUBHUB"
+        },
+        "fee_allocation_info": {
+          "fee_allocation_type": "GRUBHUB"
+        }
+      },
+      "small_order_fee": {
+        "name": "Small order delivery fee",
+        "description": "A small order delivery fee applies to your Grandma's Home 外婆家 subtotal of $8.69 or less.",
+        "minimum_order_value_cents": 1000,
+        "fee": {
+          "fee_type": "FLAT",
+          "flat_cents_value": {
+            "amount": 200,
+            "currency": "USD",
+            "styled_text": null
+          }
+        },
+        "fee_allocation_info": {
+          "attribution": "GRUBHUB"
+        }
+      },
+      "merchant_status": {
+        "category": "ACTIVE",
+        "category_description": "Active",
+        "description": "Premium",
+        "requires_attrition_reason": false,
+        "status": "PREMIUM"
+      },
+      "delivery_estimate_minutes": 30,
+      "pickup_estimate_minutes": 10
+    },
+    "pickup_tips_disabled": false,
+    "special_instructions_disabled": true,
+    "utensils_selection_disabled": false,
+    "restaurant_tags": [
+      "BASIC"
+    ],
+    "version_ids": {
+      "catalog": "v1:69.AQ1ePAEDSpk1.M4GOZK6dl73Gl2lm"
+    },
+    "shared_cart": true,
+    "subscription_information": {
+      "order_minimum": null
+    },
+    "excluded_menu_item_count": 0,
+    "aggregations": {
+      "menu_item_tags": {
+        "values": {}
+      }
+    },
+    "menu_item_features": [
+      "CHOICE_OPTION_QUANTITIES",
+      "CHOICE_CATEGORY_QUANTITIES"
+    ],
+    "pos_integrated": true,
+    "data_bytes": 0,
+    "menu_data_bytes": 0,
+    "order_validation_information": {
+      "opted_in": false
+    },
+    "template_type": "STANDARD",
+    "tax_engine_information": {
+      "tax_engine_calculation_enabled": false,
+      "tax_type_code": "MT-RECA"
+    },
+    "service_fee_taxable": true,
+    "service_fee_taxable_when_delivery_only": false,
+    "delivery_fee_taxable_when_delivery_only": false,
+    "cash_tip_allowed": false,
+    "is_too_few": false,
+    "too_few": false
+  }
+}

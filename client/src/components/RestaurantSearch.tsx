@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { searchRestaurants } from '../api/client';
@@ -12,16 +12,25 @@ export default function RestaurantSearch() {
   const [nameQuery, setNameQuery] = useState('');
   const setDeliveryAddress = useCartStore((s) => s.setDeliveryAddress);
 
-  const { data: restaurants, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['restaurants', address, nameQuery],
     queryFn: () => searchRestaurants(address, nameQuery || undefined),
     enabled: !!address,
   });
 
+  // Store geocoded address in cart when search results come back
+  useEffect(() => {
+    if (data?.location) {
+      setDeliveryAddress({
+        lat: data.location.lat,
+        lng: data.location.lng,
+        address: data.location.formattedAddress || address,
+      });
+    }
+  }, [data?.location?.lat, data?.location?.lng]);
+
   const handleAddressSet = (addr: string) => {
     setAddress(addr);
-    // TODO: Geocode and store lat/lng in cart store
-    setDeliveryAddress({ lat: 0, lng: 0, address: addr });
   };
 
   const handleRestaurantClick = (id: string) => {
@@ -52,10 +61,10 @@ export default function RestaurantSearch() {
       {isLoading && <p className="text-gray-400">Searching restaurants...</p>}
       {error && <p className="text-red-500">Error searching restaurants. Try again.</p>}
 
-      {restaurants && (
+      {data?.restaurants && (
         <div className="space-y-3">
-          <p className="text-sm text-gray-400">{restaurants.length} restaurants found</p>
-          {restaurants.map((r) => (
+          <p className="text-sm text-gray-400">{data.restaurants.length} restaurants found</p>
+          {data.restaurants.map((r) => (
             <RestaurantCard
               key={r.id}
               restaurant={r}

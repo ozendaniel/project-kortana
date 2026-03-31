@@ -1,0 +1,189 @@
+{
+  "id": "8023448",
+  "reviews": {
+    "total_count": 6,
+    "total_pages": 1,
+    "current_page": 1,
+    "review": [
+      {
+        "content": "Ordered beef noodle soup, the soup tasted bland with chewy meat. not worth the price. ",
+        "reviewer": "jennifer",
+        "star_rating": 1,
+        "diner_type": "New",
+        "review_count": 1,
+        "review_created_date": 1741191268749,
+        "order_placed_time": 1741106790369,
+        "reviewer_last_order_from_customer_date": 0,
+        "id": "ea1a53d0-f9dc-11ef-93d1-5fe82f04ac71",
+        "brand": "seamless",
+        "sentiment": "Negative",
+        "responses": [],
+        "menu_items": [
+          {
+            "id": "294902406808",
+            "name": "Grandma's Beef Noodle Soup 外婆牛肉面"
+          }
+        ],
+        "facet_responses": {}
+      },
+      {
+        "content": "The food was greasy full of oil. The soup was bland They did not include any utensils ",
+        "reviewer": "marcy",
+        "star_rating": 1,
+        "diner_type": "New",
+        "review_count": 1,
+        "review_created_date": 1736531934489,
+        "order_placed_time": 1736446341133,
+        "reviewer_last_order_from_customer_date": 0,
+        "id": "8e77e090-cf7c-11ef-a091-8d0c482ad1b5",
+        "brand": "seamless",
+        "sentiment": "Negative",
+        "responses": [],
+        "menu_items": [
+          {
+            "id": "283667303352",
+            "name": "Shrimp Dumplings (3) 水晶虾饺"
+          },
+          {
+            "id": "286558702512",
+            "name": "LS Mapo Tofu 麻婆豆腐套餐"
+          },
+          {
+            "id": "291307734512",
+            "name": "Chicken Soup 红枣竹丝鸡汤"
+          }
+        ],
+        "facet_responses": {}
+      },
+      {
+        "content": "Food was great when I've had it before and service is always friendly but today the rice was cold and the food was extremely salty",
+        "reviewer": "Jade",
+        "star_rating": 3,
+        "diner_type": "Regular",
+        "review_count": 1,
+        "review_created_date": 1733434073673,
+        "order_placed_time": 1733422409965,
+        "reviewer_last_order_from_customer_date": 0,
+        "id": "c9888390-b34f-11ef-8391-0bb2467747b7",
+        "brand": "seamless",
+        "sentiment": "Positive",
+        "responses": [],
+        "menu_items": [
+          {
+            "id": "281995131408",
+            "name": "Mapo Tofu 麻婆豆腐"
+          }
+        ],
+        "facet_responses": {
+          "pickup_ontime": "Yes",
+          "order_accuracy": "Yes",
+          "food_quality": "No"
+        }
+      },
+      {
+        "content": "so overpriced. food was nothing special. and small portions. even the side of rice that they charge extra for (???) was skimpy, which, come on, it's literally the cheapest food in the world. ",
+        "reviewer": "Deborah",
+        "star_rating": 2,
+        "diner_type": "Regular",
+        "review_count": 61,
+        "review_created_date": 1732988325938,
+        "order_placed_time": 1732924200490,
+        "reviewer_last_order_from_customer_date": 0,
+        "id": "f32de120-af41-11ef-a121-1764e8eae5db",
+        "brand": "seamless",
+        "sentiment": "Negative",
+        "responses": [],
+        "menu_items": [
+          {
+            "id": "281995131432",
+            "name": "Kung Pao Shrimp 宫保虾球"
+          }
+        ],
+        "facet_responses": {}
+      },
+      {
+        "content": "Food not worth the price",
+        "reviewer": "Tian",
+        "star_rating": 3,
+        "diner_type": "Regular",
+        "review_count": 1,
+        "review_created_date": 1720313437376,
+        "order_placed_time": 1720303479867,
+        "reviewer_last_order_from_customer_date": 0,
+        "id": "ece04c00-3bfa-11ef-8c01-0b2ed346433b",
+        "brand": "seamless",
+        "sentiment": "Negative",
+        "responses": [],
+        "menu_items": [
+          {
+            "id": "273299748952",
+            "name": "Chicken Soup 红枣竹丝鸡汤"
+          },
+          {
+            "id": "275115738960",
+            "name": "Crispy Skin Chicken 贵妃脆皮鸡"
+          },
+          {
+            "id": "275174015976",
+            "name": "Choy Sum with Dried Shrimp 樱花虾广菜心"
+          }
+        ],
+        "facet_responses": {
+          "order_accuracy": "Yes",
+          "delivery_speed": "Yes",
+          "food_quality": "No"
+        }
+      },
+      {
+        "content": "Steamed Fish fillet with tofu is super salty and burns my tongue. The lunch  bento package is nice though.",
+        "reviewer": "Haowei",
+        "star_rating": 1,
+        "diner_type": "Regular",
+        "review_count": 3,
+        "review_created_date": 1719455806854,
+        "order_placed_time": 1719368422341,
+        "reviewer_last_order_from_customer_date": 0,
+        "id": "19400260-342e-11ef-8261-495e5ed15acf",
+        "brand": "seamless",
+        "sentiment": "Positive",
+        "responses": [],
+        "menu_items": [
+          {
+            "id": "275338762896",
+            "name": "LS Steamed Fish Fillet with Tofu 豆豉蒸鱼"
+          }
+        ],
+        "facet_responses": {
+          "delivery_speed": "Yes",
+          "order_accuracy": "Yes",
+          "food_quality": "No"
+        }
+      }
+    ],
+    "restaurant_score": 0,
+    "rating_count": 0
+  },
+  "sorts": [
+    {
+      "sort_id": "timeCreated_desc",
+      "field": "Time created",
+      "pretty_name": "Most recent",
+      "fragment": "sorts=timeCreated_desc"
+    },
+    {
+      "sort_id": "ratingValue_desc",
+      "field": "Rating",
+      "pretty_name": "Highest rated",
+      "fragment": "sorts=ratingValue_desc"
+    }
+  ],
+  "ratings": {
+    "star_rating_breakdown": {
+      "1": 4,
+      "2": 2,
+      "3": 4,
+      "4": 5,
+      "5": 85
+    }
+  }
+}

@@ -1,0 +1,4210 @@
+{
+  "object": {
+    "request_id": "1ca1b580-2d41-11f1-b581-9ba8109559c1",
+    "operation_id": "1ca1b580-2d41-11f1-b581-9ba8109559c1",
+    "data": {
+      "content": [
+        {
+          "entity": {
+            "id": "8023448",
+            "name": "Grandma's Home 外婆家",
+            "description": "",
+            "phone_number": "6463296770",
+            "short_address": "56 W 22nd St",
+            "address": {
+              "locality": "New York",
+              "region": "NY",
+              "postal_code": "10010-5812",
+              "zip": "10010",
+              "street_address": "56 W 22nd St",
+              "country": "USA",
+              "time_zone_id": "America/New_York",
+              "phone_number_for_delivery": "6463296770",
+              "latitude": "40.74184036",
+              "longitude": "-73.99288178"
+            },
+            "merchant_url_path": "grandmas-home--56-w-22nd-st-new-york",
+            "order_minimum_amount": {
+              "amount": 0,
+              "currency": "USD"
+            },
+            "display_info": {
+              "template_type": "STANDARD",
+              "available_restaurant_features": [],
+              "badges": {
+                "SUBSCRIPTION": false
+              },
+              "available_hours": [
+                {
+                  "day_of_week": 1,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 2,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 3,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 4,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 5,
+                  "time_ranges": [
+                    "15:30-02:00"
+                  ]
+                },
+                {
+                  "day_of_week": 6,
+                  "time_ranges": [
+                    "15:30-02:00"
+                  ]
+                },
+                {
+                  "day_of_week": 7,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                }
+              ],
+              "available_hours_pickup": [
+                {
+                  "day_of_week": 1,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 2,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 3,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 4,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                },
+                {
+                  "day_of_week": 5,
+                  "time_ranges": [
+                    "15:30-02:00"
+                  ]
+                },
+                {
+                  "day_of_week": 6,
+                  "time_ranges": [
+                    "15:30-02:00"
+                  ]
+                },
+                {
+                  "day_of_week": 7,
+                  "time_ranges": [
+                    "15:30-01:30"
+                  ]
+                }
+              ],
+              "disclaimers": [],
+              "logo": {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "uksi9izqgkpqyqt3i39t",
+                "format": "jpg",
+                "tag": "logo",
+                "tags": [
+                  "primary_logo"
+                ],
+                "scale_mode": "FILL"
+              },
+              "search_image": {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "jymnj7e5ajnhnaxomjih",
+                "format": "jpg",
+                "tag": "search",
+                "tags": [
+                  "primary_search"
+                ],
+                "scale_mode": "FILL"
+              },
+              "header_image": {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "rdeld8ehfvxkpuqcxoel",
+                "format": "jpg",
+                "tag": "header_background",
+                "tags": [
+                  "primary_header"
+                ],
+                "scale_mode": "FILL"
+              },
+              "fee_display_settings": {
+                "menu_display_setting": {
+                  "id": "UniversalControl",
+                  "subtitle_fee_styled_text": {
+                    "text": "$1.99 delivery",
+                    "text_style": "DEFAULT"
+                  }
+                }
+              },
+              "price_rating": 3,
+              "locality_sanitation_grade": {
+                "zip_code": "10010",
+                "sanitation_grade_description": "NY Health Score",
+                "sanitation_grade_url": "https://a816-health.nyc.gov/ABCEatsRestaurants/#!/Search"
+              },
+              "fee_summary": {
+                "max_order_fee": 2098
+              }
+            },
+            "restaurant_state": {
+              "supported_fulfillment_type": {
+                "offers_delivery": true,
+                "offers_pickup": true
+              },
+              "temporary_unavailable": false,
+              "asap_only": false,
+              "managed_delivery": true,
+              "phone_number_assisted": false,
+              "phone_order_only": false,
+              "campus_restaurant": false,
+              "ultimate_restaurant": false,
+              "order_min_surging": false,
+              "coming_soon": false,
+              "not_taking_orders": false,
+              "with_account_problems": false,
+              "with_pre_launch_data_done": false,
+              "new": true
+            },
+            "menu_info": {
+              "cuisines": [
+                "Asian",
+                "Chinese",
+                "Dim Sum",
+                "Dinner",
+                "Seafood",
+                "Soup",
+                "Vegetarian"
+              ],
+              "menu_item_type": "ENHANCED",
+              "merchant_types_display": [],
+              "merchant_labels": [
+                "Asian",
+                "Chinese",
+                "Dim Sum"
+              ]
+            },
+            "delivery_info": {
+              "delivery_fee": "$1.99 delivery",
+              "delivery_estimate_range": {
+                "maximum": 51,
+                "minimum": 36
+              },
+              "delivery_estimate_with_additional_time": {
+                "maximum": 65,
+                "minimum": 55
+              },
+              "delivery_offered_to_diner": true
+            },
+            "pickup_info": {
+              "pickup_estimate_range": {
+                "maximum": 20,
+                "minimum": 10
+              },
+              "pickup_estimate_with_additional_time": {
+                "maximum": 40,
+                "minimum": 30
+              },
+              "pickup_drive_time_in_minutes": 9,
+              "pickup_drive_time_distance_in_miles": 1.34,
+              "pickup_distance_in_miles": 0.9
+            },
+            "open_status": {
+              "open_pickup": true,
+              "open_delivery": true,
+              "inundated": false,
+              "delivery_paused": false,
+              "delivery_temporary_closed": false,
+              "pickup_paused": false,
+              "pickup_temporary_closed": false
+            },
+            "pre_order_info": {
+              "delivery_future_order_status": {
+                "future_order_enabled": true,
+                "next_time": "2026-03-31T21:15:00.000Z"
+              },
+              "pickup_future_order_status": {
+                "future_order_enabled": true,
+                "next_time": "2026-03-31T21:00:00.000Z"
+              }
+            },
+            "phone_ordering_available": true,
+            "time_zone_offset": -14400000,
+            "allowable_order_types": [
+              "STANDARD"
+            ],
+            "standard_allowed": true,
+            "catering_allowed": false,
+            "cartable": true,
+            "shared_cart": true,
+            "tags": [],
+            "delivery_distance_in_miles": 0.9,
+            "place_and_pay": false,
+            "tax_engine_information": {
+              "tax_engine_calculation_enabled": false,
+              "tax_type_code": "MT-RECA"
+            },
+            "real_time_eta": {
+              "delivery_estimate_range": {
+                "start_time": "2026-03-31T21:11:00.000Z",
+                "end_time": "2026-03-31T21:26:00.000Z",
+                "single_estimate_time": "2026-03-31T21:11:00.000Z",
+                "start_time_minutes": 36,
+                "end_time_minutes": 51,
+                "single_estimate_minutes": 36,
+                "eta_notation": "RANGE_DURATION"
+              },
+              "pickup_drive_time_in_minutes": 9,
+              "pickup_drive_time_distance_in_miles": 1.34,
+              "eta_options": [
+                {
+                  "eta_type": "STANDARD_DELIVERY",
+                  "estimate_range": {
+                    "start_time": "2026-03-31T21:11:00.000Z",
+                    "end_time": "2026-03-31T21:26:00.000Z",
+                    "single_estimate_time": "2026-03-31T21:11:00.000Z",
+                    "start_time_seconds": 2160,
+                    "end_time_seconds": 3060,
+                    "single_estimate_seconds": 2160,
+                    "start_time_minutes": 36,
+                    "end_time_minutes": 51,
+                    "single_estimate_minutes": 36,
+                    "eta_notation": "RANGE_DURATION"
+                  }
+                }
+              ],
+              "merchant_eta_options": {}
+            },
+            "pickup_tips_disabled": false,
+            "utensils_selection_disabled": false,
+            "restaurant_aggregation_info": {
+              "menu_items_count": 69,
+              "menu_items_image_count": 69,
+              "menu_items_image_coverage": 100,
+              "categories_count": 15,
+              "categories_image_count": 0,
+              "categories_image_coverage": 0
+            },
+            "fee_transparency_info": {
+              "delivery_mode_fees": [
+                {
+                  "fee_type": "DELIVERY",
+                  "fee_display_name": "DELIVERY Fee",
+                  "calculated_amount": 199,
+                  "non_adjusted_amount": 0,
+                  "operand": "FLAT",
+                  "fee_attribution": "DEFAULT"
+                },
+                {
+                  "fee_type": "SERVICE",
+                  "fee_display_name": "SERVICE Fee",
+                  "calculated_amount": 1500,
+                  "non_adjusted_amount": 1500,
+                  "operand": "PERCENT",
+                  "fee_attribution": "DEFAULT",
+                  "max_fee_amount_in_cents": 1200
+                }
+              ],
+              "pickup_mode_fees": []
+            },
+            "fee_transparency_message": {
+              "banner_messages": [],
+              "widget_messages": []
+            }
+          },
+          "type": "RESTAURANT_INFO"
+        },
+        {
+          "entity": {
+            "special_instructions_disabled": true,
+            "cross_street_required": false,
+            "delivery_cutoff": 15,
+            "pickup_cutoff": 30,
+            "place_and_pay": false,
+            "removed": false,
+            "delivery_distance_in_miles": 0.9,
+            "order_min_increase_in_cents": 0,
+            "deprecated_pricing_info": {
+              "delivery_fee": {
+                "amount": 199,
+                "currency": "USD"
+              },
+              "delivery_fee_minimum": {
+                "amount": 199,
+                "currency": "USD"
+              },
+              "delivery_percentage": 0,
+              "service_toll": {
+                "name": "Service Toll Fee",
+                "description": "A toll fee that applies to your Grandma's Home 外婆家 order.",
+                "fee": {
+                  "fee_type": "FLAT",
+                  "flat_cents_value": {
+                    "amount": 200,
+                    "currency": "USD"
+                  }
+                },
+                "fee_allocation_info": {
+                  "attribution": "GRUBHUB"
+                }
+              },
+              "delivery_type": "GRUBHUB"
+            },
+            "deprecated_open_status": {
+              "open_now_delivery": true,
+              "open_now_pickup": true,
+              "next_open_closed_info": {
+                "next_order_send_time_delivery": "2026-03-31T20:37:10.182Z",
+                "next_order_send_time_pickup": "2026-03-31T20:37:10.182Z",
+                "next_delivery_time": "2026-03-31T21:13:10.182Z",
+                "next_pickup_time": "2026-03-31T20:47:10.182Z",
+                "next_cutoff_order_send_time_delivery": "2026-04-01T01:15:00.000Z",
+                "next_cutoff_order_send_time_pickup": "2026-04-01T01:00:00.000Z",
+                "order_tiers": [
+                  {
+                    "threshold_type": "ORDER_AMOUNT_CENTS",
+                    "threshold": 15000,
+                    "additional_prep_time_minutes": 20,
+                    "next_delivery_time": "2026-03-31T21:33:10.182Z",
+                    "next_order_send_time_delivery": "2026-03-31T20:37:10.182Z",
+                    "next_pickup_time": "2026-03-31T21:07:10.182Z",
+                    "next_order_send_time_pickup": "2026-03-31T20:37:10.182Z"
+                  }
+                ]
+              },
+              "future_order_available_hours_delivery": [
+                {
+                  "day_of_week": 1,
+                  "time_ranges": [
+                    "16:06-02:06"
+                  ]
+                },
+                {
+                  "day_of_week": 2,
+                  "time_ranges": [
+                    "16:06-02:06"
+                  ]
+                },
+                {
+                  "day_of_week": 3,
+                  "time_ranges": [
+                    "16:06-02:06"
+                  ]
+                },
+                {
+                  "day_of_week": 4,
+                  "time_ranges": [
+                    "16:06-02:06"
+                  ]
+                },
+                {
+                  "day_of_week": 5,
+                  "time_ranges": [
+                    "16:06-02:36"
+                  ]
+                },
+                {
+                  "day_of_week": 6,
+                  "time_ranges": [
+                    "16:06-02:36"
+                  ]
+                },
+                {
+                  "day_of_week": 7,
+                  "time_ranges": [
+                    "16:06-02:06"
+                  ]
+                }
+              ],
+              "future_order_available_hours_pickup": [
+                {
+                  "day_of_week": 1,
+                  "time_ranges": [
+                    "15:40-01:40"
+                  ]
+                },
+                {
+                  "day_of_week": 2,
+                  "time_ranges": [
+                    "15:40-01:40"
+                  ]
+                },
+                {
+                  "day_of_week": 3,
+                  "time_ranges": [
+                    "15:40-01:40"
+                  ]
+                },
+                {
+                  "day_of_week": 4,
+                  "time_ranges": [
+                    "15:40-01:40"
+                  ]
+                },
+                {
+                  "day_of_week": 5,
+                  "time_ranges": [
+                    "15:40-02:10"
+                  ]
+                },
+                {
+                  "day_of_week": 6,
+                  "time_ranges": [
+                    "15:40-02:10"
+                  ]
+                },
+                {
+                  "day_of_week": 7,
+                  "time_ranges": [
+                    "15:40-01:40"
+                  ]
+                }
+              ]
+            },
+            "order_type_settings": {
+              "service_fee": {
+                "name": "Service fee",
+                "description": "A service fee of 15.0% for delivery orders will be charged with Grandma's Home 外婆家.",
+                "delivery_fee": {
+                  "fee_type": "PERCENT",
+                  "percent_value": 15,
+                  "maximum_amount_for_percent": {
+                    "amount": 1200,
+                    "currency": "USD"
+                  }
+                },
+                "delivery_service_fee_allocation_info": {
+                  "attribution": "GRUBHUB"
+                },
+                "fee_allocation_info": {
+                  "fee_allocation_type": "GRUBHUB"
+                }
+              },
+              "small_order_fee": {
+                "name": "Small order delivery fee",
+                "description": "A small order delivery fee applies to your Grandma's Home 外婆家 subtotal of $8.69 or less.",
+                "minimum_order_value_cents": 1000,
+                "fee": {
+                  "fee_type": "FLAT",
+                  "flat_cents_value": {
+                    "amount": 200,
+                    "currency": "USD"
+                  }
+                },
+                "fee_allocation_info": {
+                  "attribution": "GRUBHUB"
+                }
+              },
+              "merchant_status": {
+                "category": "ACTIVE",
+                "category_description": "Active",
+                "description": "Premium",
+                "requires_attrition_reason": false,
+                "status": "PREMIUM"
+              },
+              "delivery_estimate_minutes": 30,
+              "pickup_estimate_minutes": 10
+            }
+          },
+          "type": "LEGACY_INFO"
+        },
+        {
+          "entity": {
+            "count": 165,
+            "value": 4.6,
+            "rating_bayesian10_point_value": 4.6,
+            "food_quality_rating_facet_percentage": 0.8867924528301887,
+            "delivery_speed_rating_facet_percentage": 0.8947368421052632,
+            "order_accuracy_rating_facet_percentage": 0.9811320754716981,
+            "valid_reviews_count": 6,
+            "top_review_text": "Food was great when I've had it before and service is always friendly but today the rice was cold and the food was extremely salty",
+            "top_reviewer_name": "Jade",
+            "rating_facets_available": true,
+            "too_few": false
+          },
+          "type": "RATINGS_REVIEWS"
+        }
+      ],
+      "feed": [],
+      "enhanced_feed": [
+        {
+          "id": "None",
+          "name": "Category Navigation",
+          "description": "",
+          "representation": {
+            "tablet": {
+              "portrait": {
+                "layout": "CONTAINER",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "CONTAINER",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "CONTAINER",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": -1,
+            "tablet": {
+              "portrait": 0,
+              "landscape": -1
+            },
+            "mobile": {
+              "portrait": 0,
+              "landscape": 0
+            }
+          },
+          "data_type": "CATEGORY",
+          "feed_type": "HORIZONTAL_CATEGORY_ARRAY",
+          "retryable": false,
+          "request": {
+            "parameters": []
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "DEFAULT"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "DEFAULT"
+              },
+              "landscape": {
+                "type": "DEFAULT"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "DEFAULT"
+              },
+              "landscape": {
+                "type": "DEFAULT"
+              }
+            }
+          },
+          "routes": {}
+        },
+        {
+          "id": "None",
+          "name": "Search",
+          "description": "Search for menu items on this menu",
+          "representation": {
+            "desktop": {
+              "layout": "CONTAINER",
+              "action_type": "FILTER",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "CONTAINER",
+                "action_type": "OVERLAY",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "CONTAINER",
+                "action_type": "FILTER",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "CONTAINER",
+                "action_type": "OVERLAY",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "CONTAINER",
+                "action_type": "OVERLAY",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 0,
+            "tablet": {
+              "portrait": 1,
+              "landscape": 0
+            },
+            "mobile": {
+              "portrait": 1,
+              "landscape": 1
+            }
+          },
+          "data_type": "MENU_ITEM_SEARCH",
+          "feed_type": "MENU_ITEM_SEARCH",
+          "retryable": false,
+          "request": {
+            "parameters": []
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "DEFAULT"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION"
+              },
+              "landscape": {
+                "type": "DEFAULT"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION"
+              }
+            }
+          },
+          "routes": {}
+        },
+        {
+          "id": "None",
+          "name": "Offers",
+          "description": "Offers available for this menu",
+          "representation": {
+            "desktop": {
+              "layout": "CONTAINER"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "CONTAINER"
+              },
+              "landscape": {
+                "layout": "CONTAINER"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "CONTAINER"
+              },
+              "landscape": {
+                "layout": "CONTAINER"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 1,
+            "tablet": {
+              "portrait": 2,
+              "landscape": 1
+            },
+            "mobile": {
+              "portrait": 2,
+              "landscape": 2
+            }
+          },
+          "data_type": "OFFER_ITEM",
+          "feed_type": "OFFERS",
+          "retryable": false,
+          "request": {
+            "parameters": []
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {}
+        },
+        {
+          "id": "None",
+          "name": "Best Sellers",
+          "description": "",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "XL_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "card_type": "XL_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "XL_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "card_type": "XL_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "XL_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 2,
+            "tablet": {
+              "portrait": 3,
+              "landscape": 2
+            },
+            "mobile": {
+              "portrait": 3,
+              "landscape": 3
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "POPULAR_ITEMS",
+          "retryable": false,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "task",
+                "value": "POPULAR_ITEMS"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {}
+        },
+        {
+          "id": "297617383080",
+          "name": "APPETIZER 前菜",
+          "description": "APPETIZER 前菜",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 3,
+            "tablet": {
+              "portrait": 4,
+              "landscape": 3
+            },
+            "mobile": {
+              "portrait": 4,
+              "landscape": 4
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383080",
+              "name": "APPETIZER 前菜",
+              "description": "APPETIZER 前菜",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 3,
+                "tablet": {
+                  "portrait": 4,
+                  "landscape": 3
+                },
+                "mobile": {
+                  "portrait": 4,
+                  "landscape": 4
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 8
+            }
+          },
+          "max_number_of_items": 8
+        },
+        {
+          "id": "297617383032",
+          "name": "DIM SUM 点心",
+          "description": "DIM SUM 点心",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 4,
+            "tablet": {
+              "portrait": 5,
+              "landscape": 4
+            },
+            "mobile": {
+              "portrait": 5,
+              "landscape": 5
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383032",
+              "name": "DIM SUM 点心",
+              "description": "DIM SUM 点心",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 4,
+                "tablet": {
+                  "portrait": 5,
+                  "landscape": 4
+                },
+                "mobile": {
+                  "portrait": 5,
+                  "landscape": 5
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 5
+            }
+          },
+          "max_number_of_items": 5
+        },
+        {
+          "id": "297617383048",
+          "name": "SOUP 汤",
+          "description": "SOUP 汤",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 5,
+            "tablet": {
+              "portrait": 6,
+              "landscape": 5
+            },
+            "mobile": {
+              "portrait": 6,
+              "landscape": 6
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383048",
+              "name": "SOUP 汤",
+              "description": "SOUP 汤",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 5,
+                "tablet": {
+                  "portrait": 6,
+                  "landscape": 5
+                },
+                "mobile": {
+                  "portrait": 6,
+                  "landscape": 6
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 2
+            }
+          },
+          "max_number_of_items": 2
+        },
+        {
+          "id": "297617383024",
+          "name": "CHICKEN 鸡",
+          "description": "CHICKEN 鸡",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 6,
+            "tablet": {
+              "portrait": 7,
+              "landscape": 6
+            },
+            "mobile": {
+              "portrait": 7,
+              "landscape": 7
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383024",
+              "name": "CHICKEN 鸡",
+              "description": "CHICKEN 鸡",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 6,
+                "tablet": {
+                  "portrait": 7,
+                  "landscape": 6
+                },
+                "mobile": {
+                  "portrait": 7,
+                  "landscape": 7
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 4
+            }
+          },
+          "max_number_of_items": 4
+        },
+        {
+          "id": "297617383008",
+          "name": "PORK 猪",
+          "description": "PORK 猪",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 7,
+            "tablet": {
+              "portrait": 8,
+              "landscape": 7
+            },
+            "mobile": {
+              "portrait": 8,
+              "landscape": 8
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383008",
+              "name": "PORK 猪",
+              "description": "PORK 猪",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 7,
+                "tablet": {
+                  "portrait": 8,
+                  "landscape": 7
+                },
+                "mobile": {
+                  "portrait": 8,
+                  "landscape": 8
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 3
+            }
+          },
+          "max_number_of_items": 3
+        },
+        {
+          "id": "297617383088",
+          "name": "BEEF 牛",
+          "description": "BEEF 牛",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 8,
+            "tablet": {
+              "portrait": 9,
+              "landscape": 8
+            },
+            "mobile": {
+              "portrait": 9,
+              "landscape": 9
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383088",
+              "name": "BEEF 牛",
+              "description": "BEEF 牛",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 8,
+                "tablet": {
+                  "portrait": 9,
+                  "landscape": 8
+                },
+                "mobile": {
+                  "portrait": 9,
+                  "landscape": 9
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 2
+            }
+          },
+          "max_number_of_items": 2
+        },
+        {
+          "id": "297617383040",
+          "name": "SEAFOOD 海鲜",
+          "description": "SEAFOOD 海鲜",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 9,
+            "tablet": {
+              "portrait": 10,
+              "landscape": 9
+            },
+            "mobile": {
+              "portrait": 10,
+              "landscape": 10
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383040",
+              "name": "SEAFOOD 海鲜",
+              "description": "SEAFOOD 海鲜",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 9,
+                "tablet": {
+                  "portrait": 10,
+                  "landscape": 9
+                },
+                "mobile": {
+                  "portrait": 10,
+                  "landscape": 10
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 6
+            }
+          },
+          "max_number_of_items": 6
+        },
+        {
+          "id": "297617383104",
+          "name": "VEGETABLE & TOFU 蔬菜",
+          "description": "VEGETABLE & TOFU 蔬菜",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 10,
+            "tablet": {
+              "portrait": 11,
+              "landscape": 10
+            },
+            "mobile": {
+              "portrait": 11,
+              "landscape": 11
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383104",
+              "name": "VEGETABLE & TOFU 蔬菜",
+              "description": "VEGETABLE & TOFU 蔬菜",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 10,
+                "tablet": {
+                  "portrait": 11,
+                  "landscape": 10
+                },
+                "mobile": {
+                  "portrait": 11,
+                  "landscape": 11
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 6
+            }
+          },
+          "max_number_of_items": 6
+        },
+        {
+          "id": "297617383064",
+          "name": "RICE & NOODLE 米面",
+          "description": "RICE & NOODLE 米面",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 11,
+            "tablet": {
+              "portrait": 12,
+              "landscape": 11
+            },
+            "mobile": {
+              "portrait": 12,
+              "landscape": 12
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383064",
+              "name": "RICE & NOODLE 米面",
+              "description": "RICE & NOODLE 米面",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 11,
+                "tablet": {
+                  "portrait": 12,
+                  "landscape": 11
+                },
+                "mobile": {
+                  "portrait": 12,
+                  "landscape": 12
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 6
+            }
+          },
+          "max_number_of_items": 6
+        },
+        {
+          "id": "297617383072",
+          "name": "DESSERT 甜品",
+          "description": "DESSERT 甜品",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 12,
+            "tablet": {
+              "portrait": 13,
+              "landscape": 12
+            },
+            "mobile": {
+              "portrait": 13,
+              "landscape": 13
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383072",
+              "name": "DESSERT 甜品",
+              "description": "DESSERT 甜品",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 12,
+                "tablet": {
+                  "portrait": 13,
+                  "landscape": 12
+                },
+                "mobile": {
+                  "portrait": 13,
+                  "landscape": 13
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 2
+            }
+          },
+          "max_number_of_items": 2
+        },
+        {
+          "id": "297617383056",
+          "name": "MERCH 周边",
+          "description": "MERCH 周边",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 13,
+            "tablet": {
+              "portrait": 14,
+              "landscape": 13
+            },
+            "mobile": {
+              "portrait": 14,
+              "landscape": 14
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383056",
+              "name": "MERCH 周边",
+              "description": "MERCH 周边",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 13,
+                "tablet": {
+                  "portrait": 14,
+                  "landscape": 13
+                },
+                "mobile": {
+                  "portrait": 14,
+                  "landscape": 14
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 1
+            }
+          },
+          "max_number_of_items": 1
+        },
+        {
+          "id": "297617383096",
+          "name": "BEER 啤酒",
+          "description": "BEER 啤酒",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 14,
+            "tablet": {
+              "portrait": 15,
+              "landscape": 14
+            },
+            "mobile": {
+              "portrait": 15,
+              "landscape": 15
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383096",
+              "name": "BEER 啤酒",
+              "description": "BEER 啤酒",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 14,
+                "tablet": {
+                  "portrait": 15,
+                  "landscape": 14
+                },
+                "mobile": {
+                  "portrait": 15,
+                  "landscape": 15
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 4
+            }
+          },
+          "max_number_of_items": 4
+        },
+        {
+          "id": "297865832496",
+          "name": "SAKE 清酒",
+          "description": "SAKE 清酒",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 15,
+            "tablet": {
+              "portrait": 16,
+              "landscape": 15
+            },
+            "mobile": {
+              "portrait": 16,
+              "landscape": 16
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297865832496",
+              "name": "SAKE 清酒",
+              "description": "SAKE 清酒",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 15,
+                "tablet": {
+                  "portrait": 16,
+                  "landscape": 15
+                },
+                "mobile": {
+                  "portrait": 16,
+                  "landscape": 16
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 4
+            }
+          },
+          "max_number_of_items": 4
+        },
+        {
+          "id": "297617383016",
+          "name": "NA BEVERAGE 饮料",
+          "description": "NA BEVERAGE 饮料",
+          "representation": {
+            "desktop": {
+              "layout": "LIST",
+              "card_type": "LARGE_ITEM_CARD_1_0",
+              "navigation_type": "SCROLL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              },
+              "landscape": {
+                "layout": "LIST",
+                "action_type": "VIEW_ALL",
+                "card_type": "LARGE_ITEM_CARD_1_0",
+                "navigation_type": "SCROLL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 16,
+            "tablet": {
+              "portrait": 17,
+              "landscape": 16
+            },
+            "mobile": {
+              "portrait": 17,
+              "landscape": 17
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "CATEGORY",
+          "retryable": true,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989310182"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "isNonRestaurantMerchant",
+                "value": "false"
+              },
+              {
+                "id": "merchantTypes",
+                "value": ""
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "agent",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "CATEGORY"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {
+            "SINGLE_FEED": {
+              "id": "297617383016",
+              "name": "NA BEVERAGE 饮料",
+              "description": "NA BEVERAGE 饮料",
+              "representation": {
+                "desktop": {
+                  "layout": "LIST",
+                  "card_type": "LARGE_ITEM_CARD_2_0"
+                },
+                "tablet": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  },
+                  "landscape": {
+                    "layout": "LIST",
+                    "card_type": "LARGE_ITEM_CARD_2_0"
+                  }
+                }
+              },
+              "sequence_order": {
+                "desktop": 16,
+                "tablet": {
+                  "portrait": 17,
+                  "landscape": 16
+                },
+                "mobile": {
+                  "portrait": 17,
+                  "landscape": 17
+                }
+              },
+              "data_type": "MENU_ITEM",
+              "feed_type": "CATEGORY",
+              "retryable": true,
+              "request": {
+                "parameters": [
+                  {
+                    "id": "time",
+                    "value": "1774989310182"
+                  },
+                  {
+                    "id": "location",
+                    "value": "POINT(-74.00809479 40.73571395)"
+                  },
+                  {
+                    "id": "operationId",
+                    "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+                  },
+                  {
+                    "id": "isFutureOrder",
+                    "value": "false"
+                  },
+                  {
+                    "id": "restaurantStatus",
+                    "value": "ORDERABLE"
+                  },
+                  {
+                    "id": "isNonRestaurantMerchant",
+                    "value": "false"
+                  },
+                  {
+                    "id": "merchantTypes",
+                    "value": ""
+                  },
+                  {
+                    "id": "orderType",
+                    "value": "STANDARD"
+                  },
+                  {
+                    "id": "agent",
+                    "value": "false"
+                  },
+                  {
+                    "id": "task",
+                    "value": "CATEGORY"
+                  }
+                ]
+              },
+              "top_nav": {
+                "tablet": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  }
+                },
+                "mobile": {
+                  "portrait": {
+                    "type": "NO_OPERATION"
+                  },
+                  "landscape": {
+                    "type": "NO_OPERATION"
+                  }
+                }
+              },
+              "max_number_of_items": 7
+            }
+          },
+          "max_number_of_items": 7
+        },
+        {
+          "id": "None",
+          "name": "Similar options nearby",
+          "description": "Similar Restaurants for the current merchant",
+          "representation": {
+            "desktop": {
+              "layout": "CAROUSEL"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "CAROUSEL"
+              },
+              "landscape": {
+                "layout": "CAROUSEL"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "CAROUSEL"
+              },
+              "landscape": {
+                "layout": "CAROUSEL"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 17,
+            "tablet": {
+              "portrait": 18,
+              "landscape": 17
+            },
+            "mobile": {
+              "portrait": 18,
+              "landscape": 18
+            }
+          },
+          "data_type": "SIMILAR_RESTAURANT",
+          "feed_type": "SIMILAR_RESTAURANTS",
+          "retryable": false,
+          "request": {
+            "parameters": [
+              {
+                "id": "operationId",
+                "value": "1ca1b580-2d41-11f1-b581-9ba8109559c1"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "brandUuid"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "task",
+                "value": "SIMILAR_RESTAURANTS"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "SEARCH_BAR",
+              "action_type": "FILTER"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              },
+              "landscape": {
+                "type": "HORIZONTAL_CATEGORY_NAVIGATION",
+                "action_type": "OVERLAY"
+              }
+            }
+          },
+          "routes": {},
+          "metadata": {
+            "recommendation_name": "similar restaurants"
+          }
+        }
+      ]
+    }
+  },
+  "status": "SUCCESS"
+}

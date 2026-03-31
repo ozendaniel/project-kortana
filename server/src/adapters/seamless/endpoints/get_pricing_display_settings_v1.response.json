@@ -1,0 +1,320 @@
+{
+  "object": {
+    "fees": {
+      "id": "UniversalControl",
+      "items": [
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithMessage",
+              "item_detail_type": "MESSAGE",
+              "message": {
+                "text": "This fee covers delivery-related costs for Seamless and is based in part on the delivery location you provided. THIS PRICE WAS SET BY AN ALGORITHM USING YOUR PERSONAL DATA.",
+                "text_style": "DEFAULT"
+              },
+              "token": "delivery fee"
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "Delivery fee",
+          "token": "delivery fee",
+          "values": [
+            "charges.fees.fee_items[type=DELIVERY].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Small order fee",
+              "token": "small order fee",
+              "values": [
+                "charges.fees.fee_items[type=CHAIN_SMALL_ORDER_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "{{action_messages.CHAIN_SMALL_ORDER_FEE}}",
+                "text_style": "PROMOTION"
+              }
+            },
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Small order fee",
+              "token": "restaurant attributed small order fee",
+              "values": [
+                "charges.fees.fee_items[type=RESTAURANT_ATTR_SMALL].calculated_amount"
+              ],
+              "message": {
+                "text": "Fee for small orders",
+                "text_style": "DEFAULT"
+              }
+            },
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Service fee",
+              "token": "service fee",
+              "values": [
+                "charges.fees.fee_items[type=CHAIN_SERVICE_FEE].calculated_amount",
+                "charges.fees.fee_items[type=SERVICE_TOLL].calculated_amount"
+              ],
+              "message": {
+                "text": "This fee helps cover operating costs and provide higher earnings for our drivers. The max for this store is $14.00.",
+                "text_style": "DEFAULT"
+              }
+            },
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Driver benefits",
+              "token": "driver benefits fee",
+              "values": [
+                "charges.fees.fee_items[type=DRIVER_BENEFITS_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "This fee is in support of our compliance with Prop 22.",
+                "text_style": "DEFAULT"
+              }
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "Other fees",
+          "token": "other fees",
+          "values": [
+            "charges.fees.fee_items[type=SERVICE_TOLL].calculated_amount",
+            "charges.fees.fee_items[type=RESTAURANT_ATTR_SMALL].calculated_amount",
+            "charges.fees.fee_items[type=DRIVER_BENEFITS_FEE].calculated_amount",
+            "charges.fees.fee_items[type=CHAIN_SMALL_ORDER_FEE].calculated_amount",
+            "charges.fees.fee_items[type=CHAIN_SERVICE_FEE].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Govt charge: Retail fee",
+              "token": "Govt charge: Retail fee",
+              "values": [
+                "charges.fees.fee_items[type=MINNESOTA_RETAIL_DELIVERY_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "Minnesota charges a Road Improvement and Food Delivery Fee of $0.50 on this order. Grubhub does not keep this fee.",
+                "text_style": "DEFAULT"
+              }
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "Govt charge: Retail fee",
+          "token": "Govt charge: Retail fee",
+          "values": [
+            "charges.fees.fee_items[type=MINNESOTA_RETAIL_DELIVERY_FEE].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Bag charge",
+              "token": "Bag charge",
+              "values": [
+                "charges.fees.fee_items[type=BAG_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "This charge is based local rules where you live and may vary by store. Grubhub does not keep this charge.",
+                "text_style": "DEFAULT"
+              }
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "Bag charge",
+          "token": "Bag charge",
+          "values": [
+            "charges.fees.fee_items[type=BAG_FEE].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Bottle deposit",
+              "token": "bottle deposit",
+              "values": [
+                "charges.fees.fee_items[type=BOTTLE_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "Your state requires payment of a refundable bottle deposit on this order. Grubhub does not keep this deposit.",
+                "text_style": "DEFAULT"
+              }
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "Bottle deposit",
+          "token": "Bottle deposit",
+          "values": [
+            "charges.fees.fee_items[type=BOTTLE_FEE].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Cup fee",
+              "token": "cup fee",
+              "values": [
+                "charges.fees.fee_items[type=CUP_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "",
+                "text_style": "DEFAULT"
+              }
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "Cup fee",
+          "token": "Cup fee",
+          "values": [
+            "charges.fees.fee_items[type=CUP_FEE].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "PIF charge",
+              "token": "PIF charge",
+              "values": [
+                "charges.fees.fee_items[type=PIF_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "This store charges a public improvements fee. Grubhub does not keep this fee.",
+                "text_style": "DEFAULT"
+              }
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "PIF charge",
+          "token": "PIF charge",
+          "values": [
+            "charges.fees.fee_items[type=PIF_FEE].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [
+            {
+              "__typename": "ItemDetailWithTitleValuesAndMessage",
+              "item_detail_type": "TITLE_VALUES_AND_MESSAGE",
+              "title": "Govt charge: Retail fee",
+              "token": "Govt charge: Retail fee",
+              "values": [
+                "charges.fees.fee_items[type=COLORADO_RETAIL_DELIVERY_FEE].calculated_amount"
+              ],
+              "message": {
+                "text": "Colorado charges Retail Delivery Fees of $0.28 on this order. Grubhub does not keep this fee.",
+                "text_style": "DEFAULT"
+              }
+            }
+          ],
+          "item_type": "CHECK_ITEM",
+          "title": "Govt charge: Retail fee",
+          "token": "Govt charge: Retail fee",
+          "values": [
+            "charges.fees.fee_items[type=COLORADO_RETAIL_DELIVERY_FEE].calculated_amount"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [],
+          "item_type": "CHECK_ITEM",
+          "title": "Tax",
+          "token": "tax",
+          "values": [
+            "charges.taxes.total"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        },
+        {
+          "details": [],
+          "item_type": "CHECK_ITEM",
+          "title": "Donation",
+          "token": "donation",
+          "values": [
+            "charges.donations.total"
+          ],
+          "text_style": "DEFAULT",
+          "display_cardinality": "POSITIVE"
+        }
+      ]
+    },
+    "tips": {
+      "id": "UniversalControl",
+      "tip_suggestions": [
+        {
+          "subtotal_range": {
+            "start": 0,
+            "end": 4999
+          },
+          "options": [
+            5,
+            8,
+            10,
+            12
+          ],
+          "option_type": "PERCENTAGE",
+          "default_position": 2
+        },
+        {
+          "subtotal_range": {
+            "start": 10000,
+            "end": null
+          },
+          "options": [
+            10,
+            15,
+            20,
+            25
+          ],
+          "option_type": "PERCENTAGE",
+          "default_position": 3
+        },
+        {
+          "subtotal_range": {
+            "start": 5000,
+            "end": 9999
+          },
+          "options": [
+            5,
+            8,
+            10,
+            12
+          ],
+          "option_type": "PERCENTAGE",
+          "default_position": 3
+        }
+      ]
+    }
+  },
+  "validation_errors": null,
+  "status": "SUCCESS"
+}

@@ -1,0 +1,23 @@
+{
+  "endpoint": "GET /restaurant_gateway/info/nonvolatile/{id}",
+  "method": "GET",
+  "exampleUrl": "https://api-gtm.grubhub.com/restaurant_gateway/info/nonvolatile/8023448?orderType=STANDARD&platform=WEB&enhancedFeed=true&weightedItemDataIncluded=true&location=POINT(-74.00809479%2040.73571395)&flowType=MENU&viewport=dWeb",
+  "queryParams": {
+    "orderType": "STANDARD",
+    "platform": "WEB",
+    "enhancedFeed": "true",
+    "weightedItemDataIncluded": "true",
+    "location": "POINT(-74.00809479 40.73571395)",
+    "flowType": "MENU",
+    "viewport": "dWeb"
+  },
+  "requestBody": null,
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/json",
+    "perimeter-x": "eyJ1IjoiYmFlZDgwODAtMmQ0MC0xMWYxLTkwNWUtZTM0MDZkOTgxYzVjIiwidiI6ImJiMjQ0ZmRkLTJkNDAtMTFmMS04MGUzLTNhNDk3ZGUzN2JmYyIsInQiOjE3NzQ5ODk2NDc0NTAsImgiOiI0N2QwNTk3YmYzNjdkY2M3MjQzNzQ1NGY1MTJiYjJmNDRjODQwZDJhOTc0MDYyZTJmMmJkYTM1ODM0NWFkODNhIn0=",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;60=10014;"
+  },
+  "capturedAt": "2026-03-31T20:35:09.765Z",
+  "callCount": 1
+}

@@ -1,0 +1,26 @@
+{
+  "endpoint": "GET /topics-gateway/v2/topic",
+  "method": "GET",
+  "exampleUrl": "https://api-gtm.grubhub.com/topics-gateway/v2/topic?stack=web&applicationId=web&timezoneOffset=-14400000&operationId=a310e6e7-9c27-4e68-84ed-fe6ff5cee2e6&location=POINT(-74.00809479%2040.73571395)&parameter=location.wkt%3APOINT(-74.00809479%2040.73571395)&parameter=locationMode%3ADELIVERY&parameter=address%3A341%20W%2011th%20St%2C%20NEW%20YORK%2C%20NY%2C%2010014&parameter=radius%3A4&parameter=detroit%3Atrue&geohash=dr5rezsywrky&locationMode=DELIVERY&accountId=55b04735-c969-e211-8d00-5cf3fc94f584&pageSource=HOME",
+  "queryParams": {
+    "stack": "web",
+    "applicationId": "web",
+    "timezoneOffset": "-14400000",
+    "operationId": "a310e6e7-9c27-4e68-84ed-fe6ff5cee2e6",
+    "location": "POINT(-74.00809479 40.73571395)",
+    "parameter": "detroit:true",
+    "geohash": "dr5rezsywrky",
+    "locationMode": "DELIVERY",
+    "accountId": "55b04735-c969-e211-8d00-5cf3fc94f584",
+    "pageSource": "HOME"
+  },
+  "requestBody": null,
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/json",
+    "perimeter-x": "eyJ1IjoiYmFlZDgwODAtMmQ0MC0xMWYxLTkwNWUtZTM0MDZkOTgxYzVjIiwidiI6ImJiMjQ0ZmRkLTJkNDAtMTFmMS04MGUzLTNhNDk3ZGUzN2JmYyIsInQiOjE3NzQ5ODk2NDc0NTAsImgiOiI0N2QwNTk3YmYzNjdkY2M3MjQzNzQ1NGY1MTJiYjJmNDRjODQwZDJhOTc0MDYyZTJmMmJkYTM1ODM0NWFkODNhIn0=",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;60=10014;"
+  },
+  "capturedAt": "2026-03-31T20:34:59.119Z",
+  "callCount": 4
+}

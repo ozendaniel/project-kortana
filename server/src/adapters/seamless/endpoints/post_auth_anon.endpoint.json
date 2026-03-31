@@ -1,0 +1,19 @@
+{
+  "endpoint": "POST /auth/anon",
+  "method": "POST",
+  "exampleUrl": "https://api-gtm.grubhub.com/auth/anon",
+  "queryParams": {},
+  "requestBody": {
+    "brand": "SEAMLESS",
+    "client_id": "beta_seamless_ayNyuFxxVQYefSAhFYCryvXBPQc",
+    "device_id": -1690405915,
+    "scope": "anonymous"
+  },
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/json",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;"
+  },
+  "capturedAt": "2026-03-31T20:32:25.138Z",
+  "callCount": 1
+}

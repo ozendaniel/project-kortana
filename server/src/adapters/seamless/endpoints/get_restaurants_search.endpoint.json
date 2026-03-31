@@ -1,0 +1,27 @@
+{
+  "endpoint": "GET /restaurants/search",
+  "method": "GET",
+  "exampleUrl": "https://api-gtm.grubhub.com/restaurants/search?orderMethod=delivery&locationMode=DELIVERY&facetSet=umamiV6&pageSize=0&hideHateos=true&searchMetrics=true&location=POINT(-73.98394776%2040.72406387)&preciseLocation=true&geohash=dr5rsmwdc5dp&sortSetId=umamiV3&countOmittingTimes=true",
+  "queryParams": {
+    "orderMethod": "delivery",
+    "locationMode": "DELIVERY",
+    "facetSet": "umamiV6",
+    "pageSize": "0",
+    "hideHateos": "true",
+    "searchMetrics": "true",
+    "location": "POINT(-73.98394776 40.72406387)",
+    "preciseLocation": "true",
+    "geohash": "dr5rsmwdc5dp",
+    "sortSetId": "umamiV3",
+    "countOmittingTimes": "true"
+  },
+  "requestBody": null,
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/json",
+    "perimeter-x": "eyJ1IjoiYmFlZDgwODAtMmQ0MC0xMWYxLTkwNWUtZTM0MDZkOTgxYzVjIiwidiI6ImJiMjQ0ZmRkLTJkNDAtMTFmMS04MGUzLTNhNDk3ZGUzN2JmYyIsInQiOjE3NzQ5ODk2NDc0NTAsImgiOiI0N2QwNTk3YmYzNjdkY2M3MjQzNzQ1NGY1MTJiYjJmNDRjODQwZDJhOTc0MDYyZTJmMmJkYTM1ODM0NWFkODNhIn0=",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;60=10009;"
+  },
+  "capturedAt": "2026-03-31T20:33:08.572Z",
+  "callCount": 2
+}

@@ -1,0 +1,27 @@
+{
+  "endpoint": "GET /restaurant_gateway/feed/{id}/None",
+  "method": "GET",
+  "exampleUrl": "https://api-gtm.grubhub.com/restaurant_gateway/feed/8023448/None?time=1774989310176&location=POINT(-74.00809479%2040.73571395)&operationId=1c9fe0c0-2d41-11f1-a0c1-9da751e0e7a5&isFutureOrder=false&restaurantStatus=ORDERABLE&isNonRestaurantMerchant=false&merchantTypes=&orderType=STANDARD&weightedItemDataIncluded=true&task=POPULAR_ITEMS&platform=WEB",
+  "queryParams": {
+    "time": "1774989310176",
+    "location": "POINT(-74.00809479 40.73571395)",
+    "operationId": "1c9fe0c0-2d41-11f1-a0c1-9da751e0e7a5",
+    "isFutureOrder": "false",
+    "restaurantStatus": "ORDERABLE",
+    "isNonRestaurantMerchant": "false",
+    "merchantTypes": "",
+    "orderType": "STANDARD",
+    "weightedItemDataIncluded": "true",
+    "task": "POPULAR_ITEMS",
+    "platform": "WEB"
+  },
+  "requestBody": null,
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/json",
+    "perimeter-x": "eyJ1IjoiYmFlZDgwODAtMmQ0MC0xMWYxLTkwNWUtZTM0MDZkOTgxYzVjIiwidiI6ImJiMjQ0ZmRkLTJkNDAtMTFmMS04MGUzLTNhNDk3ZGUzN2JmYyIsInQiOjE3NzQ5ODk2NDc0NTAsImgiOiI0N2QwNTk3YmYzNjdkY2M3MjQzNzQ1NGY1MTJiYjJmNDRjODQwZDJhOTc0MDYyZTJmMmJkYTM1ODM0NWFkODNhIn0=",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;60=10014;"
+  },
+  "capturedAt": "2026-03-31T20:35:10.471Z",
+  "callCount": 1
+}

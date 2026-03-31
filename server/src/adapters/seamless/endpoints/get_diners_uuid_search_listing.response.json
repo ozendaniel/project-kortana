@@ -1,0 +1,45 @@
+{
+  "stats": {
+    "total_results": 0,
+    "result_count": 0,
+    "page_size": 10
+  },
+  "pager": {
+    "total_pages": 0,
+    "current_page": 1
+  },
+  "results": [],
+  "partner_results": [],
+  "sorts": [
+    {
+      "sort_id": "default",
+      "field": "Most Recent",
+      "pretty_name": "Most Recent",
+      "fragment": "sorts=default"
+    },
+    {
+      "sort_id": "rating",
+      "field": "Ratings",
+      "pretty_name": "Ratings",
+      "fragment": "sorts=rating"
+    },
+    {
+      "sort_id": "relevance",
+      "field": "Relevance",
+      "pretty_name": "Relevance",
+      "fragment": "sorts=relevance"
+    },
+    {
+      "sort_id": "restaurant_name",
+      "field": "Restaurant (A-Z)",
+      "pretty_name": "Restaurant (A-Z)",
+      "fragment": "sorts=restaurant_name"
+    },
+    {
+      "sort_id": "restaurant_name_desc",
+      "field": "Restaurant (Z-A)",
+      "pretty_name": "Restaurant (Z-A)",
+      "fragment": "sorts=restaurant_name_desc"
+    }
+  ]
+}

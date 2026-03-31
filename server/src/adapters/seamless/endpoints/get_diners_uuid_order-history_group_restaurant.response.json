@@ -1,0 +1,44 @@
+{
+  "search_id": "d69cf34c-2f1b-412b-bae3-e0965a475d66",
+  "search_result": {
+    "stats": {
+      "total_results": 0
+    },
+    "bread_crumb": {
+      "sort": "default"
+    },
+    "sorts": [
+      {
+        "sort_id": "default",
+        "field": "Most Recent",
+        "pretty_name": "Most Recent",
+        "fragment": "sorts=default"
+      },
+      {
+        "sort_id": "most_ordered_from",
+        "field": "Most Ordered From",
+        "pretty_name": "Most Ordered From",
+        "fragment": "sorts=most_ordered_from"
+      },
+      {
+        "sort_id": "restaurant_name",
+        "field": "Restaurant (A-Z)",
+        "pretty_name": "Restaurant (A-Z)",
+        "fragment": "sorts=restaurant_name"
+      },
+      {
+        "sort_id": "least_ordered_from",
+        "field": "Least Ordered From",
+        "pretty_name": "Least Ordered From",
+        "fragment": "sorts=least_ordered_from"
+      },
+      {
+        "sort_id": "restaurant_name_desc",
+        "field": "Restaurant (Z-A)",
+        "pretty_name": "Restaurant (Z-A)",
+        "fragment": "sorts=restaurant_name_desc"
+      }
+    ],
+    "results": []
+  }
+}

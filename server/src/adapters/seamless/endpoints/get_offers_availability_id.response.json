@@ -1,0 +1,29 @@
+{
+  "available_offers": [],
+  "available_campaigns": [
+    {
+      "campaign_id": "f7acf41f-f940-457c-9004-d7084aa0b989",
+      "title": "Spend $80, get $8",
+      "program_title": "Earn $8 Perk",
+      "description": "$80 to go",
+      "progress": 0,
+      "legal_text": "Fees, tax, tip, and items containing alcohol are excluded from progress total. Only orders from this restaurant will earn you progress towards the Perk.",
+      "image": {
+        "type": "LEVELUP",
+        "base_url": "https://res.cloudinary.com/grubhub-pp/image/upload/",
+        "format": "jpg",
+        "public_id": "tqfzv6wwqqbxymjkivyi"
+      },
+      "bottom_sheet_image": {
+        "type": "LEVELUP",
+        "base_url": "https://res.cloudinary.com/grubhub-pp/image/upload/",
+        "format": "jpg",
+        "public_id": "tqfzv6wwqqbxymjkivyi"
+      },
+      "offer_type": "RTP"
+    }
+  ],
+  "entitlements_to_apply": [],
+  "entitlements_to_remove": [],
+  "should_retry": false
+}

@@ -1,0 +1,343 @@
+{
+  "id": "306076054632",
+  "restaurant_id": 8023448,
+  "menu_category_name": "PORK 猪",
+  "menu_category_id": "297617383008",
+  "name": "Sweet and Sour Pork 糖醋里脊",
+  "description": "pork tenderloin with black vinegar glaze",
+  "price": {
+    "amount": 2860,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$28.60",
+      "text_style": "BOLD"
+    }
+  },
+  "delivery_price": {
+    "amount": 2860,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$28.60",
+      "text_style": "BOLD"
+    }
+  },
+  "pickup_price": {
+    "amount": 2860,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$28.60",
+      "text_style": "BOLD"
+    }
+  },
+  "tax": 8.88,
+  "tax_rate": {
+    "name": "Tax rate 3d41d143-ee03-403c-afb8-17989474c89c-8.875-percent",
+    "rate": 8.88,
+    "included_in_item_price": false
+  },
+  "miscellaneous_taxes": [],
+  "minimum_cart_total": {
+    "amount": 0,
+    "currency": "USD",
+    "styled_text": null
+  },
+  "combinable_with_coupons": true,
+  "sequence": 2,
+  "minimum_price_variation": {
+    "amount": 2860,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$28.60",
+      "text_style": "BOLD"
+    }
+  },
+  "delivery_minimum_price_variation": {
+    "amount": 2860,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$28.60",
+      "text_style": "BOLD"
+    }
+  },
+  "pickup_minimum_price_variation": {
+    "amount": 2860,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$28.60",
+      "text_style": "BOLD"
+    }
+  },
+  "maximum_price_variation": {
+    "amount": 3360,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$33.60",
+      "text_style": "BOLD"
+    }
+  },
+  "delivery_maximum_price_variation": {
+    "amount": 3360,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$33.60",
+      "text_style": "BOLD"
+    }
+  },
+  "pickup_maximum_price_variation": {
+    "amount": 3360,
+    "currency": "USD",
+    "styled_text": {
+      "text": "$33.60",
+      "text_style": "BOLD"
+    }
+  },
+  "available": true,
+  "choice_category_list": [
+    {
+      "id": "297617384536",
+      "name": "Add Ons",
+      "min_choice_options": 0,
+      "max_choice_options": 4,
+      "choice_option_list": [
+        {
+          "id": "306076053688",
+          "description": "White Rice",
+          "label": "White Rice",
+          "price": {
+            "amount": 300,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$3.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "delivery_price": {
+            "amount": 300,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$3.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "pickup_price": {
+            "amount": 300,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$3.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "miscellaneous_taxes": [],
+          "choice_category_list": [],
+          "price_changes": {},
+          "sequence": 1,
+          "defaulted": false,
+          "quantity_settings": {
+            "default_units": 0,
+            "maximum_units": 1,
+            "unit_increment": 1
+          },
+          "tags": [],
+          "available": true,
+          "calorie_content": "",
+          "flexible_tax_fields": {},
+          "flexible_tax_numeric_fields": {}
+        },
+        {
+          "id": "306076053976",
+          "description": "Homemade Chili XO",
+          "label": "Homemade Chili XO",
+          "price": {
+            "amount": 200,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$2.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "delivery_price": {
+            "amount": 200,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$2.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "pickup_price": {
+            "amount": 200,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$2.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "miscellaneous_taxes": [],
+          "choice_category_list": [],
+          "price_changes": {},
+          "sequence": 2,
+          "defaulted": false,
+          "quantity_settings": {
+            "default_units": 0,
+            "maximum_units": 1,
+            "unit_increment": 1
+          },
+          "tags": [],
+          "available": true,
+          "calorie_content": "",
+          "flexible_tax_fields": {},
+          "flexible_tax_numeric_fields": {}
+        },
+        {
+          "id": "306076053960",
+          "description": "Chopsticks",
+          "label": "Chopsticks",
+          "price": {
+            "amount": 0,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$0.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "delivery_price": {
+            "amount": 0,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$0.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "pickup_price": {
+            "amount": 0,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$0.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "miscellaneous_taxes": [],
+          "choice_category_list": [],
+          "price_changes": {},
+          "sequence": 3,
+          "defaulted": false,
+          "quantity_settings": {
+            "default_units": 0,
+            "maximum_units": 1,
+            "unit_increment": 1
+          },
+          "tags": [],
+          "available": true,
+          "calorie_content": "",
+          "flexible_tax_fields": {},
+          "flexible_tax_numeric_fields": {}
+        },
+        {
+          "id": "306076054176",
+          "description": "Cutlery",
+          "label": "Cutlery",
+          "price": {
+            "amount": 0,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$0.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "delivery_price": {
+            "amount": 0,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$0.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "pickup_price": {
+            "amount": 0,
+            "currency": "USD",
+            "styled_text": {
+              "text": "$0.00",
+              "text_style": "DEFAULT"
+            }
+          },
+          "miscellaneous_taxes": [],
+          "choice_category_list": [],
+          "price_changes": {},
+          "sequence": 4,
+          "defaulted": false,
+          "quantity_settings": {
+            "default_units": 0,
+            "maximum_units": 1,
+            "unit_increment": 1
+          },
+          "tags": [],
+          "available": true,
+          "calorie_content": "",
+          "flexible_tax_fields": {},
+          "flexible_tax_numeric_fields": {}
+        }
+      ],
+      "variation_target": false,
+      "sequence": 1,
+      "quantity_settings": {
+        "maximum_units": 4,
+        "minimum_units": 0
+      },
+      "display_settings": {
+        "display_type": "CHOOSE_QUANTITY"
+      }
+    }
+  ],
+  "tag_list": [],
+  "media_image": {
+    "base_url": "https://media-cdn.grubhub.com/image/upload/",
+    "public_id": "jghdpmwgmaul2kmkpec1",
+    "format": "jpg",
+    "tag": "food",
+    "tags": [
+      "food",
+      "primary"
+    ],
+    "image_source": null,
+    "uploader_details": null,
+    "image_description": null,
+    "image_title": null,
+    "scale_mode": "FILL"
+  },
+  "media_images": [
+    {
+      "base_url": "https://media-cdn.grubhub.com/image/upload/",
+      "public_id": "jghdpmwgmaul2kmkpec1",
+      "format": "jpg",
+      "tag": "food",
+      "tags": [
+        "food",
+        "primary"
+      ],
+      "image_source": null,
+      "uploader_details": null,
+      "image_description": null,
+      "image_title": null,
+      "scale_mode": "FILL"
+    }
+  ],
+  "allowable_order_types": [
+    "standard"
+  ],
+  "lead_time_ms": 0,
+  "menu_item_features": [
+    "CHOICE_OPTION_QUANTITIES",
+    "CHOICE_CATEGORY_QUANTITIES"
+  ],
+  "in_store_only": false,
+  "gh_pos_only": false,
+  "calorie_content": "",
+  "routing_tags": [],
+  "tax_category": {
+    "code": "1003"
+  },
+  "flexible_tax_fields": {},
+  "flexible_tax_numeric_fields": {},
+  "popular": true,
+  "item_coupon": false,
+  "deleted": false
+}

@@ -1,0 +1,628 @@
+{
+  "object": {
+    "request_id": "1d34a6b4-2d41-11f1-a6b5-9ba8109559c1",
+    "operation_id": "1c9fe0c0-2d41-11f1-a0c1-9da751e0e7a5",
+    "data": {
+      "content": [
+        {
+          "entity": {
+            "item_id": "306076053784",
+            "item_name": "Tofu Skin Rolls 湖畔素烧鹅",
+            "item_description": "with mixed vegetables and black truffle sauce *VEGAN",
+            "item_price": {
+              "pickup": {
+                "value": 1540,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$15.40",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 1540,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$15.40",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "cfmtx2ld8mh4qhcil42t",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "cfmtx2ld8mh4qhcil42t",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": false
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": false
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "306076054336": "302793927928",
+              "306076054688": "302793927928",
+              "306076054128": "302793927928",
+              "306076054288": "302793927928"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        },
+        {
+          "entity": {
+            "item_id": "306076053752",
+            "item_name": "Pickled Cucumbers 酱黄瓜",
+            "item_description": "marinated persian cucumbers with sliced apples, dried chilis and lemon  *VEGAN",
+            "item_price": {
+              "pickup": {
+                "value": 1100,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$11.00",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 1100,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$11.00",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "qczb3afflfsn1k4oq8hj",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "qczb3afflfsn1k4oq8hj",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": true
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": true,
+                "display_text": "Best Seller"
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "306076053840": "297617384704",
+              "306076054008": "297617384704",
+              "306076054024": "297617384704",
+              "306076053696": "297617384704"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        },
+        {
+          "entity": {
+            "item_id": "309236893208",
+            "item_name": "Lotus Root with Sticky Rice 桂花糯米藕",
+            "item_description": "with sweet osmanthus glaze *VEGAN *GLUTEN FREE",
+            "item_price": {
+              "pickup": {
+                "value": 1320,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$13.20",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 1320,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$13.20",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "ivsmjwyk7roxvbavbmrl",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "ivsmjwyk7roxvbavbmrl",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": false
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": false
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "309236893216": "309236893240",
+              "309236893232": "309236893240",
+              "309236893200": "309236893240",
+              "309236893224": "309236893240"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        },
+        {
+          "entity": {
+            "item_id": "308329801800",
+            "item_name": "Soy Glazed Crispy Fish 西湖酥鱼",
+            "item_description": "crispy Branzino filet in a sweet and savory sauce with aromatic spices",
+            "item_price": {
+              "pickup": {
+                "value": 2090,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$20.90",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 2090,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$20.90",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "xgyz71gtannhukbfvm4c",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "xgyz71gtannhukbfvm4c",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": false
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": false
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "308329801824": "308329801840",
+              "308329801816": "308329801840",
+              "308329801808": "308329801840",
+              "308329801832": "308329801840"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        },
+        {
+          "entity": {
+            "item_id": "306076054272",
+            "item_name": "You Tiao Shrimp 招牌油条虾",
+            "item_description": "stuffed with shrimp paste, topped with sweet mayo, pineapples and lime zest",
+            "item_price": {
+              "pickup": {
+                "value": 1980,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$19.80",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 1980,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$19.80",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "b1xjuj9nwclcogcxsp3i",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "b1xjuj9nwclcogcxsp3i",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": false
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": false
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "306076054280": "297617384584",
+              "306076054192": "297617384584",
+              "306076054488": "297617384584",
+              "306076054312": "297617384584"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        },
+        {
+          "entity": {
+            "item_id": "306076053896",
+            "item_name": "Homemade Fish Cake 手工温州鱼饼",
+            "item_description": "side of soy vinaigrette with fresh chillies, cilantro, and garlic",
+            "item_price": {
+              "pickup": {
+                "value": 1650,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$16.50",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 1650,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$16.50",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "db1wfr0izy7pom0xtmtc",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "db1wfr0izy7pom0xtmtc",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": false
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": false
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "306076054592": "304492573944",
+              "306076054296": "304492573944",
+              "306076054616": "304492573944",
+              "306076054704": "304492573944"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        },
+        {
+          "entity": {
+            "item_id": "306076416272",
+            "item_name": "Okra Salad 捞汁秋葵",
+            "item_description": "in chili vinagrette",
+            "item_price": {
+              "pickup": {
+                "value": 1760,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$17.60",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 1760,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$17.60",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "zo9tku75glqlgkxkefon",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "zo9tku75glqlgkxkefon",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": false
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": false
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "306076416256": "316900256088",
+              "306076416280": "316900256088",
+              "306076416328": "316900256088",
+              "306076416264": "316900256088"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        },
+        {
+          "entity": {
+            "item_id": "306169096104",
+            "item_name": "Chili XO Chicken 海鲜辣酱脆鸡块",
+            "item_description": "tossed in housemade XO sauce, crispy shallots and perilla leaves, with a side of candied ginger mustard mayo",
+            "item_price": {
+              "pickup": {
+                "value": 1430,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$14.30",
+                  "text_style": "DEFAULT"
+                }
+              },
+              "delivery": {
+                "value": 1430,
+                "currency": "USD",
+                "has_costing_required_options": false,
+                "required_price_with_choice_options": false,
+                "styled_text": {
+                  "text": "$14.30",
+                  "text_style": "DEFAULT"
+                }
+              }
+            },
+            "media_image": {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "el6iniempqocrwrvzsu0",
+              "format": "jpg",
+              "tag": "food",
+              "scale_mode": "FILL"
+            },
+            "media_images": [
+              {
+                "base_url": "https://media-cdn.grubhub.com/image/upload/",
+                "public_id": "el6iniempqocrwrvzsu0",
+                "format": "jpg",
+                "tag": "food",
+                "tags": [
+                  "food",
+                  "primary"
+                ],
+                "scale_mode": "FILL"
+              }
+            ],
+            "features": {
+              "SPICY": false,
+              "POPULAR": false
+            },
+            "features_v2": {
+              "SPICY": {
+                "enabled": false
+              },
+              "POPULAR": {
+                "enabled": false
+              }
+            },
+            "features_v3": {},
+            "quick_add_available": false,
+            "quick_add_state": "HIDDEN",
+            "quick_add_configuration": {
+              "state": "ENABLED",
+              "action": "OPEN_MENU_ITEM_MODAL"
+            },
+            "choice_option_ids_map": {
+              "306169096080": "306173784104",
+              "306169096088": "306173784104",
+              "306169096072": "306173784104",
+              "306169096096": "306173784104"
+            },
+            "choice_option_data_map": {},
+            "saved": false
+          },
+          "type": "MENU_ITEM"
+        }
+      ]
+    }
+  },
+  "status": "SUCCESS"
+}

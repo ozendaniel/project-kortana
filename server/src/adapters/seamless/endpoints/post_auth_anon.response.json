@@ -1,0 +1,93 @@
+{
+  "credential": {
+    "email": null,
+    "gh_login_id": "0",
+    "first_name": null,
+    "last_name": null,
+    "brand": null,
+    "phone": null,
+    "phone_type": null,
+    "ud_id": null,
+    "created_date": null,
+    "disable_password": false,
+    "disabled": false,
+    "disable_date": null,
+    "last_login_date": null,
+    "email_verification_date": null,
+    "phone_verification_date": null,
+    "first_cross_over_at": null,
+    "silo_id": null,
+    "user_details": null,
+    "created_ip_address": null,
+    "last_login_ip_address": null,
+    "user_agent": null,
+    "email_last_updated": null,
+    "phone_last_updated": null
+  },
+  "claims": [
+    {
+      "ud_id": null,
+      "claim_id": "SEAMLESS",
+      "claim": "brand",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": null,
+      "claim_id": "88",
+      "claim": "application_id",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": null,
+      "claim_id": "1",
+      "claim": "channel_id",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": null,
+      "claim_id": "1.0",
+      "claim": "application_version",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": null,
+      "claim_id": "beta_seamless_ayNyuFxxVQYefSAhFYCryvXBPQc",
+      "claim": "client_id",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": null,
+      "claim_id": "anonymous",
+      "claim": "scope",
+      "claim_type": "temporary"
+    },
+    {
+      "ud_id": null,
+      "claim_id": "Umami Seamless",
+      "claim": "application_name",
+      "claim_type": "temporary"
+    }
+  ],
+  "session_handle": {
+    "access_token": "0d33bb8e-10c2-44cd-812e-ac19ac661078",
+    "token_type": null,
+    "expire_in": 60,
+    "refresh_token": "54041163-5192-43b8-a4dc-db94ece3f30f",
+    "refresh_expire_in": 10080,
+    "token_created": "2026-03-31T20:32:25.581Z",
+    "refresh_token_created": "2026-03-31T20:32:25.581Z",
+    "grubhub_token": null,
+    "token_created_time": 1774989145581,
+    "refresh_token_created_time": 1774989145581,
+    "token_expire_time": 1774992745581,
+    "refresh_token_expire_time": 1775593945581,
+    "tracking_id": "b390c6f6-8345-4cde-8c88-ee8df6c0e330",
+    "last_login_time": "2026-03-31T20:32:25.581Z",
+    "login_session_id": "57cb76e3-ce34-4d17-8ae7-0ac9aeaaf3b0",
+    "disabled": false,
+    "refresh_token_remaining_secs": 604799,
+    "token_remaining_secs": 3599,
+    "idle_timeout_mins": null,
+    "last_login_ip_address": "158.106.192.186"
+  }
+}

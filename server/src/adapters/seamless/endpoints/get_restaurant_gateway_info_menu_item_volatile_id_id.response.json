@@ -1,0 +1,120 @@
+{
+  "object": {
+    "request_id": "305d96c6-2d41-11f1-96c7-a588e64b559e",
+    "operation_id": "305d96c6-2d41-11f1-96c7-a588e64b559e",
+    "data": {
+      "content": [],
+      "feed": [],
+      "enhanced_feed": [
+        {
+          "id": "306076054632",
+          "name": "Often bought with",
+          "description": "",
+          "representation": {
+            "desktop": {
+              "layout": "CAROUSEL",
+              "card_type": "X_SMALL_ITEM_CARD_1_0"
+            },
+            "tablet": {
+              "portrait": {
+                "layout": "CAROUSEL",
+                "card_type": "X_SMALL_ITEM_CARD_1_0"
+              },
+              "landscape": {
+                "layout": "CAROUSEL",
+                "card_type": "X_SMALL_ITEM_CARD_1_0"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "layout": "CAROUSEL",
+                "card_type": "X_SMALL_ITEM_CARD_1_0"
+              },
+              "landscape": {
+                "layout": "CAROUSEL",
+                "card_type": "X_SMALL_ITEM_CARD_1_0"
+              }
+            }
+          },
+          "sequence_order": {
+            "desktop": 0,
+            "tablet": {
+              "portrait": 0,
+              "landscape": 0
+            },
+            "mobile": {
+              "portrait": 0,
+              "landscape": 0
+            }
+          },
+          "data_type": "MENU_ITEM",
+          "feed_type": "MENU_ITEM_RECOMMENDATIONS",
+          "retryable": false,
+          "request": {
+            "parameters": [
+              {
+                "id": "time",
+                "value": "1774989343295"
+              },
+              {
+                "id": "location",
+                "value": "POINT(-74.00809479 40.73571395)"
+              },
+              {
+                "id": "operationId",
+                "value": "305d96c6-2d41-11f1-96c7-a588e64b559e"
+              },
+              {
+                "id": "isFutureOrder",
+                "value": "false"
+              },
+              {
+                "id": "restaurantStatus",
+                "value": "ORDERABLE"
+              },
+              {
+                "id": "orderType",
+                "value": "STANDARD"
+              },
+              {
+                "id": "merchantTypeArrayString",
+                "value": ""
+              },
+              {
+                "id": "recommendationsType",
+                "value": "DEFAULT"
+              },
+              {
+                "id": "task",
+                "value": "MENU_ITEM_RECOMMENDATIONS"
+              }
+            ]
+          },
+          "top_nav": {
+            "desktop": {
+              "type": "NO_OPERATION"
+            },
+            "tablet": {
+              "portrait": {
+                "type": "NO_OPERATION"
+              },
+              "landscape": {
+                "type": "NO_OPERATION"
+              }
+            },
+            "mobile": {
+              "portrait": {
+                "type": "NO_OPERATION"
+              },
+              "landscape": {
+                "type": "NO_OPERATION"
+              }
+            }
+          },
+          "routes": {}
+        }
+      ]
+    }
+  },
+  "status": "SUCCESS"
+}

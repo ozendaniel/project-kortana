@@ -1,0 +1,308 @@
+{
+  "id": "MjfVAC1BEfGVAdvzCzc-tQ",
+  "diner_id": "VbBHNclp4hGNAFzz_JT1hA",
+  "group_id": "MjfVAi1BEfGVA9vzCzc-tQ",
+  "when_for": "2026-03-31T21:11:00.000Z",
+  "group_type": null,
+  "group_payment_mode": null,
+  "currency": "USD",
+  "fulfillment_info": {
+    "type": "DELIVERY",
+    "delivery_info": {
+      "id": null,
+      "coordinate_id": null,
+      "address": {
+        "region_code": "US",
+        "address_lines": [
+          "341 W 11th St"
+        ],
+        "cross_streets": "11th Street and Washington",
+        "locality": "NEW YORK",
+        "sublocality": null,
+        "neighborhood": null,
+        "administrative_area": "NY",
+        "postal_code": "10014",
+        "sorting_code": null,
+        "coordinates": {
+          "latitude": 40.73571395,
+          "longitude": -74.00809479
+        },
+        "organization_name": null,
+        "detailed_pin_coordinates": null
+      },
+      "delivery_instructions": "",
+      "name": "Daniel Ozen",
+      "phone": "8187301347",
+      "email": "ozen.daniel@gmail.com",
+      "green_indicated": false,
+      "delivery_eta_type": "STANDARD_DELIVERY",
+      "handoff_options": [],
+      "latitude": "40.73571395",
+      "longitude": "-74.00809479",
+      "street_address1": "341 W 11th St",
+      "cross_streets": "11th Street and Washington",
+      "street_address2": null,
+      "address_locality": "NEW YORK",
+      "address_region": "NY",
+      "postal_code": "10014",
+      "address_country": "US"
+    },
+    "pickup_info": null,
+    "incomplete_delivery": null,
+    "incomplete_pickup": null,
+    "individual_info": null
+  },
+  "notification_preferences": null,
+  "experiments": [
+    "ADDING_PAYMENT_ADJUSTMENT",
+    "CALCULATOR_WORKFLOW_AUTHORITY",
+    "CALCULATOR_WORKFLOW_REVERSE_SHADOW",
+    "CONSOLIDATE_MERCHANT_SOURCED_FEE_TAX_CALCULATION",
+    "CONSUME_ORDER_REQUEST_VIA_KAFKA",
+    "CONSUME_STATUS_UPDATE_VIA_KAFKA",
+    "DIRECT_CARTS_ENABLED",
+    "DMP_ENABLED_V2",
+    "DMP_PAYMENTS_WITH_PAYMENT_ATTRIBUTION",
+    "DO_NOT_ADD_SERVICE_FEE_TO_MERCHANT_TOTAL",
+    "DRONE_DELIVERY",
+    "ENABLE_ADD_DELIVERY_INFO_VIA_GATEWAY",
+    "ENABLE_ADD_INCOMPLETE_DELIVERY_VIA_GATEWAY",
+    "ENABLE_AUTONOMOUS_DELIVERY",
+    "ENABLE_BUNDLED_ORDER_PAYMENTS",
+    "ENABLE_MMO_SUBTOTALS_FOR_ALL_CARTS",
+    "ENABLE_ORDER_PART_ALCOHOL_ATTRIBUTE_POPULATION",
+    "ENABLE_POSTCHECKOUT_PUBLISHING",
+    "ENABLE_REMOVE_ADD_ON_VIA_GATEWAY",
+    "ENABLE_REMOVE_PAYMENT_VIA_GATEWAY",
+    "ENABLE_TAX_ENGINE_FOR_PAYMENT_REFRESH",
+    "ENABLE_UPDATE_WHEN_FOR_VIA_GATEWAY",
+    "FEE_ATTRIBUTION_POWERED",
+    "FEE_SAVINGS_POPULATION",
+    "FLEXIBLE_FEES",
+    "GROUP_ORDER_ENABLE_MULTI_PAYER_CARTS",
+    "IGNORE_MINIMUM_TIP_REQUIREMENT",
+    "INCLUDE_TIP_IN_MINIMUM",
+    "INHERIT_PARENT_TAX_CATEGORY",
+    "INTEGRATE_TAX_ENGINE_FEES",
+    "LINEOPTION_ENHANCEMENTS",
+    "MAS_USE_64BIT_REST_ID",
+    "MULTIPLE_ORDER_PART_SHARED_CART",
+    "ORDERS_DAPI_UPDATE_POST_CONFIRMED",
+    "ORDERS_QUEUE_MIGRATION_MAS_ADJUSTMENT_PUBLISH",
+    "ORDERS_QUEUE_MIGRATION_MAS_STATUSUPDATE_PUBLISH",
+    "ORDER_UUID_AS_GROUP_IDENTIFIER",
+    "POS_VALIDATION_USE_CONTEXT",
+    "PRESERVE_LINE_FORMAT_TO_TAX_ENGINE",
+    "PUBLISH_CARTING_TAX_EVENT",
+    "PUBLISH_ORDER_REQUEST_V2_VIA_KAFKA",
+    "PUBLISH_STATUS_UPDATE_VIA_KAFKA",
+    "ROBOT_DELIVERY",
+    "SAVING_DETAILS_BREAKDOWN",
+    "SEND_ALL_ENTITLEMENTS_AT_ONCE_ON_GROUP_PAYMENT_UPDATE",
+    "TAX_ENGINE_SOURCE_OF_TRUTH",
+    "USE_ADDRESS_MAPPER_FOR_GROUP_FEES",
+    "USE_CONTENT_VAR_ID_PREFIX",
+    "USE_NEW_FEE_TAXABLE_AMOUNT_LOGIC",
+    "VALIDATE_DELIVERY_AT_CHECKOUT",
+    "WRITE_LATEST_ORDER_REQUEST_TO_LOOKUP"
+  ],
+  "cart_attributes": [],
+  "charges": {
+    "lines": {
+      "diner_total": 2860,
+      "line_items": [
+        {
+          "id": "MohmAC1BEfGmAbeAiVJyNQ",
+          "menu_item_id": "306076054632",
+          "menu_category_id": "297617383008",
+          "name": "Sweet and Sour Pork 糖醋里脊",
+          "price": 2860,
+          "display_price": null,
+          "quantity": 1,
+          "weight": null,
+          "requested_weight": null,
+          "measurement_unit": null,
+          "diner_total": 2860,
+          "options": [],
+          "special_instructions": null,
+          "restaurant_id": "8023448",
+          "badges": [],
+          "item_coupon": false,
+          "combinable_with_coupons": false,
+          "adjustments": null,
+          "item_tags": [],
+          "packaging_options": [],
+          "images": [
+            {
+              "base_url": "https://media-cdn.grubhub.com/image/upload/",
+              "public_id": "jghdpmwgmaul2kmkpec1",
+              "format": "jpg",
+              "tags": [
+                "food",
+                "primary"
+              ],
+              "image_title": null,
+              "scale_mode": "FILL"
+            }
+          ]
+        }
+      ]
+    },
+    "diner_subtotal": 2860,
+    "fees": {
+      "total": 828,
+      "delivery": 199,
+      "service": 629,
+      "fee_items": [
+        {
+          "calculated_amount": 199,
+          "non_adjusted_amount": 199,
+          "potential_adjusted_amount": 199,
+          "fee_adjustment_category": "NONE",
+          "group": "DELIVERY",
+          "type": "DELIVERY",
+          "id": "eyJhIjoxOTksIm5hIjoxOTksInBhYSI6MTk5LCJnIjoxLCJmZyI6IkRFTElWRVJZIiwibyI6MCwib3AiOjEsIm0iOjE5OSwibG8iOnsib3MiOlt7Im9wIjoxLCJtIjoxOTl9XX0sInRhIjp0cnVlLCJ0IjoxLCJmdCI6IkRFTElWRVJZIiwibiI6IkRlbGl2ZXJ5IGZlZSIsImZhYyI6Ik5PTkUiLCJmZWVBdHRyaWJ1dGlvbiI6MH0=",
+          "name": "Delivery fee",
+          "fee_attribution": "DEFAULT"
+        },
+        {
+          "calculated_amount": 429,
+          "non_adjusted_amount": 429,
+          "potential_adjusted_amount": 429,
+          "fee_adjustment_category": "NON_SUBSCRIPTION",
+          "group": "SERVICE",
+          "type": "CHAIN_SERVICE_FEE",
+          "id": "eyJhIjo0MjksIm5hIjo0MjksInBhYSI6NDI5LCJnIjowLCJmZyI6IlNFUlZJQ0UiLCJvIjowLCJvcCI6MCwibSI6MTUuMDAsImxvIjp7Im9zIjpbeyJvcCI6MCwibSI6MTUuMDB9XX0sInRhIjp0cnVlLCJ0IjoyLCJmdCI6IlNFUlZJQ0UiLCJuIjoiU2VydmljZSBmZWUiLCJmYWMiOiJOT05fU1VCU0NSSVBUSU9OIiwiZmVlQXR0cmlidXRpb24iOjB9",
+          "name": "Service fee",
+          "fee_attribution": "DEFAULT"
+        },
+        {
+          "calculated_amount": 200,
+          "non_adjusted_amount": 200,
+          "potential_adjusted_amount": 200,
+          "fee_adjustment_category": "NONE",
+          "group": "SERVICE",
+          "type": "SERVICE_TOLL",
+          "id": "eyJhIjoyMDAsIm5hIjoyMDAsInBhYSI6MjAwLCJnIjowLCJmZyI6IlNFUlZJQ0UiLCJvIjowLCJvcCI6MSwibSI6MjAwLCJsbyI6eyJvcyI6W3sib3AiOjEsIm0iOjIwMH1dfSwidGEiOnRydWUsInQiOjUsImZ0IjoiVE9MTCIsIm4iOiJPdGhlciBmZWVzIiwiZmFjIjoiTk9ORSIsImZlZUF0dHJpYnV0aW9uIjowfQ==",
+          "name": "Other fees",
+          "fee_attribution": "DEFAULT"
+        }
+      ],
+      "fee_amount_saved_if_pickup": 828,
+      "promotion_infos": []
+    },
+    "donations": null,
+    "taxes": {
+      "total": 328,
+      "delivery": 18,
+      "sales": 254,
+      "service": 56,
+      "fee_tax_items": [
+        {
+          "calculated_amount": 18,
+          "fee_type": "DELIVERY"
+        },
+        {
+          "calculated_amount": 38,
+          "fee_type": "CHAIN_SERVICE_FEE"
+        },
+        {
+          "calculated_amount": 18,
+          "fee_type": "SERVICE_TOLL"
+        }
+      ]
+    },
+    "exempted_taxes": null,
+    "tip": {
+      "amount": 0,
+      "type": "INCLUDE_IN_BILL"
+    },
+    "diner_grand_total": 4016,
+    "adjustments": null,
+    "add_ons": []
+  },
+  "payments": {},
+  "savings_breakdown": {
+    "total_savings": 0,
+    "savings_details": {
+      "gh_plus": 0,
+      "amazon_gh_plus": 0,
+      "delivery_savings": 0,
+      "service_savings": 0
+    },
+    "fee_savings": {}
+  },
+  "restaurant_ids": [
+    "8023448"
+  ],
+  "restaurants": [
+    {
+      "id": "8023448",
+      "name": "Grandma's Home 外婆家",
+      "badges": [],
+      "managed_delivery": true
+    }
+  ],
+  "affiliate": null,
+  "time_placed": null,
+  "recommended_tip_settings": {
+    "minimum_tip_amount": 286,
+    "minimum_tip_percentage": 10
+  },
+  "catering_info": null,
+  "edit_window_close": null,
+  "ordering_info": {
+    "type": "STANDARD",
+    "tiers": [],
+    "eta": "2026-03-31T21:11:00.000Z",
+    "estimate_range": {
+      "minimum": 35,
+      "maximum": 50
+    },
+    "real_time_eta": {
+      "estimate_range": {
+        "start_time": "2026-03-31T21:11:00.000Z",
+        "end_time": "2026-03-31T21:26:00.000Z",
+        "single_estimate_time": "2026-03-31T21:11:00.000Z",
+        "start_time_minutes": 35,
+        "end_time_minutes": 50,
+        "single_estimate_minutes": 35,
+        "eta_notation": "RANGE_DURATION"
+      },
+      "eta_options": [
+        {
+          "eta_type": "STANDARD_DELIVERY",
+          "estimate_range": {
+            "start_time": "2026-03-31T21:11:00.000Z",
+            "end_time": "2026-03-31T21:26:00.000Z",
+            "single_estimate_time": "2026-03-31T21:11:00.000Z",
+            "start_time_minutes": 35,
+            "end_time_minutes": 50,
+            "single_estimate_minutes": 35,
+            "eta_notation": "RANGE_DURATION"
+          },
+          "delivery_fee": null
+        }
+      ]
+    }
+  },
+  "action_messages": {},
+  "update_metadata": null,
+  "adjustments": null,
+  "action_messages_metadata": {
+    "chain_small_order_fee": null,
+    "free_menu_item": null,
+    "free_menu_category": null,
+    "subscription_validation_parts": null
+  },
+  "submission_time": null,
+  "pnp_substitution_rule": null,
+  "order_request_uuid": "ESbK1cESNx2IAbxlE_1o7w",
+  "silo_id": null,
+  "state": "ACTIVE",
+  "status": "ACTIVE",
+  "asap": true,
+  "anchor": false,
+  "group_admin": false,
+  "multi_part_shared_cart_enabled": true
+}

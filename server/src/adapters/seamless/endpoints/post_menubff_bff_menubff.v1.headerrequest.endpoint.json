@@ -1,0 +1,14 @@
+{
+  "endpoint": "POST /menubff/bff/menubff.v1.HeaderRequest",
+  "method": "POST",
+  "exampleUrl": "https://api-gtm.grubhub.com/menubff/bff/menubff.v1.HeaderRequest",
+  "queryParams": {},
+  "requestBody": "\n\u00078023448\u0012\r1774989310313\u001a\u001fPOINT(-74.00809479 40.73571395)\"\bstandard(\u00002\u0003WEB@\u0000J\u0004dWeb",
+  "responseStatus": 200,
+  "headers": {
+    "content-type": "application/octet-stream",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;60=10014;"
+  },
+  "capturedAt": "2026-03-31T20:35:10.472Z",
+  "callCount": 1
+}

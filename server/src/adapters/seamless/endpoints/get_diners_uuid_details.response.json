@@ -1,0 +1,48 @@
+{
+  "order_history_summary": {
+    "ud_id": "VbBHNclp4hGNAFzz_JT1hA",
+    "first_time_user": false,
+    "last_order_time": 1702903516790,
+    "first_time_mobile": false
+  },
+  "preferences": {
+    "green_indicator": true,
+    "email_unsubscribe": false,
+    "charity_opt_in": false
+  },
+  "diner_identity": {
+    "total_orders": 35,
+    "last_order_date": 1702857600000,
+    "last_order_date_time": 1702903516790,
+    "last_order_cancelled": false,
+    "desktop_order_split": 71,
+    "mobile_web_orders": 6,
+    "total_native_mobile_orders": 2,
+    "last_native_mobile_order_date": 1628380800000,
+    "first_order_date": 1468108800000,
+    "last_view_session_date": 1759881600000,
+    "sessions_since_order": 1,
+    "yr_eligible": false,
+    "firm_association_indicator": "consumer",
+    "consumer_orders": 35,
+    "corporate_orders": 0,
+    "desktop_orders": 25,
+    "eat24_account_works_on_grubhub": false,
+    "diner_tier": "",
+    "last30_days_orders": 0,
+    "rolling60_days_promo_orders": 0,
+    "rolling90_days_promo_orders": 0,
+    "gh_plus_last30_days_restaurant_orders": 0,
+    "gh_plus_last60_days_restaurant_orders": 0,
+    "gh_plus_last30_days_discount_orders": 0,
+    "gh_plus_last60_days_discount_orders": 0,
+    "last1_year_pickup_weekday_orders": 0,
+    "last1_year_pickup_weekend_orders": 0,
+    "last30_days_pickup_weekday_orders": 0,
+    "last30_days_pickup_weekend_orders": 0,
+    "last30_days_sessions": 0,
+    "last60_days_sessions": 0,
+    "diner_tags": [],
+    "birthday": ""
+  }
+}

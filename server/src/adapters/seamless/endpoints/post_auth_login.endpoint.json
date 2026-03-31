@@ -1,0 +1,29 @@
+{
+  "endpoint": "POST /auth/login",
+  "method": "POST",
+  "exampleUrl": "https://api-gtm.grubhub.com/auth/login",
+  "queryParams": {},
+  "requestBody": {
+    "brand": "SEAMLESS",
+    "client_id": "beta_seamless_ayNyuFxxVQYefSAhFYCryvXBPQc",
+    "device_id": -1690405915,
+    "email": "ozen.daniel@gmail.com",
+    "password": "Do121123",
+    "exclusive_session": false,
+    "metadata_map": {
+      "ACCERTIFY_UBA_ID": "147850f2d45d5c657ab46cb3a4a7b24b577d",
+      "ACCERTIFY_UBA_SESSION_ID": "7ee8ba15749134cb1844f53aa63147f6c426",
+      "ACCERTIFY_SESSION_ID": "b390c6f6-8345-4cde-8c88-ee8df6c0e330",
+      "ACCERTIFY_PAGE_ID": "6305313521702108",
+      "ACCERTIFY_DEVICE_TRANSACTION_ID": "3700306b-8145-46ce-aead-b28eebedcae4"
+    }
+  },
+  "responseStatus": 401,
+  "headers": {
+    "content-type": "application/json",
+    "perimeter-x": "eyJ1IjoiYmFlZDgwODAtMmQ0MC0xMWYxLTkwNWUtZTM0MDZkOTgxYzVjIiwidiI6ImJiMjQ0ZmRkLTJkNDAtMTFmMS04MGUzLTNhNDk3ZGUzN2JmYyIsInQiOjE3NzQ5ODk2NDc0NTAsImgiOiI0N2QwNTk3YmYzNjdkY2M3MjQzNzQ1NGY1MTJiYjJmNDRjODQwZDJhOTc0MDYyZTJmMmJkYTM1ODM0NWFkODNhIn0=",
+    "x-gh-features": "0=pc;1=@grubhubprod/order-taking-client-sdk 16.6.6;3=Chrome 146.0.0.0;"
+  },
+  "capturedAt": "2026-03-31T20:32:43.934Z",
+  "callCount": 2
+}

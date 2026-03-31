@@ -57,7 +57,7 @@ router.get('/search', async (req: Request, res: Response) => {
       },
     }));
 
-    res.json({ restaurants });
+    res.json({ restaurants, location: geo });
   } catch (err) {
     console.error('[Route] /restaurants/search error:', err);
     res.status(500).json({ error: 'Internal server error' });

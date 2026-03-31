@@ -1,0 +1,13 @@
+{
+  "data": {
+    "getOpenCartsCount": 1
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "74788e4b-ad63-4f5f-b152-27dd934f9071",
+      "correlationId": "74788e4b-ad63-4f5f-b152-27dd934f9071",
+      "ddb": false
+    }
+  }
+}

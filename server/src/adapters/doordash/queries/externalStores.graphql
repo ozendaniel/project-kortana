@@ -1,0 +1,21 @@
+# DoorDash GraphQL: externalStores
+# Captured from HAR: 2026-03-31T19:28:39.482Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "lat": 40.74778279569351,
+#   "lng": -73.99306888697012,
+#   "query": ""
+# }
+
+query externalStores($lat: Float!, $lng: Float!, $query: String!) {
+  externalStores(lat: $lat, lng: $lng, query: $query) {
+    id
+    name
+    type
+    address
+    hasRequested
+    __typename
+  }
+}

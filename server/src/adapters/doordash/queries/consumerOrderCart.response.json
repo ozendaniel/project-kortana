@@ -1,0 +1,197 @@
+{
+  "data": {
+    "consumerOrderCart": {
+      "id": "a93db194-9b33-4fc1-8735-a9ddbbf66315",
+      "hasError": null,
+      "cartType": "CART_TYPE_STORE_CART",
+      "isConsumerPickup": false,
+      "isConvenienceCart": false,
+      "isPrescriptionDelivery": false,
+      "prescriptionStoreInfo": null,
+      "isMerchantShipping": false,
+      "offersDelivery": true,
+      "offersPickup": true,
+      "subtotal": 3380,
+      "urlCode": null,
+      "groupCart": false,
+      "groupCartType": "GROUP_CART_TYPE_UNSPECIFIED",
+      "groupCartSource": "GROUP_CART_SOURCE_UNSPECIFIED",
+      "groupCartPollInterval": null,
+      "scheduledDeliveryAvailable": null,
+      "isCatering": false,
+      "isSameStoreCatering": false,
+      "isBundle": false,
+      "bundleType": null,
+      "fulfillmentType": "Any",
+      "originalBundleOrderCartId": null,
+      "cartStatusType": "CART_STATUS_TYPE_ACTIVE",
+      "cateringInfo": null,
+      "shortenedUrl": null,
+      "maxIndividualCost": null,
+      "serviceRateMessage": null,
+      "isOutsideDeliveryRegion": null,
+      "currencyCode": "USD",
+      "asapMinutesRange": null,
+      "orderTimeAvailability": null,
+      "menu": {
+        "id": "60580950",
+        "hoursToOrderInAdvance": null,
+        "name": null,
+        "minOrderSize": 0,
+        "isCatering": false,
+        "__typename": "Menu"
+      },
+      "creator": {
+        "id": "28068561",
+        "firstName": null,
+        "lastName": null,
+        "localizedNames": {
+          "informalName": "",
+          "formalName": "",
+          "formalNameAbbreviated": "",
+          "__typename": "LocalizedNames"
+        },
+        "__typename": "OrderCartCreator"
+      },
+      "deliveries": null,
+      "submittedAt": null,
+      "restaurant": {
+        "id": "27957635",
+        "name": null,
+        "maxOrderSize": 0,
+        "coverImgUrl": null,
+        "slug": "grandma-s-home-new-york",
+        "address": {
+          "printableAddress": null,
+          "street": "56 West 22nd Street",
+          "lat": 40.742145,
+          "lng": -73.992727,
+          "__typename": "Address"
+        },
+        "business": {
+          "id": "12785919",
+          "name": "Grandma's Home 外婆家",
+          "__typename": "Business"
+        },
+        "orderProtocol": null,
+        "idealGroupSize": null,
+        "highQualitySubtotalThreshold": null,
+        "__typename": "Restaurant"
+      },
+      "storeDisclaimers": [
+        {
+          "id": "265",
+          "disclaimerDetailsLink": "https://doordash.com",
+          "disclaimerLinkSubstring": "",
+          "disclaimerText": "Prices on this menu are set directly by the Merchant.",
+          "displayTreatment": "store_screen",
+          "__typename": "StoreDisclaimer"
+        }
+      ],
+      "orders": [
+        {
+          "id": "75fd1f39-3bd5-4e80-81d8-a8e9ebe592fb",
+          "consumer": {
+            "firstName": null,
+            "lastName": null,
+            "id": "28068561",
+            "localizedNames": null,
+            "__typename": "OrderConsumer"
+          },
+          "isSubCartFinalized": false,
+          "splitBillSubcartStatus": null,
+          "lineItems": null,
+          "orderItems": [
+            {
+              "__typename": "OrderItem",
+              "id": "75fd1f39-3bd5-4e80-81d8-a8e9ebe592fb",
+              "options": [
+                {
+                  "id": "item75fd1f39-3bd5-4e80-81d8-a8e9ebe592fb-option42995239385",
+                  "name": "White Rice",
+                  "quantity": null,
+                  "nestedOptions": "[]",
+                  "__typename": "Option"
+                }
+              ],
+              "itemLevelDiscount": null,
+              "cartItemStatusType": "CART_ITEM_STATUS_TYPE_PENDING_SUBMIT",
+              "nestedOptions": "[{\"itemExtraOption\":{\"id\":\"42995239385\",\"name\":\"White Rice\",\"description\":\"White Rice\",\"price\":300,\"itemExtraName\":null,\"chargeAbove\":0,\"defaultQuantity\":0,\"merchantSuppliedItemId\":\"5dbfcfea-448d-4789-a886-53b01017ae22\",\"itemExtraId\":\"9424873442\",\"itemExtraNumFreeOptions\":0,\"menuItemExtraOptionPrice\":300,\"menuItemExtraOptionBasePrice\":300,\"itemExtraMerchantSuppliedId\":\"9dc5cbe8-d52b-4928-9fb5-e2e8c200b9f0\"},\"id\":\"42995239385\",\"quantity\":1,\"options\":[]}]",
+              "specialInstructions": "",
+              "substitutionPreference": "substitute",
+              "quantity": 1,
+              "singlePrice": null,
+              "priceOfTotalQuantity": 3380,
+              "priceDisplayString": null,
+              "nonDiscountPriceDisplayString": null,
+              "continuousQuantity": null,
+              "unit": "ea",
+              "purchaseType": "PURCHASE_TYPE_UNIT",
+              "estimatedPricingDescription": "",
+              "isPrescriptionItem": false,
+              "increment": null,
+              "discounts": null,
+              "item": {
+                "id": "24267694311",
+                "imageUrl": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/f7de08f4-8afc-435c-87f1-3a70c7ab66c8-retina-large.jpg",
+                "name": "Kung Pao Shrimp 宫保虾球",
+                "price": null,
+                "minAgeRequirement": null,
+                "category": null,
+                "extras": null,
+                "itemTagsList": null,
+                "storeId": null,
+                "businessId": null,
+                "__typename": "OrderCartItem"
+              },
+              "bundleStore": null,
+              "giftInfo": null,
+              "badges": null,
+              "nudgeList": null,
+              "promoNudgeList": null,
+              "itemLimitData": null
+            }
+          ],
+          "paymentCard": null,
+          "paymentLineItems": null,
+          "__typename": "Order"
+        }
+      ],
+      "selectedDeliveryOption": null,
+      "teamAccount": null,
+      "total": null,
+      "totalBeforeDiscountsAndCredits": null,
+      "footerDetails": null,
+      "outOfStockMenuItemIds": null,
+      "orderQualityInfo": null,
+      "invalidItems": null,
+      "__typename": "OrderCart",
+      "domain": {
+        "giftInfo": {
+          "recipientName": "",
+          "recipientGivenName": "",
+          "recipientFamilyName": "",
+          "recipientPhone": "",
+          "recipientEmail": "",
+          "cardMessage": "",
+          "cardId": "",
+          "shouldNotifyTrackingToRecipientOnDasherAssign": null,
+          "shouldNotifyRecipientForDasherQuestions": null,
+          "senderName": "",
+          "shouldRecipientScheduleGift": false,
+          "hasGiftIntent": null,
+          "__typename": "OrderCartGiftOptions"
+        },
+        "__typename": "OrderCartDomain"
+      }
+    }
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "a5673852-b64a-4693-92ab-2ba37593cc3f",
+      "correlationId": "a5673852-b64a-4693-92ab-2ba37593cc3f",
+      "ddb": false
+    }
+  }
+}

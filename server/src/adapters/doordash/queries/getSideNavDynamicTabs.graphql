@@ -1,0 +1,28 @@
+# DoorDash GraphQL: getSideNavDynamicTabs
+# Captured from HAR: 2026-03-31T19:28:39.483Z
+# Response status: 200
+#
+# Variables example:
+# {}
+
+query getSideNavDynamicTabs {
+  sideNavTabs {
+    tabs {
+      id
+      label
+      icon
+      onClick {
+        action
+        route
+        routeAliases
+        __typename
+      }
+      svg
+      tag
+      badge
+      verticalId
+      __typename
+    }
+    __typename
+  }
+}

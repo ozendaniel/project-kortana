@@ -1,0 +1,45 @@
+# DoorDash GraphQL: promoStickyFooter
+# Captured from HAR: 2026-03-31T19:28:39.487Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "storeId": "27957635",
+#   "submarketId": "17",
+#   "consumerId": "28068561",
+#   "subtotal": 0,
+#   "micStickyFooterState": "MIC_STICKY_FOOTER_STATE_UNSPECIFIED"
+# }
+
+query promoStickyFooter($consumerId: ID!, $cartId: ID, $storeId: ID, $submarketId: ID, $menuId: ID, $subtotal: Int, $currency: String, $isDYFCart: Boolean, $cartStatusType: CartStatusType, $landingPageType: PromoLandingPageTypeMap, $micStickyFooterState: MICStickyFooterState) {
+  promoStickyFooter(
+    consumerId: $consumerId
+    cartId: $cartId
+    storeId: $storeId
+    submarketId: $submarketId
+    menuId: $menuId
+    subtotal: $subtotal
+    currency: $currency
+    isDYFCart: $isDYFCart
+    cartStatusType: $cartStatusType
+    landingPageType: $landingPageType
+    micStickyFooterState: $micStickyFooterState
+  ) {
+    copy
+    cartSubtotal
+    promotionMinSubtotal
+    campaignId
+    leadingIcon
+    actionUrl
+    promoSubmessage
+    loyaltyProgressOnScale1
+    useCase
+    metadata {
+      segmentsCount
+      progressBarValue
+      stickyFooterState
+      __typename
+    }
+    __typename
+  }
+}

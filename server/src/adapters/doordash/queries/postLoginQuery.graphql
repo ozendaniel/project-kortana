@@ -1,0 +1,18 @@
+# DoorDash GraphQL: postLoginQuery
+# Captured from HAR: 2026-03-31T19:28:39.476Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "action": "Login",
+#   "code": "e0763f38-ffec-42f7-8716-b54968d82556"
+# }
+
+query postLoginQuery($action: String!, $code: String!) {
+  postLogin(action: $action, code: $code) {
+    status
+    isLoggedInPriorToTokenExchange
+    nextUrl
+    __typename
+  }
+}

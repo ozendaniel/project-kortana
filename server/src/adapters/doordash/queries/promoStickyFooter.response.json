@@ -1,0 +1,25 @@
+{
+  "data": {
+    "promoStickyFooter": {
+      "copy": "Claim your $10 reward in cart",
+      "cartSubtotal": null,
+      "promotionMinSubtotal": null,
+      "campaignId": "09805242-a41b-4f6a-8dd8-d2a9bda35b42",
+      "leadingIcon": null,
+      "actionUrl": null,
+      "promoSubmessage": null,
+      "loyaltyProgressOnScale1": 1,
+      "useCase": null,
+      "metadata": null,
+      "__typename": "StickyFooter"
+    }
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "5058540b-e8cd-438e-88e5-a3c00ecd27ba",
+      "correlationId": "5058540b-e8cd-438e-88e5-a3c00ecd27ba",
+      "ddb": false
+    }
+  }
+}

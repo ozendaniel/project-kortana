@@ -1,0 +1,21 @@
+# DoorDash GraphQL: getConsentsByUserTypeAndId
+# Captured from HAR: 2026-03-31T19:28:39.477Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "uidType": "UID_TYPE_CONSUMER"
+# }
+
+query getConsentsByUserTypeAndId($uidType: UidType!) {
+  getConsentsByUserTypeAndId(uidType: $uidType) {
+    consentsList {
+      policy
+      optOut
+      uid
+      __typename
+    }
+    userId
+    __typename
+  }
+}

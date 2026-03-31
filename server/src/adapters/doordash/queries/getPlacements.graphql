@@ -1,0 +1,229 @@
+# DoorDash GraphQL: getPlacements
+# Captured from HAR: 2026-03-31T19:28:39.482Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "location": "HOMEPAGE",
+#   "component": "BENEFIT_FOOTER",
+#   "teamId": "",
+#   "timezone": "America/New_York"
+# }
+
+query getPlacements($storeId: String, $component: PlacementComponent!, $location: PlacementLocation!, $isCardPayment: Boolean, $teamId: String, $landingPageType: String, $timezone: String, $subtotal: IAmountMonetaryFields) {
+  getPlacements(
+    location: $location
+    component: $component
+    storeId: $storeId
+    isCardPayment: $isCardPayment
+    teamId: $teamId
+    landingPageType: $landingPageType
+    timezone: $timezone
+    subtotal: $subtotal
+  ) {
+    placements {
+      placementSections {
+        id
+        title {
+          copy
+          headIcon {
+            name
+            color
+            __typename
+          }
+          tailIcon {
+            name
+            color
+            __typename
+          }
+          styling {
+            backgroundColor
+            foregroundColor
+            textStyle
+            __typename
+          }
+          __typename
+        }
+        description {
+          copy
+          headIcon {
+            name
+            color
+            __typename
+          }
+          tailIcon {
+            name
+            color
+            __typename
+          }
+          styling {
+            backgroundColor
+            foregroundColor
+            textStyle
+            __typename
+          }
+          __typename
+        }
+        buttons {
+          title {
+            copy
+            headIcon {
+              name
+              color
+              __typename
+            }
+            tailIcon {
+              name
+              color
+              __typename
+            }
+            styling {
+              backgroundColor
+              foregroundColor
+              textStyle
+              __typename
+            }
+            __typename
+          }
+          type
+          action {
+            uri
+            type
+            custom
+            __typename
+          }
+          icon {
+            name
+            color
+            __typename
+          }
+          status
+          custom
+          __typename
+        }
+        layoutVariant
+        placementModels {
+          id
+          type
+          title {
+            copy
+            headIcon {
+              name
+              color
+              __typename
+            }
+            tailIcon {
+              name
+              color
+              __typename
+            }
+            styling {
+              backgroundColor
+              foregroundColor
+              textStyle
+              __typename
+            }
+            __typename
+          }
+          description {
+            copy
+            headIcon {
+              name
+              color
+              __typename
+            }
+            tailIcon {
+              name
+              color
+              __typename
+            }
+            styling {
+              backgroundColor
+              foregroundColor
+              textStyle
+              __typename
+            }
+            __typename
+          }
+          buttons {
+            title {
+              copy
+              headIcon {
+                name
+                color
+                __typename
+              }
+              tailIcon {
+                name
+                color
+                __typename
+              }
+              styling {
+                backgroundColor
+                foregroundColor
+                textStyle
+                __typename
+              }
+              __typename
+            }
+            type
+            action {
+              uri
+              type
+              custom
+              __typename
+            }
+            icon {
+              name
+              color
+              __typename
+            }
+            status
+            custom
+            __typename
+          }
+          headIcon {
+            name
+            color
+            imageUrl
+            custom
+            __typename
+          }
+          tailIcon {
+            name
+            color
+            __typename
+          }
+          styling {
+            backgroundColor
+            foregroundColor
+            textStyle
+            __typename
+          }
+          logging
+          custom
+          layoutVariant
+          images {
+            id
+            uri
+            placeholder
+            local
+            __typename
+          }
+          action {
+            uri
+            type
+            custom
+            __typename
+          }
+          __typename
+        }
+        custom
+        logging
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}

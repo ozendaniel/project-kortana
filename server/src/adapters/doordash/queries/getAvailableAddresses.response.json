@@ -1,0 +1,264 @@
+{
+  "data": {
+    "getAvailableAddresses": [
+      {
+        "id": "1954816116",
+        "addressId": "4983795",
+        "street": "15 East 30th Street",
+        "city": "New York",
+        "subpremise": "47C",
+        "state": "NY",
+        "zipCode": "10016",
+        "country": "United States",
+        "countryCode": "US",
+        "lat": 40.7456737,
+        "lng": -73.9853709,
+        "districtId": null,
+        "manualLat": null,
+        "manualLng": null,
+        "timezone": "America/New_York",
+        "shortname": "15 E 30th St",
+        "printableAddress": "15 E 30th St, New York, NY 10016, USA",
+        "driverInstructions": null,
+        "dropoffPreferences": {
+          "allPreferences": [
+            {
+              "optionId": "1",
+              "isDefault": false,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            },
+            {
+              "optionId": "2",
+              "isDefault": true,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            }
+          ],
+          "__typename": "DropoffPreferences"
+        },
+        "buildingName": null,
+        "entryCode": null,
+        "addressLinkType": "ADDRESS_LINK_TYPE_UNSPECIFIED",
+        "personalAddressLabel": null,
+        "formattedAddressSegmentedList": [
+          "15 East 30th Street, 47C",
+          "New York, NY 10016, USA"
+        ],
+        "formattedAddressSegmentedNonUserEditableFieldsList": [
+          "15 East 30th Street",
+          "New York, NY 10016, USA"
+        ],
+        "__typename": "DefaultAddress"
+      },
+      {
+        "id": "4698302478",
+        "addressId": "1559234726",
+        "street": "330 7th Avenue",
+        "city": "New York",
+        "subpremise": "22nd floor",
+        "state": "NY",
+        "zipCode": "10001",
+        "country": "United States",
+        "countryCode": "US",
+        "lat": 40.74778279569351,
+        "lng": -73.99306888697012,
+        "districtId": null,
+        "manualLat": null,
+        "manualLng": null,
+        "timezone": "America/New_York",
+        "shortname": "330 7th Avenue",
+        "printableAddress": "330 7th Ave 22nd floor, New York, NY 10001, USA",
+        "driverInstructions": null,
+        "dropoffPreferences": {
+          "allPreferences": [
+            {
+              "optionId": "1",
+              "isDefault": false,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            },
+            {
+              "optionId": "2",
+              "isDefault": true,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            }
+          ],
+          "__typename": "DropoffPreferences"
+        },
+        "buildingName": null,
+        "entryCode": null,
+        "addressLinkType": "ADDRESS_LINK_TYPE_UNSPECIFIED",
+        "personalAddressLabel": null,
+        "formattedAddressSegmentedList": [
+          "330 7th Avenue, 22nd floor",
+          "New York, NY 10001"
+        ],
+        "formattedAddressSegmentedNonUserEditableFieldsList": [
+          "330 7th Avenue",
+          "New York, NY 10001"
+        ],
+        "__typename": "DefaultAddress"
+      },
+      {
+        "id": "58330819",
+        "addressId": "30138012",
+        "street": "16955 Adlon Road",
+        "city": "Los Angeles",
+        "subpremise": "",
+        "state": "CA",
+        "zipCode": "91436",
+        "country": "United States",
+        "countryCode": "US",
+        "lat": 34.146299,
+        "lng": -118.503395,
+        "districtId": null,
+        "manualLat": null,
+        "manualLng": null,
+        "timezone": "America/Los_Angeles",
+        "shortname": "16955 Adlon Road",
+        "printableAddress": "16955 Adlon Rd, Encino, CA 91436, USA",
+        "driverInstructions": null,
+        "dropoffPreferences": {
+          "allPreferences": [
+            {
+              "optionId": "1",
+              "isDefault": false,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            },
+            {
+              "optionId": "2",
+              "isDefault": true,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            }
+          ],
+          "__typename": "DropoffPreferences"
+        },
+        "buildingName": null,
+        "entryCode": null,
+        "addressLinkType": "ADDRESS_LINK_TYPE_UNSPECIFIED",
+        "personalAddressLabel": null,
+        "formattedAddressSegmentedList": [
+          "16955 Adlon Road",
+          "Los Angeles, CA 91436, USA"
+        ],
+        "formattedAddressSegmentedNonUserEditableFieldsList": [
+          "16955 Adlon Road",
+          "Los Angeles, CA 91436, USA"
+        ],
+        "__typename": "DefaultAddress"
+      },
+      {
+        "id": "449679894",
+        "addressId": "2292946",
+        "street": "3739 Collins Avenue",
+        "city": "Miami Beach",
+        "subpremise": "N-607",
+        "state": "FL",
+        "zipCode": "33140",
+        "country": "United States",
+        "countryCode": "US",
+        "lat": 25.810785,
+        "lng": -80.12311,
+        "districtId": null,
+        "manualLat": null,
+        "manualLng": null,
+        "timezone": "America/New_York",
+        "shortname": "3739 Collins Avenue",
+        "printableAddress": "3739 Collins Ave, Miami Beach, FL 33140, USA",
+        "driverInstructions": null,
+        "dropoffPreferences": {
+          "allPreferences": [
+            {
+              "optionId": "1",
+              "isDefault": false,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            },
+            {
+              "optionId": "2",
+              "isDefault": true,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            }
+          ],
+          "__typename": "DropoffPreferences"
+        },
+        "buildingName": null,
+        "entryCode": "",
+        "addressLinkType": "ADDRESS_LINK_TYPE_UNSPECIFIED",
+        "personalAddressLabel": null,
+        "formattedAddressSegmentedList": [
+          "3739 Collins Avenue, N-607",
+          "Miami Beach, FL 33140, USA"
+        ],
+        "formattedAddressSegmentedNonUserEditableFieldsList": [
+          "3739 Collins Avenue",
+          "Miami Beach, FL 33140, USA"
+        ],
+        "__typename": "DefaultAddress"
+      },
+      {
+        "id": "35231342",
+        "addressId": "956041",
+        "street": "95 Horatio Street",
+        "city": "New York",
+        "subpremise": "",
+        "state": "NY",
+        "zipCode": "10014",
+        "country": "United States",
+        "countryCode": "US",
+        "lat": 40.738834,
+        "lng": -74.00884,
+        "districtId": null,
+        "manualLat": null,
+        "manualLng": null,
+        "timezone": null,
+        "shortname": "95 Horatio Street",
+        "printableAddress": "95 Horatio St, New York, NY 10014, USA",
+        "driverInstructions": null,
+        "dropoffPreferences": {
+          "allPreferences": [
+            {
+              "optionId": "1",
+              "isDefault": false,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            },
+            {
+              "optionId": "2",
+              "isDefault": true,
+              "instructions": "",
+              "__typename": "DropoffPreference"
+            }
+          ],
+          "__typename": "DropoffPreferences"
+        },
+        "buildingName": null,
+        "entryCode": null,
+        "addressLinkType": "ADDRESS_LINK_TYPE_UNSPECIFIED",
+        "personalAddressLabel": null,
+        "formattedAddressSegmentedList": [
+          "95 Horatio Street",
+          "New York, NY 10014, USA"
+        ],
+        "formattedAddressSegmentedNonUserEditableFieldsList": [
+          "95 Horatio Street",
+          "New York, NY 10014, USA"
+        ],
+        "__typename": "DefaultAddress"
+      }
+    ]
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "23018b29-3f82-4547-a587-eca2ec9df5db",
+      "correlationId": "23018b29-3f82-4547-a587-eca2ec9df5db",
+      "ddb": false
+    }
+  }
+}

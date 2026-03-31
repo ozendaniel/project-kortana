@@ -1,0 +1,898 @@
+# DoorDash GraphQL: itemPage
+# Captured from HAR: 2026-03-31T19:28:39.495Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "itemId": "24267694311",
+#   "consumerId": "28068561",
+#   "storeId": "27957635",
+#   "isMerchantPreview": false,
+#   "isNested": false,
+#   "shouldFetchPresetCarousels": true,
+#   "fulfillmentType": "Delivery",
+#   "cursorContext": {
+#     "reorderItemCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJpdGVtIiwiZG1fdmVyc2lvbiI6MiwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI0MjY3Njk0MzExLCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6IjMwMDAwMjE5NTI5NDgwMDkiLCJzdG9yZUxpdGVEYXRhIjpudWxsLCJpc19ob21lZ3Jvd25fbG95YWx0eSI6bnVsbCwicGFnZV9zdGFja190cmFjZSI6W10sInN0b3JlSWQiOjI3OTU3NjM1LCJtZW51SWQiOjYwNTgwOTUwLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOmZhbHNlfQ=="
+#   },
+#   "shouldFetchStoreLiteData": false
+# }
+
+query itemPage($storeId: ID!, $itemId: ID!, $consumerId: ID, $isMerchantPreview: Boolean, $isNested: Boolean!, $fulfillmentType: FulfillmentType, $shouldFetchPresetCarousels: Boolean!, $cursorContext: ItemPageCursorContextInput, $shouldFetchStoreLiteData: Boolean!, $scheduledMinTimeUtc: String, $scheduledMaxTimeUtc: String) {
+  itemPage(
+    storeId: $storeId
+    itemId: $itemId
+    consumerId: $consumerId
+    isMerchantPreview: $isMerchantPreview
+    fulfillmentType: $fulfillmentType
+    cursorContext: $cursorContext
+    scheduledMinTimeUtc: $scheduledMinTimeUtc
+    scheduledMaxTimeUtc: $scheduledMaxTimeUtc
+  ) {
+    itemHeader @skip(if: $isNested) {
+      id
+      name
+      imgUrl
+      imgUrlList {
+        url
+        photoUuid
+        __typename
+      }
+      discountPricesList {
+        quantity
+        discountUnitAmount
+        discountCurrency
+        discountDisplayString
+        discountDecimalPlaces
+        optionsWithDiscount {
+          id
+          discount {
+            unitAmount
+            currency
+            decimalPlaces
+            sign
+            symbol
+            displayString
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      photoCountText
+      description
+      displayString
+      unitAmount
+      currency
+      decimalPlaces
+      specialInstructionsMaxLength
+      calloutDisplayString
+      minLeadTime
+      minAgeRequirement
+      foodAlcoholConstraint
+      dashpassExclusiveItemDisabled
+      isDashpassExclusive
+      shouldDisplayAiDisclaimer
+      quantityLimit
+      servingSizeDisplayString
+      banners {
+        type
+        text
+        title
+        button {
+          action
+          text
+          __typename
+        }
+        backgroundImage {
+          url
+          __typename
+        }
+        __typename
+      }
+      caloricInfoDisplayString
+      dietaryTagsList {
+        type
+        abbreviatedTagDisplayString
+        fullTagDisplayString
+        __typename
+      }
+      menuId
+      storeLiteData @include(if: $shouldFetchStoreLiteData) {
+        id
+        storeName
+        numberOfRatingsDisplayString
+        averageRating
+        storeLogoUrl
+        isDashpassPartner
+        displayDeliveryFee
+        __typename
+      }
+      reviewData {
+        ...ReviewDataFragment
+        __typename
+      }
+      secondaryDescription
+      terms {
+        title
+        disclaimer {
+          text
+          type
+          descriptionList
+          closeAction {
+            text
+            type
+            actionUrl
+            metadata
+            alignment
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      badges {
+        ...BadgeFragment
+        __typename
+      }
+      lockStatus
+      dishType
+      isMenuV2
+      secondaryCalloutDisplayString
+      insightString
+      disableQuantityStepper
+      __typename
+    }
+    optionLists {
+      ...OptionListFragment
+      __typename
+    }
+    presetCarousels @include(if: $shouldFetchPresetCarousels) {
+      name
+      description
+      selectedPresetIndex
+      presets {
+        name
+        specialInstructions
+        description
+        displayPrice
+        displayPriceColor
+        strikethroughPrice
+        dietaryTagsList {
+          type
+          abbreviatedTagDisplayString
+          fullTagDisplayString
+          __typename
+        }
+        flattenedDefaultNodes {
+          __typename
+          ... on DefaultOption {
+            parentId
+            id
+            name
+            nextCursor
+            displayString
+            unitAmount
+            currency
+            decimalPlaces
+            selectedQuantity
+            caloricInfoDisplayString
+            isRequiredForOptionPromo
+            strikethroughPrice {
+              unitAmount
+              currency
+              displayString
+              symbol
+              decimalPlaces
+              __typename
+            }
+            dietaryTagsList {
+              type
+              abbreviatedTagDisplayString
+              fullTagDisplayString
+              __typename
+            }
+            imgUrl
+            __typename
+          }
+          ... on DefaultOptionList {
+            parentId
+            id
+            name
+            subtitle
+            type
+            selectionNode
+            minNumOptions
+            maxNumOptions
+            minAggregateOptionsQuantity
+            maxAggregateOptionsQuantity
+            minOptionChoiceQuantity
+            maxOptionChoiceQuantity
+            numFreeOptions
+            isOptional
+            options {
+              id
+              name
+              unitAmount
+              currency
+              displayString
+              decimalPlaces
+              nextCursor
+              caloricInfoDisplayString
+              isRequiredForOptionPromo
+              strikethroughPrice {
+                unitAmount
+                currency
+                displayString
+                symbol
+                decimalPlaces
+                __typename
+              }
+              dietaryTagsList {
+                type
+                abbreviatedTagDisplayString
+                fullTagDisplayString
+                __typename
+              }
+              imgUrl
+              nestedExtrasList {
+                ...NestedExtrasFragment
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+        }
+        __typename
+      }
+      __typename
+    }
+    itemType @skip(if: $isNested)
+    itemCarousels @skip(if: $isNested) {
+      id
+      type
+      data {
+        name
+        description
+        content {
+          ...RecommendedItemFragment
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    itemPreferences {
+      ...ItemPreferencesFragment
+      __typename
+    }
+    additionalDescriptions @skip(if: $isNested) {
+      ...AdditionalDescriptionsFragment
+      __typename
+    }
+    itemFooter {
+      id
+      data {
+        title
+        overrideButton {
+          text
+          actionUrl
+          metadata
+          __typename
+        }
+        titleStyle
+        placementsFooter
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment RecommendedItemFragment on RecommendedItem {
+  id
+  name
+  description
+  imageUrl
+  nextCursor
+  price {
+    displayString
+    __typename
+  }
+  quickAddContext {
+    ...QuickAddContextFragment
+    __typename
+  }
+  __typename
+}
+
+fragment QuickAddContextFragment on QuickAddContext {
+  isEligible
+  price {
+    currency
+    decimalPlaces
+    displayString
+    sign
+    symbol
+    unitAmount
+    __typename
+  }
+  nestedOptions
+  specialInstructions
+  defaultQuantity
+  __typename
+}
+
+fragment ReviewDataFragment on ReviewData {
+  ratingDisplayString
+  reviewCount
+  itemReviewRankingCount
+  consumerItemRating {
+    rating {
+      ratingType
+      ratingValue
+      __typename
+    }
+    ratingDisplayString
+    __typename
+  }
+  __typename
+}
+
+fragment ItemPreferencesFragment on ItemPreferences {
+  id
+  title
+  specialInstructions {
+    title
+    characterMaxLength
+    isEnabled
+    placeholderText
+    __typename
+  }
+  substitutionPreferences {
+    title
+    substitutionPreferencesList {
+      id
+      displayString
+      isDefault
+      value
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment AdditionalDescriptionsFragment on ItemAdditionalDescription {
+  id
+  title
+  bulletCopyList
+  __typename
+}
+
+fragment OptionListFragment on OptionList {
+  type
+  id
+  name
+  subtitle
+  selectionNode
+  minNumOptions
+  maxNumOptions
+  minAggregateOptionsQuantity
+  maxAggregateOptionsQuantity
+  minOptionChoiceQuantity
+  maxOptionChoiceQuantity
+  numFreeOptions
+  isOptional
+  storeId
+  titleLayout {
+    actionUrl
+    __typename
+  }
+  options {
+    ...OptionFragment
+    nestedExtrasList {
+      ...NestedExtrasFragment
+      __typename
+    }
+    __typename
+  }
+  validationType
+  collapseDisplayCount
+  selectionModeDisplayType
+  layoutType
+  optionListCollectionId
+  flattenedDefaultNodes {
+    __typename
+    ... on DefaultOption {
+      parentId
+      id
+      name
+      nextCursor
+      displayString
+      unitAmount
+      currency
+      decimalPlaces
+      selectedQuantity
+      caloricInfoDisplayString
+      defaultQuantity
+      isRequiredForOptionPromo
+      strikethroughPrice {
+        unitAmount
+        currency
+        displayString
+        symbol
+        decimalPlaces
+        __typename
+      }
+      dietaryTagsList {
+        type
+        abbreviatedTagDisplayString
+        fullTagDisplayString
+        __typename
+      }
+      imgUrl
+      chargeAbove
+      __typename
+    }
+    ... on DefaultOptionList {
+      parentId
+      id
+      name
+      subtitle
+      type
+      selectionNode
+      minNumOptions
+      maxNumOptions
+      minAggregateOptionsQuantity
+      maxAggregateOptionsQuantity
+      minOptionChoiceQuantity
+      maxOptionChoiceQuantity
+      numFreeOptions
+      isOptional
+      options {
+        id
+        name
+        unitAmount
+        currency
+        displayString
+        decimalPlaces
+        nextCursor
+        caloricInfoDisplayString
+        chargeAbove
+        defaultQuantity
+        isRequiredForOptionPromo
+        strikethroughPrice {
+          unitAmount
+          currency
+          displayString
+          symbol
+          decimalPlaces
+          __typename
+        }
+        dietaryTagsList {
+          type
+          abbreviatedTagDisplayString
+          fullTagDisplayString
+          __typename
+        }
+        imgUrl
+        __typename
+      }
+      __typename
+    }
+  }
+  __typename
+}
+
+fragment OptionFragment on FeedOption {
+  id
+  name
+  unitAmount
+  currency
+  displayString
+  decimalPlaces
+  nextCursor
+  caloricInfoDisplayString
+  chargeAbove
+  chargeAboveDisplayString
+  defaultQuantity
+  isRequiredForOptionPromo
+  strikethroughPrice {
+    unitAmount
+    currency
+    displayString
+    symbol
+    decimalPlaces
+    __typename
+  }
+  dietaryTagsList {
+    type
+    abbreviatedTagDisplayString
+    fullTagDisplayString
+    __typename
+  }
+  optionTagsList {
+    type
+    abbreviatedTagDisplayString
+    fullTagDisplayString
+    __typename
+  }
+  minOptionChoiceQuantity
+  maxOptionChoiceQuantity
+  imgUrl
+  imageDisplayType
+  sortOrder
+  defaultOptionListsList
+  selectedQuantity
+  externalId
+  ratingDisplayString
+  logging
+  valueUpsellString
+  __typename
+}
+
+fragment NestedExtrasFragment on OptionList {
+  type
+  id
+  name
+  subtitle
+  selectionNode
+  minNumOptions
+  maxNumOptions
+  minAggregateOptionsQuantity
+  maxAggregateOptionsQuantity
+  minOptionChoiceQuantity
+  maxOptionChoiceQuantity
+  numFreeOptions
+  isOptional
+  storeId
+  titleLayout {
+    actionUrl
+    __typename
+  }
+  options {
+    ...OptionFragment
+    nestedExtrasList {
+      type
+      id
+      name
+      subtitle
+      selectionNode
+      minNumOptions
+      maxNumOptions
+      minAggregateOptionsQuantity
+      maxAggregateOptionsQuantity
+      minOptionChoiceQuantity
+      maxOptionChoiceQuantity
+      numFreeOptions
+      isOptional
+      storeId
+      titleLayout {
+        actionUrl
+        __typename
+      }
+      options {
+        ...OptionFragment
+        nestedExtrasList {
+          type
+          id
+          name
+          subtitle
+          selectionNode
+          minNumOptions
+          maxNumOptions
+          minAggregateOptionsQuantity
+          maxAggregateOptionsQuantity
+          minOptionChoiceQuantity
+          maxOptionChoiceQuantity
+          numFreeOptions
+          isOptional
+          storeId
+          titleLayout {
+            actionUrl
+            __typename
+          }
+          options {
+            ...OptionFragment
+            __typename
+          }
+          validationType
+          collapseDisplayCount
+          selectionModeDisplayType
+          layoutType
+          optionListCollectionId
+          flattenedDefaultNodes {
+            __typename
+            ... on DefaultOption {
+              parentId
+              id
+              name
+              nextCursor
+              displayString
+              unitAmount
+              currency
+              decimalPlaces
+              selectedQuantity
+              caloricInfoDisplayString
+              defaultQuantity
+              isRequiredForOptionPromo
+              strikethroughPrice {
+                unitAmount
+                currency
+                displayString
+                symbol
+                decimalPlaces
+                __typename
+              }
+              dietaryTagsList {
+                type
+                abbreviatedTagDisplayString
+                fullTagDisplayString
+                __typename
+              }
+              imgUrl
+              chargeAbove
+              __typename
+            }
+            ... on DefaultOptionList {
+              parentId
+              id
+              name
+              subtitle
+              type
+              selectionNode
+              minNumOptions
+              maxNumOptions
+              minAggregateOptionsQuantity
+              maxAggregateOptionsQuantity
+              minOptionChoiceQuantity
+              maxOptionChoiceQuantity
+              numFreeOptions
+              isOptional
+              options {
+                id
+                name
+                unitAmount
+                currency
+                displayString
+                decimalPlaces
+                nextCursor
+                caloricInfoDisplayString
+                chargeAbove
+                defaultQuantity
+                isRequiredForOptionPromo
+                strikethroughPrice {
+                  unitAmount
+                  currency
+                  displayString
+                  symbol
+                  decimalPlaces
+                  __typename
+                }
+                dietaryTagsList {
+                  type
+                  abbreviatedTagDisplayString
+                  fullTagDisplayString
+                  __typename
+                }
+                imgUrl
+                __typename
+              }
+              __typename
+            }
+          }
+          __typename
+        }
+        __typename
+      }
+      validationType
+      collapseDisplayCount
+      selectionModeDisplayType
+      layoutType
+      optionListCollectionId
+      flattenedDefaultNodes {
+        __typename
+        ... on DefaultOption {
+          parentId
+          id
+          name
+          nextCursor
+          displayString
+          unitAmount
+          currency
+          decimalPlaces
+          selectedQuantity
+          caloricInfoDisplayString
+          defaultQuantity
+          isRequiredForOptionPromo
+          strikethroughPrice {
+            unitAmount
+            currency
+            displayString
+            symbol
+            decimalPlaces
+            __typename
+          }
+          dietaryTagsList {
+            type
+            abbreviatedTagDisplayString
+            fullTagDisplayString
+            __typename
+          }
+          imgUrl
+          chargeAbove
+          __typename
+        }
+        ... on DefaultOptionList {
+          parentId
+          id
+          name
+          subtitle
+          type
+          selectionNode
+          minNumOptions
+          maxNumOptions
+          minAggregateOptionsQuantity
+          maxAggregateOptionsQuantity
+          minOptionChoiceQuantity
+          maxOptionChoiceQuantity
+          numFreeOptions
+          isOptional
+          options {
+            id
+            name
+            unitAmount
+            currency
+            displayString
+            decimalPlaces
+            nextCursor
+            caloricInfoDisplayString
+            chargeAbove
+            defaultQuantity
+            isRequiredForOptionPromo
+            strikethroughPrice {
+              unitAmount
+              currency
+              displayString
+              symbol
+              decimalPlaces
+              __typename
+            }
+            dietaryTagsList {
+              type
+              abbreviatedTagDisplayString
+              fullTagDisplayString
+              __typename
+            }
+            imgUrl
+            __typename
+          }
+          __typename
+        }
+      }
+      __typename
+    }
+    __typename
+  }
+  validationType
+  collapseDisplayCount
+  selectionModeDisplayType
+  layoutType
+  optionListCollectionId
+  flattenedDefaultNodes {
+    __typename
+    ... on DefaultOption {
+      parentId
+      id
+      name
+      nextCursor
+      displayString
+      unitAmount
+      currency
+      decimalPlaces
+      selectedQuantity
+      caloricInfoDisplayString
+      defaultQuantity
+      isRequiredForOptionPromo
+      strikethroughPrice {
+        unitAmount
+        currency
+        displayString
+        symbol
+        decimalPlaces
+        __typename
+      }
+      dietaryTagsList {
+        type
+        abbreviatedTagDisplayString
+        fullTagDisplayString
+        __typename
+      }
+      imgUrl
+      chargeAbove
+      __typename
+    }
+    ... on DefaultOptionList {
+      parentId
+      id
+      name
+      subtitle
+      type
+      selectionNode
+      minNumOptions
+      maxNumOptions
+      minAggregateOptionsQuantity
+      maxAggregateOptionsQuantity
+      minOptionChoiceQuantity
+      maxOptionChoiceQuantity
+      numFreeOptions
+      isOptional
+      options {
+        id
+        name
+        unitAmount
+        currency
+        displayString
+        decimalPlaces
+        nextCursor
+        caloricInfoDisplayString
+        chargeAbove
+        defaultQuantity
+        isRequiredForOptionPromo
+        strikethroughPrice {
+          unitAmount
+          currency
+          displayString
+          symbol
+          decimalPlaces
+          __typename
+        }
+        dietaryTagsList {
+          type
+          abbreviatedTagDisplayString
+          fullTagDisplayString
+          __typename
+        }
+        imgUrl
+        __typename
+      }
+      __typename
+    }
+  }
+  __typename
+}
+
+fragment BadgeFragment on Badge {
+  isDashpass
+  type
+  text
+  backgroundColor
+  styleType
+  dlsTagSize
+  dlsTextStyle
+  dlsTagStyle
+  dlsTagType
+  placement
+  leadingIcon
+  leadingIconSize
+  trailingIcon
+  trailingIconSize
+  endTime
+  dlsTextColor
+  brandedDecorator {
+    prefixText
+    postfixText
+    postfixTextLeadingIcon
+    __typename
+  }
+  trailingText {
+    copy
+    dlsTextStyle
+    dlsTextColor
+    __typename
+  }
+  onClick
+  __typename
+}

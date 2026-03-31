@@ -1,23 +1,16 @@
-# DoorDash GraphQL: homePageFacetFeed
-# Captured from HAR: 2026-03-31T19:28:39.481Z
+# DoorDash GraphQL: autocompleteFacetFeed
+# Captured from HAR: 2026-03-31T19:28:39.478Z
 # Response status: 200
 #
 # Variables example:
 # {
-#   "cursor": "eyJvZmZzZXQiOjAsInZlcnRpY2FsX2lkcyI6WzEwMywxMDAzMzIsNzAsMTEwMDQ0LDMsMTQ2LDE3NCwyLDM3LDEzOSwyNzEsMTM2LDIzNSwxMTAwMDEsMjM5LDIzNiw0LDI0MywyNDEsMjY4LDE0OCwxMTAwMTMsMTAwMzMzXSwiY3Jvc3NfdmVydGljYWxfcGFnZV90eXBlIjoiSE9NRVBBR0UiLCJwYWdlX3N0YWNrX3RyYWNlIjpbXSwibGF5b3V0X292ZXJyaWRlIjoiVU5TUEVDSUZJRUQiLCJuZXh0X3BhZ2VfY2FjaGVfa2V5IjoiVkVSVElDQUw6MjgwNjg1NjE6ZHhfYjVlOTRhYTM4MTdlNDA1NjlkNzFlOGM5MmMwODhiNmM6MToyZjkxOWZhNS00YzRlLTQxZjYtYmRjMC04MzAzYWJiYTUxNjI6TFo0IiwiaXNfcGFnaW5hdGlvbl9mYWxsYmFjayI6bnVsbCwic291cmNlX3BhZ2VfdHlwZSI6bnVsbCwidmVydGljYWxfbmFtZXMiOnt9LCJkZF9wbGFjZV9pZHMiOlsiNjFhZmUxNDctMmY5Ny00ZmExLWFmN2ItYTk0YTk3YjdmYWRkIiwiMzQyMzdhMGItZDNlMC00YWQ5LWIxOTYtZWNlNDEwNDVmMzNkIiwiOTE0YjlkMmItYTM4My00YjMwLWE2MTEtYzc3MDI4OTA3Y2NiIiwiNzVhNDQwNDktZGUzMy00N2NlLWFmNTktYjNhZDY0Y2JlNGNkIl19",
-#   "filterQuery": "",
-#   "displayHeader": false,
-#   "isDebug": false,
-#   "cuisineFilterVerticalIds": ""
+#   "query": ""
 # }
 
-query homePageFacetFeed($cursor: String, $filterQuery: String, $displayHeader: Boolean, $isDebug: Boolean, $cuisineFilterVerticalIds: String) {
-  homePageFacetFeed(
-    cursor: $cursor
-    filterQuery: $filterQuery
-    displayHeader: $displayHeader
-    isDebug: $isDebug
-    cuisineFilterVerticalIds: $cuisineFilterVerticalIds
+query autocompleteFacetFeed($query: String!, $serializedBundleGlobalSearchContext: String) {
+  autocompleteFacetFeed(
+    query: $query
+    serializedBundleGlobalSearchContext: $serializedBundleGlobalSearchContext
   ) {
     ...FacetFeedV2ResultFragment
     __typename

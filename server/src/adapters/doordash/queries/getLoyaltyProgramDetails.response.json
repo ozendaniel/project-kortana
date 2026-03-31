@@ -1,0 +1,61 @@
+{
+  "data": {
+    "getLoyaltyProgramDetails": {
+      "programId": "202372b4-4211-4f20-a132-e16dec47a0ca",
+      "programExperience": 0,
+      "header": {
+        "pageTitle": "Store Rewards",
+        "merchantName": "Grandma's Home 外婆家",
+        "__typename": "ProgramDetailsHeader"
+      },
+      "programExplanation": {
+        "title": "How it works",
+        "explanationText": " 1. Order from **Grandma's Home 外婆家** until you've reached $100.\n 2. Once a reward is earned, your reward will be applied **on your next order**.\n\nCannot be combined with other promos. Taxes, fees and tip amount don't count towards your Store Rewards. Any additional spend after $100 will carry over to your next reward. Alcohol item subtotal will not count towards Store Rewards and you cannot apply Store Rewards to orders with alcohol.",
+        "__typename": "ProgramExplanation"
+      },
+      "termsAndConditions": {
+        "termsText": "[Terms & Conditions](https://help.doordash.com/consumers/s/article/Loyalty-Terms-Conditions?language=en_US)",
+        "__typename": "TermsAndConditions"
+      },
+      "footer": {
+        "ctaAction": "https://www.doordash.com/loyalty/wallet?origin=program_details_page",
+        "ctaTitle": "See my rewards",
+        "__typename": "ProgramDetailsFooter"
+      },
+      "omnichannelLoyaltyLinkingView": {
+        "icon": null,
+        "title": null,
+        "description": null,
+        "button": {
+          "enabled": null,
+          "enabledTitle": null,
+          "disabledTitle": null,
+          "__typename": "OmnichannelLoyaltyLinkingModalButton"
+        },
+        "modalContent": {
+          "title": null,
+          "body1": null,
+          "body2": null,
+          "footer": null,
+          "button": {
+            "enabled": null,
+            "enabledTitle": null,
+            "disabledTitle": null,
+            "__typename": "OmnichannelLoyaltyLinkingModalButton"
+          },
+          "__typename": "OmnichannelLoyaltyLinkingModalContent"
+        },
+        "__typename": "OmnichannelLoyaltyLinkingView"
+      },
+      "__typename": "GetLoyaltyProgramDetailsResponse"
+    }
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "6a3e626e-b3ea-47c7-aa27-9cec8359b7f4",
+      "correlationId": "6a3e626e-b3ea-47c7-aa27-9cec8359b7f4",
+      "ddb": false
+    }
+  }
+}

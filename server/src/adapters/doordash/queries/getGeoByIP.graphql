@@ -1,0 +1,25 @@
+# DoorDash GraphQL: getGeoByIP
+# Captured from HAR: 2026-03-31T19:28:39.474Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "features": [
+#     "FEATURES_GEO",
+#     "FEATURES_ANONYMOUS_TYPE"
+#   ]
+# }
+
+query getGeoByIP($features: [GeoFeature!]) {
+  getGeoByIP(features: $features) {
+    geoLocation {
+      lat
+      lng
+      cityName
+      countryCode
+      postalCode
+      __typename
+    }
+    __typename
+  }
+}

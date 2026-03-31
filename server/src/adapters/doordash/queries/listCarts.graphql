@@ -1,51 +1,24 @@
-# DoorDash GraphQL: addCartItem
-# Captured from HAR: 2026-03-31T19:28:39.498Z
+# DoorDash GraphQL: listCarts
+# Captured from HAR: 2026-03-31T19:28:39.500Z
 # Response status: 200
 #
 # Variables example:
 # {
-#   "addCartItemInput": {
-#     "storeId": "27957635",
-#     "menuId": "60580950",
-#     "itemId": "24267694311",
-#     "itemName": "Kung Pao Shrimp 宫保虾球",
-#     "itemDescription": "with leek, dried chilies, peanuts, and a savory-sweet sauce",
-#     "currency": "USD",
-#     "quantity": 1,
-#     "nestedOptions": "[{\"id\":\"42995239385\",\"quantity\":1,\"options\":[],\"itemExtraOption\":{\"id\":\"42995239385\",\"name\":\"White Rice\",\"description\":\"White Rice\",\"price\":300,\"chargeAbove\":0,\"defaultQuantity\":0}}]",
-#     "specialInstructions": "",
-#     "substitutionPreference": "substitute",
-#     "unitPrice": 3380,
-#     "cartId": "",
-#     "isBundle": false,
-#     "bundleType": "BUNDLE_TYPE_UNSPECIFIED"
-#   },
-#   "lowPriorityBatchAddCartItemInput": [],
-#   "fulfillmentContext": {
-#     "shouldUpdateFulfillment": false,
-#     "fulfillmentType": "Delivery"
-#   },
-#   "monitoringContext": {
-#     "isGroup": false
-#   },
-#   "cartContext": {
-#     "isBundle": false
-#   },
-#   "returnCartFromOrderService": false,
-#   "shouldKeepOnlyOneActiveCart": false
+#   "input": {
+#     "cartContextFilter": {
+#       "experienceCase": "MULTI_CART_EXPERIENCE_CONTEXT",
+#       "multiCartExperienceContext": {
+#         "storeId": "27957635"
+#       }
+#     },
+#     "cartFilter": {
+#       "shouldIncludeSubmitted": true
+#     }
+#   }
 # }
 
-mutation addCartItem($addCartItemInput: AddCartItemInput!, $fulfillmentContext: FulfillmentContextInput!, $cartContext: CartContextInput, $returnCartFromOrderService: Boolean, $monitoringContext: MonitoringContextInput, $lowPriorityBatchAddCartItemInput: [AddCartItemInput!], $shouldKeepOnlyOneActiveCart: Boolean, $selectedDeliveryOption: SelectedDeliveryOptionInput) {
-  addCartItemV2(
-    addCartItemInput: $addCartItemInput
-    fulfillmentContext: $fulfillmentContext
-    cartContext: $cartContext
-    returnCartFromOrderService: $returnCartFromOrderService
-    monitoringContext: $monitoringContext
-    lowPriorityBatchAddCartItemInput: $lowPriorityBatchAddCartItemInput
-    shouldKeepOnlyOneActiveCart: $shouldKeepOnlyOneActiveCart
-    selectedDeliveryOption: $selectedDeliveryOption
-  ) {
+query listCarts($input: ListCartsInput!) {
+  listCarts(input: $input) {
     ...ConsumerOrderCartFragment
     __typename
   }

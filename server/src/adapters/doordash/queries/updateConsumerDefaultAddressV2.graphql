@@ -1,54 +1,72 @@
-# DoorDash GraphQL: addCartItem
-# Captured from HAR: 2026-03-31T19:28:39.498Z
+# DoorDash GraphQL: updateConsumerDefaultAddressV2
+# Captured from HAR: 2026-03-31T19:28:39.482Z
 # Response status: 200
 #
 # Variables example:
 # {
-#   "addCartItemInput": {
-#     "storeId": "27957635",
-#     "menuId": "60580950",
-#     "itemId": "24267694311",
-#     "itemName": "Kung Pao Shrimp 宫保虾球",
-#     "itemDescription": "with leek, dried chilies, peanuts, and a savory-sweet sauce",
-#     "currency": "USD",
-#     "quantity": 1,
-#     "nestedOptions": "[{\"id\":\"42995239385\",\"quantity\":1,\"options\":[],\"itemExtraOption\":{\"id\":\"42995239385\",\"name\":\"White Rice\",\"description\":\"White Rice\",\"price\":300,\"chargeAbove\":0,\"defaultQuantity\":0}}]",
-#     "specialInstructions": "",
-#     "substitutionPreference": "substitute",
-#     "unitPrice": 3380,
-#     "cartId": "",
-#     "isBundle": false,
-#     "bundleType": "BUNDLE_TYPE_UNSPECIFIED"
-#   },
-#   "lowPriorityBatchAddCartItemInput": [],
-#   "fulfillmentContext": {
-#     "shouldUpdateFulfillment": false,
-#     "fulfillmentType": "Delivery"
-#   },
-#   "monitoringContext": {
-#     "isGroup": false
-#   },
-#   "cartContext": {
-#     "isBundle": false
-#   },
-#   "returnCartFromOrderService": false,
-#   "shouldKeepOnlyOneActiveCart": false
+#   "defaultAddressId": "1954816116"
 # }
 
-mutation addCartItem($addCartItemInput: AddCartItemInput!, $fulfillmentContext: FulfillmentContextInput!, $cartContext: CartContextInput, $returnCartFromOrderService: Boolean, $monitoringContext: MonitoringContextInput, $lowPriorityBatchAddCartItemInput: [AddCartItemInput!], $shouldKeepOnlyOneActiveCart: Boolean, $selectedDeliveryOption: SelectedDeliveryOptionInput) {
-  addCartItemV2(
-    addCartItemInput: $addCartItemInput
-    fulfillmentContext: $fulfillmentContext
-    cartContext: $cartContext
-    returnCartFromOrderService: $returnCartFromOrderService
-    monitoringContext: $monitoringContext
-    lowPriorityBatchAddCartItemInput: $lowPriorityBatchAddCartItemInput
-    shouldKeepOnlyOneActiveCart: $shouldKeepOnlyOneActiveCart
-    selectedDeliveryOption: $selectedDeliveryOption
-  ) {
-    ...ConsumerOrderCartFragment
+mutation updateConsumerDefaultAddressV2($defaultAddressId: ID!) {
+  updateConsumerDefaultAddressV2(defaultAddressId: $defaultAddressId) {
+    defaultAddress {
+      ...DefaultAddressFragment
+      submarket
+      submarketId
+      __typename
+    }
+    availableAddresses {
+      ...DefaultAddressFragment
+      __typename
+    }
+    orderCart {
+      ...ConsumerOrderCartFragment
+      __typename
+    }
+    ...CoreConsumerFragment
     __typename
   }
+}
+
+fragment DefaultAddressFragment on DefaultAddress {
+  id
+  addressId
+  street
+  city
+  subpremise
+  state
+  zipCode
+  country
+  countryCode
+  lat
+  lng
+  districtId
+  manualLat
+  manualLng
+  timezone
+  shortname
+  printableAddress
+  driverInstructions
+  dropoffPreferences {
+    allPreferences {
+      optionId
+      isDefault
+      instructions
+      __typename
+    }
+    __typename
+  }
+  buildingName
+  entryCode
+  addressLinkType
+  personalAddressLabel {
+    labelIcon
+    labelName
+    __typename
+  }
+  formattedAddressSegmentedList
+  formattedAddressSegmentedNonUserEditableFieldsList
+  __typename
 }
 
 fragment ConsumerOrderCartFragment on OrderCart {
@@ -545,6 +563,49 @@ fragment CheckoutOrderTimeAvailabilityFragment on OrderTimeAvailability {
     subtitle
     isSelected
     isDisabled
+    __typename
+  }
+  __typename
+}
+
+fragment CoreConsumerFragment on Consumer {
+  id
+  userId
+  timezone
+  firstName
+  lastName
+  localizedNames {
+    informalName
+    formalName
+    formalNameAbbreviated
+    __typename
+  }
+  email
+  marketId
+  phoneNumber
+  defaultCountry
+  isGuest
+  scheduledDeliveryTime
+  dropoffOptions {
+    id
+    displayString
+    isDefault
+    isEnabled
+    placeholderText
+    disabledMessage
+    __typename
+  }
+  phoneNumberComponents {
+    formattedNationalNumber
+    nationalNumber
+    formattedInternationalNumber
+    countryCode
+    internationalNumber
+    countryShortname
+    __typename
+  }
+  districtAvailability {
+    isDistrictActive
     __typename
   }
   __typename

@@ -1,0 +1,15 @@
+# DoorDash GraphQL: markRecentlyVisitedStoreV2
+# Captured from HAR: 2026-03-31T19:28:39.484Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "storeId": "27957635"
+# }
+
+mutation markRecentlyVisitedStoreV2($storeId: String!) {
+  markRecentlyVisitedStoreV2(storeId: $storeId) {
+    storeId
+    __typename
+  }
+}

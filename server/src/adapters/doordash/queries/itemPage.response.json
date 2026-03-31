@@ -1,0 +1,1736 @@
+{
+  "data": {
+    "itemPage": {
+      "itemHeader": {
+        "id": "24267694311",
+        "name": "Kung Pao Shrimp 宫保虾球",
+        "imgUrl": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/f7de08f4-8afc-435c-87f1-3a70c7ab66c8-retina-large.jpg",
+        "imgUrlList": [],
+        "discountPricesList": [],
+        "photoCountText": null,
+        "description": "with leek, dried chilies, peanuts, and a savory-sweet sauce",
+        "displayString": "+$30.80",
+        "unitAmount": 3080,
+        "currency": "USD",
+        "decimalPlaces": 2,
+        "specialInstructionsMaxLength": 0,
+        "calloutDisplayString": null,
+        "minLeadTime": null,
+        "minAgeRequirement": 0,
+        "foodAlcoholConstraint": "REQUIRES_NONE",
+        "dashpassExclusiveItemDisabled": false,
+        "isDashpassExclusive": false,
+        "shouldDisplayAiDisclaimer": false,
+        "quantityLimit": 0,
+        "servingSizeDisplayString": null,
+        "banners": [],
+        "caloricInfoDisplayString": "",
+        "dietaryTagsList": [],
+        "menuId": "60580950",
+        "reviewData": null,
+        "secondaryDescription": "",
+        "terms": null,
+        "badges": [],
+        "lockStatus": "ITEM_PAGE_LOCK_STATUS_UNLOCKED",
+        "dishType": "DISH_TYPE_UNSPECIFIED",
+        "isMenuV2": true,
+        "secondaryCalloutDisplayString": null,
+        "insightString": null,
+        "disableQuantityStepper": false,
+        "__typename": "ItemHeader"
+      },
+      "optionLists": [
+        {
+          "type": "extra_option",
+          "id": "9424873442",
+          "name": "Add Ons",
+          "subtitle": "Select up to 4",
+          "selectionNode": "multi_select",
+          "minNumOptions": 0,
+          "maxNumOptions": 4,
+          "minAggregateOptionsQuantity": null,
+          "maxAggregateOptionsQuantity": null,
+          "minOptionChoiceQuantity": null,
+          "maxOptionChoiceQuantity": null,
+          "numFreeOptions": 0,
+          "isOptional": true,
+          "storeId": null,
+          "titleLayout": null,
+          "options": [
+            {
+              "id": "42995239385",
+              "name": "White Rice",
+              "unitAmount": 300,
+              "currency": "USD",
+              "displayString": "+$3.00",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": "5dbfcfea-448d-4789-a886-53b01017ae22",
+              "ratingDisplayString": null,
+              "logging": null,
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "42995239386",
+              "name": "Homemade Chili XO",
+              "unitAmount": 200,
+              "currency": "USD",
+              "displayString": "+$2.00",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": "0310577d-0257-45ac-a9e0-971d5f77be77",
+              "ratingDisplayString": null,
+              "logging": null,
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "42995239387",
+              "name": "Chopsticks",
+              "unitAmount": 0,
+              "currency": "USD",
+              "displayString": "",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": "39198b51-ebdb-4175-af27-be9aa3f45e1f",
+              "ratingDisplayString": null,
+              "logging": null,
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "42995239388",
+              "name": "Cutlery",
+              "unitAmount": 0,
+              "currency": "USD",
+              "displayString": "",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": "bc9a9f36-cbc7-4537-aff9-c760945d6f57",
+              "ratingDisplayString": null,
+              "logging": null,
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            }
+          ],
+          "validationType": "DEFAULT",
+          "collapseDisplayCount": null,
+          "selectionModeDisplayType": "SELECTION_MODE_DISPLAY_TYPE_DEFAULT",
+          "layoutType": "OPTION_LIST_LAYOUT_TYPE_UNSPECIFIED",
+          "optionListCollectionId": null,
+          "flattenedDefaultNodes": [],
+          "__typename": "OptionList"
+        },
+        {
+          "type": "item",
+          "id": "recommended_option_24267664132",
+          "name": "Recommended Beverages",
+          "subtitle": "Choose up to 5",
+          "selectionNode": "multi_select",
+          "minNumOptions": 0,
+          "maxNumOptions": 10,
+          "minAggregateOptionsQuantity": null,
+          "maxAggregateOptionsQuantity": null,
+          "minOptionChoiceQuantity": null,
+          "maxOptionChoiceQuantity": null,
+          "numFreeOptions": 0,
+          "isOptional": true,
+          "storeId": null,
+          "titleLayout": null,
+          "options": [
+            {
+              "id": "24267664132",
+              "name": "Diet Coke 健怡可乐",
+              "unitAmount": 400,
+              "currency": "USD",
+              "displayString": "+$4.00",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267664132",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Beverages",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267664131",
+              "name": "Mexican Coke 可口可乐",
+              "unitAmount": 660,
+              "currency": "USD",
+              "displayString": "+$6.60",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267664131",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Beverages",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267664129",
+              "name": "Panna 普娜",
+              "unitAmount": 990,
+              "currency": "USD",
+              "displayString": "+$9.90",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267664129",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 2,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Beverages",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267664134",
+              "name": "Sprite 雪碧",
+              "unitAmount": 400,
+              "currency": "USD",
+              "displayString": "+$4.00",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267664134",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 3,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Beverages",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267663140",
+              "name": "Baby Jasmine Lager, Master Gao 高大师茉莉花茶拉格",
+              "unitAmount": 1100,
+              "currency": "USD",
+              "displayString": "+$11.00",
+              "decimalPlaces": 2,
+              "nextCursor": null,
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267663140",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 4,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Beverages",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            }
+          ],
+          "validationType": "DEFAULT",
+          "collapseDisplayCount": null,
+          "selectionModeDisplayType": "SELECTION_MODE_DISPLAY_TYPE_DEFAULT",
+          "layoutType": "OPTION_LIST_LAYOUT_TYPE_UNSPECIFIED",
+          "optionListCollectionId": null,
+          "flattenedDefaultNodes": [],
+          "__typename": "OptionList"
+        },
+        {
+          "type": "item",
+          "id": "recommended_option_24267662210",
+          "name": "Recommended Sides And Apps",
+          "subtitle": "Choose up to 5",
+          "selectionNode": "multi_select",
+          "minNumOptions": 0,
+          "maxNumOptions": 10,
+          "minAggregateOptionsQuantity": null,
+          "maxAggregateOptionsQuantity": null,
+          "minOptionChoiceQuantity": null,
+          "maxOptionChoiceQuantity": null,
+          "numFreeOptions": 0,
+          "isOptional": true,
+          "storeId": null,
+          "titleLayout": null,
+          "options": [
+            {
+              "id": "24267662210",
+              "name": "Soy Glazed Crispy Fish 西湖酥鱼",
+              "unitAmount": 2090,
+              "currency": "USD",
+              "displayString": "+$20.90",
+              "decimalPlaces": 2,
+              "nextCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJyZWNvbW1lbmRlZF9pdGVtIiwiZG1fdmVyc2lvbiI6MSwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI0MjY3NjYyMjEwLCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6bnVsbCwic3RvcmVMaXRlRGF0YSI6bnVsbCwiaXNfaG9tZWdyb3duX2xveWFsdHkiOm51bGwsInBhZ2Vfc3RhY2tfdHJhY2UiOltdLCJzdG9yZUlkIjoyNzk1NzYzNSwibWVudUlkIjpudWxsLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOm51bGx9",
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267662210",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Sides And Apps",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267712317",
+              "name": "Pan-Seared Pork Buns (3) 外婆煎包",
+              "unitAmount": 1320,
+              "currency": "USD",
+              "displayString": "+$13.20",
+              "decimalPlaces": 2,
+              "nextCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJyZWNvbW1lbmRlZF9pdGVtIiwiZG1fdmVyc2lvbiI6MSwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI0MjY3NzEyMzE3LCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6bnVsbCwic3RvcmVMaXRlRGF0YSI6bnVsbCwiaXNfaG9tZWdyb3duX2xveWFsdHkiOm51bGwsInBhZ2Vfc3RhY2tfdHJhY2UiOltdLCJzdG9yZUlkIjoyNzk1NzYzNSwibWVudUlkIjpudWxsLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOm51bGx9",
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267712317",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Sides And Apps",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267714732",
+              "name": "White Rice 白饭",
+              "unitAmount": 300,
+              "currency": "USD",
+              "displayString": "+$3.00",
+              "decimalPlaces": 2,
+              "nextCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJyZWNvbW1lbmRlZF9pdGVtIiwiZG1fdmVyc2lvbiI6MSwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI0MjY3NzE0NzMyLCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6bnVsbCwic3RvcmVMaXRlRGF0YSI6bnVsbCwiaXNfaG9tZWdyb3duX2xveWFsdHkiOm51bGwsInBhZ2Vfc3RhY2tfdHJhY2UiOltdLCJzdG9yZUlkIjoyNzk1NzYzNSwibWVudUlkIjpudWxsLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOm51bGx9",
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267714732",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 2,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Sides And Apps",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267712316",
+              "name": "Xiao Long Bao(4) 小笼包",
+              "unitAmount": 1540,
+              "currency": "USD",
+              "displayString": "+$15.40",
+              "decimalPlaces": 2,
+              "nextCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJyZWNvbW1lbmRlZF9pdGVtIiwiZG1fdmVyc2lvbiI6MSwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI0MjY3NzEyMzE2LCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6bnVsbCwic3RvcmVMaXRlRGF0YSI6bnVsbCwiaXNfaG9tZWdyb3duX2xveWFsdHkiOm51bGwsInBhZ2Vfc3RhY2tfdHJhY2UiOltdLCJzdG9yZUlkIjoyNzk1NzYzNSwibWVudUlkIjpudWxsLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOm51bGx9",
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267712316",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 3,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Sides And Apps",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "24267662209",
+              "name": "Lotus Root with Sticky Rice 桂花糯米藕",
+              "unitAmount": 1320,
+              "currency": "USD",
+              "displayString": "+$13.20",
+              "decimalPlaces": 2,
+              "nextCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJyZWNvbW1lbmRlZF9pdGVtIiwiZG1fdmVyc2lvbiI6MSwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI0MjY3NjYyMjA5LCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6bnVsbCwic3RvcmVMaXRlRGF0YSI6bnVsbCwiaXNfaG9tZWdyb3duX2xveWFsdHkiOm51bGwsInBhZ2Vfc3RhY2tfdHJhY2UiOltdLCJzdG9yZUlkIjoyNzk1NzYzNSwibWVudUlkIjpudWxsLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOm51bGx9",
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267662209",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 4,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Sides And Apps",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            }
+          ],
+          "validationType": "DEFAULT",
+          "collapseDisplayCount": null,
+          "selectionModeDisplayType": "SELECTION_MODE_DISPLAY_TYPE_DEFAULT",
+          "layoutType": "OPTION_LIST_LAYOUT_TYPE_UNSPECIFIED",
+          "optionListCollectionId": null,
+          "flattenedDefaultNodes": [],
+          "__typename": "OptionList"
+        },
+        {
+          "type": "item",
+          "id": "recommended_option_27072864344",
+          "name": "Recommended Desserts",
+          "subtitle": "Choose up to 2",
+          "selectionNode": "multi_select",
+          "minNumOptions": 0,
+          "maxNumOptions": 10,
+          "minAggregateOptionsQuantity": null,
+          "maxAggregateOptionsQuantity": null,
+          "minOptionChoiceQuantity": null,
+          "maxOptionChoiceQuantity": null,
+          "numFreeOptions": 0,
+          "isOptional": true,
+          "storeId": null,
+          "titleLayout": null,
+          "options": [
+            {
+              "id": "27072864344",
+              "name": "Mango Pomelo Sago 杨枝甘露",
+              "unitAmount": 1100,
+              "currency": "USD",
+              "displayString": "+$11.00",
+              "decimalPlaces": 2,
+              "nextCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJyZWNvbW1lbmRlZF9pdGVtIiwiZG1fdmVyc2lvbiI6MSwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI3MDcyODY0MzQ0LCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6bnVsbCwic3RvcmVMaXRlRGF0YSI6bnVsbCwiaXNfaG9tZWdyb3duX2xveWFsdHkiOm51bGwsInBhZ2Vfc3RhY2tfdHJhY2UiOltdLCJzdG9yZUlkIjoyNzk1NzYzNSwibWVudUlkIjpudWxsLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOm51bGx9",
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27072864344",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Desserts",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 2,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            },
+            {
+              "id": "27072864343",
+              "name": "Matcha Sesame Balls (3) 抹茶麻球",
+              "unitAmount": 1210,
+              "currency": "USD",
+              "displayString": "+$12.10",
+              "decimalPlaces": 2,
+              "nextCursor": "eyJkbV9pZCI6Iml0ZW1fMSIsImRtX3R5cGUiOiJyZWNvbW1lbmRlZF9pdGVtIiwiZG1fdmVyc2lvbiI6MSwiY3Vyc29yX3ZlcnNpb24iOiJJVEVNX1BBR0UiLCJpdGVtSWQiOjI3MDcyODY0MzQzLCJvcHRpb25JZCI6bnVsbCwic2VsZWN0ZWRPcmRlckl0ZW1JZCI6bnVsbCwic3RvcmVMaXRlRGF0YSI6bnVsbCwiaXNfaG9tZWdyb3duX2xveWFsdHkiOm51bGwsInBhZ2Vfc3RhY2tfdHJhY2UiOltdLCJzdG9yZUlkIjoyNzk1NzYzNSwibWVudUlkIjpudWxsLCJjYXRlZ29yeUlkIjpudWxsLCJidXNpbmVzc0lkIjpudWxsLCJ2ZXJ0aWNhbElkIjpudWxsLCJpc19tZWFsX21hbmFnZXJfZW50cnkiOm51bGx9",
+              "caloricInfoDisplayString": "",
+              "chargeAbove": 0,
+              "chargeAboveDisplayString": "",
+              "defaultQuantity": 0,
+              "isRequiredForOptionPromo": false,
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "optionTagsList": [],
+              "minOptionChoiceQuantity": null,
+              "maxOptionChoiceQuantity": null,
+              "imgUrl": "",
+              "imageDisplayType": "IMAGE_DISPLAY_TYPE_UNSPECIFIED",
+              "sortOrder": null,
+              "defaultOptionListsList": null,
+              "selectedQuantity": null,
+              "externalId": null,
+              "ratingDisplayString": null,
+              "logging": {
+                "fieldsMap": [
+                  [
+                    "consumer_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "28068561",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "24267694311",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27072864343",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_item_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 1,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_name",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "Recommended Desserts",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "option_list_position",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 2,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_available",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "promo_shown",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "",
+                      "boolValue": false
+                    }
+                  ],
+                  [
+                    "store_id",
+                    {
+                      "nullValue": 0,
+                      "numberValue": 0,
+                      "stringValue": "27957635",
+                      "boolValue": false
+                    }
+                  ]
+                ]
+              },
+              "valueUpsellString": null,
+              "__typename": "FeedOption",
+              "nestedExtrasList": []
+            }
+          ],
+          "validationType": "DEFAULT",
+          "collapseDisplayCount": null,
+          "selectionModeDisplayType": "SELECTION_MODE_DISPLAY_TYPE_DEFAULT",
+          "layoutType": "OPTION_LIST_LAYOUT_TYPE_UNSPECIFIED",
+          "optionListCollectionId": null,
+          "flattenedDefaultNodes": [],
+          "__typename": "OptionList"
+        }
+      ],
+      "presetCarousels": [
+        {
+          "name": "Your recommended options",
+          "description": "",
+          "selectedPresetIndex": 0,
+          "presets": [
+            {
+              "name": "Last ordered on 7/17/25",
+              "specialInstructions": null,
+              "description": "White Rice",
+              "displayPrice": "$33.80",
+              "displayPriceColor": "USAGE_COLOR_TEXT_DEFAULT",
+              "strikethroughPrice": null,
+              "dietaryTagsList": [],
+              "flattenedDefaultNodes": [
+                {
+                  "__typename": "DefaultOption",
+                  "parentId": "9424873442",
+                  "id": "42995239385",
+                  "name": "White Rice",
+                  "nextCursor": null,
+                  "displayString": "+$3.00",
+                  "unitAmount": 300,
+                  "currency": "USD",
+                  "decimalPlaces": 2,
+                  "selectedQuantity": 1,
+                  "caloricInfoDisplayString": "",
+                  "isRequiredForOptionPromo": null,
+                  "strikethroughPrice": null,
+                  "dietaryTagsList": [],
+                  "imgUrl": ""
+                }
+              ],
+              "__typename": "Preset"
+            }
+          ],
+          "__typename": "PresetCarousel"
+        }
+      ],
+      "itemType": "HAS_NESTED_OPTIONS",
+      "itemCarousels": [],
+      "itemPreferences": {
+        "id": "user_preferences_id",
+        "title": "User Preferences",
+        "specialInstructions": {
+          "title": "Add Special Instructions",
+          "characterMaxLength": 0,
+          "isEnabled": false,
+          "placeholderText": "The store has chosen not to accept special requests. Contact them directly with questions about their menus.",
+          "__typename": "ItemSpecialInstructions"
+        },
+        "substitutionPreferences": {
+          "title": "If item is unavailable",
+          "substitutionPreferencesList": [
+            {
+              "id": "OPTION_TYPE_SUBSTITUTE",
+              "displayString": "Go with merchant recommendation",
+              "isDefault": true,
+              "value": "substitute",
+              "__typename": "ItemSubstitutionPreference"
+            },
+            {
+              "id": "OPTION_TYPE_REFUND",
+              "displayString": "Refund this item",
+              "isDefault": false,
+              "value": "refund",
+              "__typename": "ItemSubstitutionPreference"
+            },
+            {
+              "id": "OPTION_TYPE_CONTACT",
+              "displayString": "Contact me",
+              "isDefault": false,
+              "value": "contact",
+              "__typename": "ItemSubstitutionPreference"
+            },
+            {
+              "id": "OPTION_TYPE_CANCEL",
+              "displayString": "Cancel the entire order",
+              "isDefault": false,
+              "value": "cancel",
+              "__typename": "ItemSubstitutionPreference"
+            }
+          ],
+          "__typename": "ItemSubstitutionPreferences"
+        },
+        "__typename": "ItemPreferences"
+      },
+      "additionalDescriptions": [],
+      "itemFooter": null,
+      "__typename": "ItemPage"
+    }
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "72366065-8fc8-4681-b599-b5275720f661",
+      "correlationId": "72366065-8fc8-4681-b599-b5275720f661",
+      "ddb": false
+    }
+  }
+}

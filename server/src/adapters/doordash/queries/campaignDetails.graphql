@@ -1,0 +1,58 @@
+# DoorDash GraphQL: campaignDetails
+# Captured from HAR: 2026-03-31T19:28:39.480Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "locale": "en-US",
+#   "placementType": 14,
+#   "landingPageType": "HOMEPAGE",
+#   "skipConsumerAnnouncements": false
+# }
+
+query campaignDetails($locale: String, $placementType: Int, $landingPageType: LandingPageType, $skipConsumerAnnouncements: Boolean!) {
+  ... @skip(if: $skipConsumerAnnouncements) {
+    consumerAnnouncements(
+      locale: $locale
+      placementType: $placementType
+      landingPageType: $landingPageType
+    ) {
+      id
+      title
+      body
+      showOnce
+      renderType
+      announcement {
+        desktopImage
+        mobileImage
+        contents {
+          text
+          styling {
+            font {
+              size
+              family
+              __typename
+            }
+            insets {
+              top
+              right
+              left
+              bottom
+              __typename
+            }
+            color
+            alignment
+            isUnderlined
+            __typename
+          }
+          __typename
+        }
+        primaryActionLabel
+        primaryAction
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}

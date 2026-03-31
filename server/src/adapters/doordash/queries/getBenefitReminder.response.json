@@ -1,0 +1,32 @@
+{
+  "data": {
+    "getBenefitReminder": {
+      "reminderTitle": "empty",
+      "type": "",
+      "icon": null,
+      "metadata": {
+        "amount": null,
+        "isDisplay": false,
+        "tracking": {
+          "benefit_reminder_type": "UNSPECIFIED",
+          "is_guest": false,
+          "placement_type": "NOT_SPECIFIED",
+          "title": "empty",
+          "did_display": false,
+          "type": ""
+        },
+        "__typename": "BenefitReminderMetadata"
+      },
+      "custom": null,
+      "__typename": "GetBenefitReminderResponse"
+    }
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "c9c53844-1319-4363-a668-14828f1693fa",
+      "correlationId": "c9c53844-1319-4363-a668-14828f1693fa",
+      "ddb": false
+    }
+  }
+}

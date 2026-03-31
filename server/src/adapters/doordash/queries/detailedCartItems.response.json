@@ -1,0 +1,57 @@
+{
+  "errors": [
+    {
+      "message": "3 INVALID_ARGUMENT: Cart not found error in previewOrderV2 NOT_FOUND: NOT_FOUND: Missing valid cart id",
+      "extensions": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "exception": {
+          "code": 3,
+          "details": "Cart not found error in previewOrderV2 NOT_FOUND: NOT_FOUND: Missing valid cart id",
+          "metadata": {
+            "content-type": [
+              "application/grpc"
+            ],
+            "x-envoy-upstream-service-time": [
+              "53"
+            ],
+            "date": [
+              "Tue, 31 Mar 2026 19:15:32 GMT"
+            ],
+            "server": [
+              "envoy"
+            ],
+            "isgrpcerror": [
+              "true"
+            ],
+            "path": [
+              "/order_service.ConsumerOrderService/PreviewOrderV2"
+            ]
+          },
+          "progress": "PROCESSED",
+          "correlationId": "7aa8d18c-203b-41e7-b227-83b2919fccbd",
+          "referenceId": "7e276b92c5954ba0b760ddaa1bff48af"
+        },
+        "correlationId": "7aa8d18c-203b-41e7-b227-83b2919fccbd",
+        "referenceId": "7e276b92c5954ba0b760ddaa1bff48af"
+      }
+    }
+  ],
+  "data": {
+    "orderCart": null
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "7aa8d18c-203b-41e7-b227-83b2919fccbd",
+      "correlationId": "7aa8d18c-203b-41e7-b227-83b2919fccbd",
+      "ddb": false
+    },
+    "upstreamServiceInfo": {
+      "version": 1,
+      "upstreamServices": {
+        "serviceName": "",
+        "errorLogs": ""
+      }
+    }
+  }
+}

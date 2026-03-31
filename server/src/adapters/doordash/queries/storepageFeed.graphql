@@ -1,10 +1,1324 @@
-# DoorDash restaurant menu query
-# TODO: Capture actual query from DevTools
+# DoorDash GraphQL: storepageFeed
+# Captured from HAR: 2026-03-31T19:28:39.489Z
+# Response status: 200
 #
-# Steps to capture:
-# 1. Open doordash.com with DevTools Network tab (filter: graphql)
-# 2. Navigate to a restaurant page
-# 3. Copy the storepageFeed query from the request payload
-#
-# Expected variables: { storeId }
-# Expected response: menu categories with items, prices, modifiers
+# Variables example:
+# {
+#   "storeId": "27957635",
+#   "menuId": "60580950",
+#   "isMerchantPreview": false,
+#   "fulfillmentType": "Delivery",
+#   "cursor": null,
+#   "scheduledTime": null,
+#   "entryPoint": "HomePage"
+# }
+
+query storepageFeed($storeId: ID!, $menuId: ID, $isMerchantPreview: Boolean, $fulfillmentType: FulfillmentType, $cursor: String, $menuSurfaceArea: MenuSurfaceArea, $scheduledTime: String, $scheduledMinTimeUtc: String, $scheduledMaxTimeUtc: String, $entryPoint: StoreEntryPoint, $DMGroups: [DMGroup]) {
+  storepageFeed(
+    storeId: $storeId
+    menuId: $menuId
+    isMerchantPreview: $isMerchantPreview
+    fulfillmentType: $fulfillmentType
+    cursor: $cursor
+    menuSurfaceArea: $menuSurfaceArea
+    scheduledTime: $scheduledTime
+    scheduledMinTimeUtc: $scheduledMinTimeUtc
+    scheduledMaxTimeUtc: $scheduledMaxTimeUtc
+    entryPoint: $entryPoint
+    DMGroups: $DMGroups
+  ) {
+    storeHeader {
+      id
+      name
+      description
+      timezone
+      priceRange
+      priceRangeDisplayString
+      offersDelivery
+      offersPickup
+      offersGroupOrder
+      offersCatering
+      offersPackageReturns
+      offersSameStoreCatering
+      offersScheduling
+      isConvenience
+      isDashpassPartner
+      isShippingOnly
+      showGiftEntry
+      photoCountText
+      scrollToCategoryId
+      maxOrderSize
+      additionalHeaderImages {
+        url
+        photoUuid
+        __typename
+      }
+      address {
+        lat
+        lng
+        city
+        state
+        street
+        displayAddress
+        cityLink
+        countryShortname
+        __typename
+      }
+      business {
+        id
+        name
+        link
+        differentialPricingEnabled
+        __typename
+      }
+      businessTags {
+        name
+        link
+        __typename
+      }
+      deliveryFeeLayout {
+        title
+        subtitle
+        isSurging
+        displayDeliveryFee
+        shouldUseDiscountedFee
+        pricingDisclosureInfo
+        shouldHideDeliveryFeeTooltip
+        discountedFeeLayout {
+          title
+          titleColor
+          subtitle
+          subtitleColor
+          strikethroughText
+          strikethroughTextColor
+          icon {
+            name
+            color
+            size
+            __typename
+          }
+          __typename
+        }
+        titleUpsellLayout {
+          title
+          titleColor
+          icon {
+            name
+            color
+            size
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      deliveryTimeLayout {
+        title
+        subtitle
+        tooltip {
+          title
+          description
+          __typename
+        }
+        titleStyle
+        titleIcon {
+          name
+          color
+          __typename
+        }
+        button {
+          ...ConfigurableButtonFragment
+          __typename
+        }
+        __typename
+      }
+      pickupTimeLayout {
+        title
+        subtitle
+        tooltip {
+          title
+          description
+          __typename
+        }
+        titleStyle
+        button {
+          ...ConfigurableButtonFragment
+          __typename
+        }
+        __typename
+      }
+      deliveryFeeTooltip {
+        title
+        description
+        additionalSections {
+          title
+          description
+          bulletDescriptions
+          attributedTitle {
+            title
+            subtitle
+            strikethroughText
+            logo
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      pricingNFeesLayouts {
+        title
+        subtitle
+        strikethroughText
+        __typename
+      }
+      storeTagsList {
+        type
+        name
+        custom
+        __typename
+      }
+      coverImgUrl
+      coverSquareImgUrl
+      businessHeaderImgUrl
+      ratings {
+        numRatings
+        numRatingsDisplayString
+        averageRating
+        isNewlyAdded
+        __typename
+      }
+      savelists {
+        id
+        __typename
+      }
+      distanceFromConsumer {
+        value
+        label
+        __typename
+      }
+      enableSwitchToPickup
+      asapStatus {
+        ...OperatingStatusFragment
+        __typename
+      }
+      asapPickupStatus {
+        ...OperatingStatusFragment
+        __typename
+      }
+      status {
+        delivery {
+          isAvailable
+          minutes
+          displayUnavailableStatus
+          unavailableReason
+          isTooFarFromConsumer
+          isStoreInactive
+          __typename
+        }
+        pickup {
+          isAvailable
+          minutes
+          displayUnavailableStatus
+          unavailableReason
+          isStoreInactive
+          __typename
+        }
+        __typename
+      }
+      asapMinutes
+      asapPickupMinutes
+      currency
+      storeBio
+      travelTime {
+        value
+        type
+        __typename
+      }
+      distanceBasedPricingLayout {
+        ...DistanceBasedPricingLayoutFragment
+        __typename
+      }
+      pickupFeeMessageLayout {
+        title
+        subtitle
+        iconUrl
+        actionUrl
+        tooltip {
+          title
+          description
+          buttons {
+            text
+            action
+            __typename
+          }
+          additionalSections {
+            title
+            description
+            bulletDescriptions
+            attributedTitle {
+              title
+              subtitle
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        logo
+        __typename
+      }
+      serviceFeeLayout {
+        ...ServiceFeeLayoutFragment
+        __typename
+      }
+      liquorLicenseLayout {
+        title
+        actionUrl
+        __typename
+      }
+      fulfillmentToggleLayout {
+        firstFulfillmentLayout {
+          subtitle
+          __typename
+        }
+        secondFulfillmentLayout {
+          subtitle
+          __typename
+        }
+        __typename
+      }
+      pricingDisclosureLayout {
+        ...PricingDisclosureLayoutFragment
+        __typename
+      }
+      benefitLayoutsList {
+        ...BenefitLayoutsListFragment
+        __typename
+      }
+      idealGroupSizeMessageLayout {
+        title
+        tooltip {
+          description
+          __typename
+        }
+        __typename
+      }
+      orderQualityMetadata {
+        idealGroupSize
+        highQualitySubtotalThreshold
+        __typename
+      }
+      shouldHighlightGroupOrderExperience
+      shouldDisplayGroupOrderEducation
+      __typename
+    }
+    footer {
+      ...StoreFooterFragment
+      __typename
+    }
+    mxInfo {
+      ...MxInfoFragment
+      __typename
+    }
+    banners {
+      pickup {
+        id
+        title
+        text
+        __typename
+      }
+      catering {
+        id
+        text
+        __typename
+      }
+      mpCatering {
+        id
+        title
+        text
+        __typename
+      }
+      demandGen {
+        id
+        title
+        text
+        modals {
+          type
+          modalKey
+          modalInfo {
+            title
+            description
+            buttonsList {
+              text
+              action
+              __typename
+            }
+            imageUrl
+            imageSubtitle
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      demandTest {
+        id
+        title
+        text
+        modals {
+          type
+          modalKey
+          modalInfo {
+            title
+            description
+            buttonsList {
+              text
+              action
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      shipAnywhere {
+        ...ShipAnywhereBannerFragment
+        __typename
+      }
+      dashpassGated {
+        id
+        title
+        text
+        version
+        backgroundColor
+        button {
+          text
+          type
+          metadata
+          backgroundColor
+          textWithIcon {
+            segments {
+              type
+              text {
+                displayString
+                textStyle
+                textColor
+                __typename
+              }
+              icon {
+                type
+                color
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        border {
+          borderWidth
+          borderRadius
+          borderColor
+          __typename
+        }
+        styledTitle {
+          displayString
+          textColor
+          textStyle
+          leadingIcon {
+            type
+            color
+            __typename
+          }
+          __typename
+        }
+        styledBodyText {
+          displayString
+          textColor
+          textStyle
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    carousels {
+      id
+      type
+      name
+      description
+      items {
+        id
+        name
+        description
+        displayPrice
+        displayStrikethroughPrice
+        imgUrl
+        dynamicLabelDisplayString
+        calloutDisplayString
+        ratingDisplayString
+        nextCursor
+        orderItemId
+        secondaryCallout {
+          text
+          __typename
+        }
+        dietaryTagsList {
+          type
+          abbreviatedTagDisplayString
+          fullTagDisplayString
+          __typename
+        }
+        reorderCartId
+        reorderUuid
+        unitAmount
+        currency
+        specialInstructions
+        quickAddContext {
+          ...QuickAddContextFragment
+          __typename
+        }
+        badges {
+          title
+          titleColor
+          backgroundColor
+          icon {
+            color
+            name
+            size
+            __typename
+          }
+          badge {
+            ...BadgeFragment
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    menuBook {
+      id
+      name
+      displayOpenHours
+      menuCategories {
+        id
+        name
+        numItems
+        next {
+          anchor
+          cursor
+          __typename
+        }
+        __typename
+      }
+      menuList {
+        id
+        name
+        displayOpenHours
+        __typename
+      }
+      __typename
+    }
+    itemLists {
+      id
+      name
+      description
+      callout {
+        ...MenuCalloutFragment
+        __typename
+      }
+      footer {
+        ...MenuCalloutFragment
+        __typename
+      }
+      items {
+        ...ItemListItemFragment
+        __typename
+      }
+      itemCategoryTabs {
+        id
+        name
+        items {
+          ...ItemListItemFragment
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    disclaimersList {
+      id
+      text
+      __typename
+    }
+    reviewPreview {
+      ...ReviewPreviewFragment
+      __typename
+    }
+    popupContent {
+      id
+      type
+      title
+      message
+      acceptButtonText
+      dismissButtonText
+      metadataList {
+        key
+        value
+        __typename
+      }
+      bulletCopyList
+      showOnce
+      __typename
+    }
+    legallyRequiredPopups {
+      id
+      type
+      title
+      message
+      acceptButtonText
+      dismissButtonText
+      dismissButtonPopup {
+        id
+        type
+        title
+        message
+        acceptButtonText
+        dismissButtonText
+        __typename
+      }
+      metadataList {
+        key
+        value
+        __typename
+      }
+      bulletCopyList
+      showOnce
+      __typename
+    }
+    cateringDetails {
+      ...CateringDetailsFragment
+      __typename
+    }
+    bundling {
+      ...BundlingFragment
+      __typename
+    }
+    experiments {
+      isLoggedOutStorePageEnabled
+      isSeoTrafficFloatingViewCart
+      __typename
+    }
+    welcomeBackModule {
+      data {
+        messageLayout {
+          title
+          titleColor
+          subtitle
+          subtitleColor
+          subtitleCallouts {
+            segments {
+              type
+              text {
+                displayString
+                textColor
+                textStyle
+                __typename
+              }
+              icon {
+                type
+                color
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        profileImage {
+          url
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment QuickAddContextFragment on QuickAddContext {
+  isEligible
+  price {
+    currency
+    decimalPlaces
+    displayString
+    sign
+    symbol
+    unitAmount
+    __typename
+  }
+  nestedOptions
+  specialInstructions
+  defaultQuantity
+  __typename
+}
+
+fragment BundlingFragment on StoreBundlingContent {
+  mixAndMatchBanner {
+    ...BundlingMixAndMatchBannerFragment
+    __typename
+  }
+  siblingStoreMenuBooks {
+    ...BundlingSiblingMenuBookFragment
+    __typename
+  }
+  siblingStoreItemLists {
+    ...BundlingSiblingItemListFragment
+    __typename
+  }
+  __typename
+}
+
+fragment BundlingMixAndMatchBannerFragment on MixAndMatchBanner {
+  id
+  title
+  subtitle
+  stores {
+    id
+    name
+    imageUrl
+    anchor
+    __typename
+  }
+  __typename
+}
+
+fragment BundlingSiblingMenuBookFragment on MenuBook {
+  id
+  name
+  description
+  imageUrl
+  menuCategories {
+    id
+    name
+    numItems
+    next {
+      anchor
+      cursor
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment BundlingSiblingItemListFragment on MenuPageItemList {
+  id
+  name
+  description
+  items {
+    id
+    name
+    description
+    displayPrice
+    imageUrl
+    dynamicLabelDisplayString
+    calloutDisplayString
+    logging
+    secondaryCallout {
+      logo
+      text
+      __typename
+    }
+    quickAddContext {
+      ...QuickAddContextFragment
+      __typename
+    }
+    dietaryTagsList {
+      type
+      abbreviatedTagDisplayString
+      fullTagDisplayString
+      __typename
+    }
+    nextCursor
+    ratingDisplayString
+    storeId
+    overrideNavigateUrl
+    displayStrikethroughPrice
+    servingSizeDisplayString
+    badges {
+      title
+      titleColor
+      backgroundColor
+      icon {
+        color
+        name
+        size
+        __typename
+      }
+      badge {
+        ...BadgeFragment
+        __typename
+      }
+      __typename
+    }
+    minLeadTime
+    __typename
+  }
+  __typename
+}
+
+fragment BadgeFragment on Badge {
+  isDashpass
+  type
+  text
+  backgroundColor
+  styleType
+  dlsTagSize
+  dlsTextStyle
+  dlsTagStyle
+  dlsTagType
+  placement
+  leadingIcon
+  leadingIconSize
+  trailingIcon
+  trailingIconSize
+  endTime
+  dlsTextColor
+  brandedDecorator {
+    prefixText
+    postfixText
+    postfixTextLeadingIcon
+    __typename
+  }
+  trailingText {
+    copy
+    dlsTextStyle
+    dlsTextColor
+    __typename
+  }
+  onClick
+  __typename
+}
+
+fragment OperatingStatusFragment on AsapStatus {
+  unavailableStatus
+  displayUnavailableStatus
+  unavailableReason
+  displayUnavailableReason {
+    title
+    subtitle
+    __typename
+  }
+  unavailableReasonStyling {
+    foregroundColor
+    backgroundColor
+    __typename
+  }
+  isAvailable
+  unavailableReasonKeysList
+  numMinutesUntilClose
+  operatingSummaryLayout {
+    title
+    titleColor
+    subtitle
+    subtitleColor
+    buttons {
+      ...ConfigurableButtonFragment
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment ConfigurableButtonFragment on ConfigurableButton {
+  text
+  type
+  actionUrl
+  metadata
+  alignment
+  __typename
+}
+
+fragment ReviewPreviewFragment on ReviewPreview {
+  maxNumStars
+  consumerReviewData {
+    avgRating
+    numRatings
+    numRatingsDisplayString
+    insufficientRatings
+    numReviews
+    numReviewsDisplayString
+    consumerReviews {
+      consumerReviewUuid
+      reviewerDisplayName
+      starRating
+      reviewedAt
+      reviewText
+      markedUpReviewText
+      isVerified
+      experience
+      reviewSource
+      taggedItems {
+        id
+        name
+        __typename
+      }
+      items {
+        id
+        name
+        __typename
+      }
+      consumerReviewSource
+      reviewerData {
+        id
+        creatorProfileUri
+        displayName
+        description
+        profileImage {
+          url
+          __typename
+        }
+        isVerified
+        categoryHighlightTag
+        __typename
+      }
+      reviewPhotoDetails {
+        ...UgcPhotoDetailsFragment
+        __typename
+      }
+      photoCountDisplayString
+      ratingTag {
+        ratingIcon
+        ratingTitle
+        __typename
+      }
+      __typename
+    }
+    googleReviewData {
+      avgRating
+      numRatings
+      numRatingsDisplayString
+      __typename
+    }
+    starsRatingCount {
+      starsRating
+      ratingCount
+      __typename
+    }
+    themeMentions {
+      themeLabel
+      themeLabelDisplayString
+      themeMentionCount
+      themeSentiment
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment UgcPhotoDetailsFragment on PhotoDetails {
+  title
+  subtitle
+  photoUuid
+  photoUrl
+  submissionTimeDisplayString
+  createdAt
+  reviewerData {
+    displayName
+    profileImage {
+      url
+      __typename
+    }
+    __typename
+  }
+  photoTaggedItems {
+    itemId
+    itemIdStr
+    itemName
+    price {
+      currency
+      displayString
+      decimalPlaces
+      unitAmount
+      sign
+      symbol
+      __typename
+    }
+    image {
+      url
+      __typename
+    }
+    categoryName
+    __typename
+  }
+  __typename
+}
+
+fragment MenuCalloutFragment on MessageLayout {
+  title
+  titleColor
+  subtitle
+  iconUrl
+  actionUrl
+  buttons {
+    text
+    type
+    actionUrl
+    metadata
+    alignment
+    __typename
+  }
+  __typename
+}
+
+fragment CateringDetailsFragment on CateringDetailsDM {
+  id
+  data {
+    orderTimeInAdvance {
+      title
+      subtitle
+      __typename
+    }
+    cancelOrderTimeInAdvance {
+      title
+      subtitle
+      __typename
+    }
+    deliveryFee {
+      title
+      subtitle
+      __typename
+    }
+    minOrderSize {
+      title
+      subtitle
+      __typename
+    }
+    header {
+      title
+      subtitle
+      __typename
+    }
+    siblingStoreInfo {
+      siblingStoreId
+      siblingStoreType
+      __typename
+    }
+    cateringMenuInfo {
+      defaultMenuId
+      __typename
+    }
+    orderTimeInAdvanceValue {
+      rawValue
+      unit
+      text
+      __typename
+    }
+    minOrderSizeValue {
+      rawValue
+      unit
+      text
+      __typename
+    }
+    modifyTimeInAdvanceValue {
+      rawValue
+      unit
+      text
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment DistanceBasedPricingLayoutFragment on MessageLayout {
+  title
+  titleColor
+  subtitle
+  subtitleColor
+  iconUrl
+  actionUrl
+  strikethroughText
+  strikethroughTextColor
+  tooltip {
+    title
+    description
+    buttons {
+      text
+      action
+      __typename
+    }
+    image {
+      url
+      photoUuid
+      __typename
+    }
+    additionalSections {
+      attributedTitle {
+        title
+        titleColor
+        icon {
+          name
+          color
+          size
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  icon {
+    name
+    color
+    size
+    __typename
+  }
+  backgroundColor
+  badge {
+    text
+    type
+    backgroundColor
+    endTime
+    dlsTagStyle
+    dlsTagSize
+    dlsTagType
+    __typename
+  }
+  __typename
+}
+
+fragment PricingDisclosureLayoutFragment on MessageLayout {
+  title
+  subtitle
+  tooltip {
+    title
+    bulletDescriptions
+    __typename
+  }
+  __typename
+}
+
+fragment ServiceFeeLayoutFragment on MessageLayout {
+  title
+  subtitle
+  iconUrl
+  actionUrl
+  tooltip {
+    title
+    description
+    buttons {
+      text
+      action
+      __typename
+    }
+    banners {
+      title
+      titleLogo
+      description
+      buttons {
+        text
+        action
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment ShipAnywhereBannerFragment on StoreBannerContent {
+  id
+  title
+  text
+  modals {
+    type
+    modalKey
+    modalInfo {
+      title
+      description
+      buttonsList {
+        text
+        action
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  popup {
+    title
+    dismissButtonText
+    bulletCopyList
+    __typename
+  }
+  __typename
+}
+
+fragment ItemListItemFragment on MenuPageItem {
+  id
+  name
+  description
+  displayPrice
+  displayStrikethroughPrice
+  logging
+  imageUrl
+  dietaryTagsList {
+    type
+    abbreviatedTagDisplayString
+    fullTagDisplayString
+    __typename
+  }
+  dynamicLabelDisplayString
+  calloutDisplayString
+  secondaryCallout {
+    logo
+    text
+    __typename
+  }
+  quickAddContext {
+    ...QuickAddContextFragment
+    __typename
+  }
+  nextCursor
+  ratingDisplayString
+  servingSizeDisplayString
+  storeId
+  overrideNavigateUrl
+  badges {
+    title
+    titleColor
+    backgroundColor
+    icon {
+      color
+      name
+      size
+      __typename
+    }
+    badge {
+      ...BadgeFragment
+      __typename
+    }
+    __typename
+  }
+  minLeadTime
+  __typename
+}
+
+fragment StoreFooterFragment on StoreFooterDm {
+  id
+  type
+  sortOrder
+  data {
+    dashpassPreviewFooter {
+      enabledMessage
+      disabledMessage
+      __typename
+    }
+    __typename
+  }
+  version
+  __typename
+}
+
+fragment MxInfoFragment on MxInfoData {
+  website
+  phoneno
+  address {
+    lat
+    lng
+    street
+    city
+    displayAddress
+    state
+    cityLink
+    countryShortname
+    __typename
+  }
+  operationInfo {
+    operationStatusInfo {
+      description
+      operationStatus
+      __typename
+    }
+    storeOperationHourInfo {
+      description
+      operationSchedule {
+        dayOfWeek
+        timeSlotList
+        __typename
+      }
+      __typename
+    }
+    doordashOperationHourInfo {
+      description
+      operationSchedule {
+        dayOfWeek
+        timeSlotList
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  dayOfWeek
+  __typename
+}
+
+fragment BenefitLayoutsListFragment on MessageLayout {
+  title
+  titleColor
+  subtitle
+  subtitleColor
+  iconUrl
+  actionUrl
+  tooltip {
+    title
+    description
+    buttons {
+      text
+      action
+      __typename
+    }
+    image {
+      url
+      photoUuid
+      __typename
+    }
+    __typename
+  }
+  icon {
+    name
+    color
+    size
+    __typename
+  }
+  backgroundColor
+  badge {
+    text
+    type
+    backgroundColor
+    endTime
+    dlsTagStyle
+    dlsTagSize
+    dlsTagType
+    __typename
+  }
+  buttons {
+    text
+    metadata
+    __typename
+  }
+  __typename
+}

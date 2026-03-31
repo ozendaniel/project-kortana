@@ -1,0 +1,12 @@
+# DoorDash GraphQL: getOpenCartsCount
+# Captured from HAR: 2026-03-31T19:28:39.501Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "input": {}
+# }
+
+query getOpenCartsCount($input: GetOpenCartsCountInput!) {
+  getOpenCartsCount(input: $input)
+}

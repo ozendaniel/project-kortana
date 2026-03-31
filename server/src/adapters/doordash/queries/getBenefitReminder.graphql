@@ -1,0 +1,42 @@
+# DoorDash GraphQL: getBenefitReminder
+# Captured from HAR: 2026-03-31T19:28:39.487Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "placementType": "BENEFIT_REMINDER_PLACEMENT_TYPE_STORE",
+#   "cursor": "",
+#   "teamId": ""
+# }
+
+query getBenefitReminder($placementType: BenefitReminderPlacementTypeMap!, $cursor: String, $teamId: String) {
+  getBenefitReminder(
+    placementType: $placementType
+    cursor: $cursor
+    teamId: $teamId
+  ) {
+    reminderTitle
+    type
+    icon
+    metadata {
+      amount
+      isDisplay
+      tracking
+      __typename
+    }
+    custom {
+      isDashpass
+      subtitle
+      hasDismiss
+      action {
+        type
+        title
+        description
+        buttonText
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}

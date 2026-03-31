@@ -1,0 +1,18 @@
+# DoorDash GraphQL: getPersonalAddressLabels
+# Captured from HAR: 2026-03-31T19:28:39.481Z
+# Response status: 200
+#
+# Variables example:
+# {}
+
+query getPersonalAddressLabels {
+  getPersonalAddressLabels {
+    address {
+      id
+      __typename
+    }
+    labelIcon
+    labelName
+    __typename
+  }
+}

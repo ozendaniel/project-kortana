@@ -1,0 +1,54 @@
+# DoorDash GraphQL: getAvailableAddresses
+# Captured from HAR: 2026-03-31T19:28:39.485Z
+# Response status: 200
+#
+# Variables example:
+# {}
+
+query getAvailableAddresses {
+  getAvailableAddresses {
+    ...DefaultAddressFragment
+    __typename
+  }
+}
+
+fragment DefaultAddressFragment on DefaultAddress {
+  id
+  addressId
+  street
+  city
+  subpremise
+  state
+  zipCode
+  country
+  countryCode
+  lat
+  lng
+  districtId
+  manualLat
+  manualLng
+  timezone
+  shortname
+  printableAddress
+  driverInstructions
+  dropoffPreferences {
+    allPreferences {
+      optionId
+      isDefault
+      instructions
+      __typename
+    }
+    __typename
+  }
+  buildingName
+  entryCode
+  addressLinkType
+  personalAddressLabel {
+    labelIcon
+    labelName
+    __typename
+  }
+  formattedAddressSegmentedList
+  formattedAddressSegmentedNonUserEditableFieldsList
+  __typename
+}

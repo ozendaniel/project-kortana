@@ -1,0 +1,118 @@
+{
+  "capturedAt": "2026-03-31T19:28:39.503Z",
+  "totalRequests": 43,
+  "operations": [
+    {
+      "name": "addCartItem",
+      "count": 1
+    },
+    {
+      "name": "autocompleteFacetFeed",
+      "count": 6
+    },
+    {
+      "name": "campaignDetails",
+      "count": 2
+    },
+    {
+      "name": "consumerOrderCart",
+      "count": 1
+    },
+    {
+      "name": "detailedCartItems",
+      "count": 1
+    },
+    {
+      "name": "deviceAttestation",
+      "count": 1
+    },
+    {
+      "name": "externalStores",
+      "count": 2
+    },
+    {
+      "name": "getAvailableAddresses",
+      "count": 1
+    },
+    {
+      "name": "getBenefitReminder",
+      "count": 1
+    },
+    {
+      "name": "getConsentsByUserTypeAndId",
+      "count": 1
+    },
+    {
+      "name": "getConsumerOrdersWithDetails",
+      "count": 2
+    },
+    {
+      "name": "getGeoByIP",
+      "count": 1
+    },
+    {
+      "name": "getHasNewNotifications",
+      "count": 2
+    },
+    {
+      "name": "getLoyaltyProgramDetails",
+      "count": 2
+    },
+    {
+      "name": "getOpenCartsCount",
+      "count": 1
+    },
+    {
+      "name": "getPersonalAddressLabels",
+      "count": 2
+    },
+    {
+      "name": "getPlacements",
+      "count": 2
+    },
+    {
+      "name": "getSideNavDynamicTabs",
+      "count": 1
+    },
+    {
+      "name": "homePageFacetFeed",
+      "count": 3
+    },
+    {
+      "name": "itemPage",
+      "count": 1
+    },
+    {
+      "name": "listCarts",
+      "count": 1
+    },
+    {
+      "name": "listDetailedCarts",
+      "count": 1
+    },
+    {
+      "name": "markRecentlyVisitedStoreV2",
+      "count": 1
+    },
+    {
+      "name": "postLoginQuery",
+      "count": 1
+    },
+    {
+      "name": "promoStickyFooter",
+      "count": 2
+    },
+    {
+      "name": "setUserLocalePreference",
+      "count": 1
+    },
+    {
+      "name": "storepageFeed",
+      "count": 1
+    },
+    {
+      "name": "updateConsumerDefaultAddressV2",
+      "count": 1
+    }
+  ]
+}

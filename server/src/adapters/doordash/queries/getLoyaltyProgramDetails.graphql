@@ -1,0 +1,60 @@
+# DoorDash GraphQL: getLoyaltyProgramDetails
+# Captured from HAR: 2026-03-31T19:28:39.494Z
+# Response status: 200
+#
+# Variables example:
+# {
+#   "storeId": "27957635"
+# }
+
+query getLoyaltyProgramDetails($storeId: ID!) {
+  getLoyaltyProgramDetails(storeId: $storeId) {
+    programId
+    programExperience
+    header {
+      pageTitle
+      merchantName
+      __typename
+    }
+    programExplanation {
+      title
+      explanationText
+      __typename
+    }
+    termsAndConditions {
+      termsText
+      __typename
+    }
+    footer {
+      ctaAction
+      ctaTitle
+      __typename
+    }
+    omnichannelLoyaltyLinkingView {
+      icon
+      title
+      description
+      button {
+        enabled
+        enabledTitle
+        disabledTitle
+        __typename
+      }
+      modalContent {
+        title
+        body1
+        body2
+        footer
+        button {
+          enabled
+          enabledTitle
+          disabledTitle
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}

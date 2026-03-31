@@ -1,0 +1,13 @@
+{
+  "data": {
+    "setUserLocalePreference": true
+  },
+  "extensions": {
+    "requestInfo": {
+      "version": 1,
+      "requestId": "d24a03d0-1874-45d4-852e-26ed610fbecf",
+      "correlationId": "d24a03d0-1874-45d4-852e-26ed610fbecf",
+      "ddb": false
+    }
+  }
+}

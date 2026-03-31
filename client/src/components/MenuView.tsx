@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getMenu } from '../api/client';
@@ -11,7 +12,9 @@ function formatCents(cents: number): string {
 export default function MenuView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addItem, setRestaurant, items } = useCartStore();
+  const addItem = useCartStore((s) => s.addItem);
+  const restaurantId = useCartStore((s) => s.restaurantId);
+  const setRestaurant = useCartStore((s) => s.setRestaurant);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['menu', id],
@@ -19,15 +22,17 @@ export default function MenuView() {
     enabled: !!id,
   });
 
+  // Set restaurant in cart when navigating to a new restaurant
+  useEffect(() => {
+    if (data?.restaurant && data.restaurant.id !== restaurantId) {
+      setRestaurant(data.restaurant.id, data.restaurant.name);
+    }
+  }, [data?.restaurant?.id]);
+
   if (isLoading) return <p className="text-gray-400">Loading menu...</p>;
   if (error || !data) return <p className="text-red-500">Error loading menu.</p>;
 
   const { restaurant, menu } = data;
-
-  // Set restaurant in cart on first load
-  if (!items.length) {
-    setRestaurant(restaurant.id, restaurant.name);
-  }
 
   const handleAddItem = (item: { id: string; name: string; platforms: Record<string, { priceCents: number; available: boolean }> }) => {
     addItem({

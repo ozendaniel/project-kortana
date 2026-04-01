@@ -67,9 +67,15 @@ export interface SearchResult {
   location: { lat: number; lng: number; formattedAddress: string };
 }
 
-export async function searchRestaurants(address: string, query?: string): Promise<SearchResult> {
+export async function searchRestaurants(
+  address: string,
+  query?: string,
+  options?: { radius?: number; cuisine?: string }
+): Promise<SearchResult> {
   const params = new URLSearchParams({ address });
   if (query) params.set('q', query);
+  if (options?.radius) params.set('radius', String(options.radius));
+  if (options?.cuisine) params.set('cuisine', options.cuisine);
   const { data } = await api.get(`/restaurants/search?${params}`);
   return { restaurants: data.restaurants, location: data.location };
 }

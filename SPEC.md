@@ -537,7 +537,13 @@ Run at 3:00 AM ET daily (lowest delivery demand, least likely to trigger bot det
 
 ### Search
 ```
-GET /api/restaurants/search?address={address}&q={optional_name_query}
+GET /api/restaurants/search?address={address}&q={name}&radius={km}&cuisine={type}
+
+Query params:
+  address  (required)  — street address, geocoded server-side
+  q        (optional)  — filter by restaurant name (ILIKE)
+  radius   (optional)  — search radius in km (default 8, max 25)
+  cuisine  (optional)  — filter by cuisine type (ILIKE on cuisine_tags array)
 
 Response: {
   restaurants: [{
@@ -545,13 +551,12 @@ Response: {
     name: "Joe's Pizza",
     address: "7 Carmine St, New York, NY",
     cuisines: ["italian", "pizza"],
-    rating: 4.5,
     platforms: {
-      doordash: { available: true, deliveryTime: "25-35 min", deliveryFee: 299 },
-      seamless: { available: true, deliveryTime: "30-40 min", deliveryFee: 199 }
-    },
-    imageUrl: "https://..."
-  }]
+      doordash: { available: true },
+      seamless: { available: true }
+    }
+  }],
+  location: { lat: 40.730, lng: -73.999, formattedAddress: "..." }
 }
 ```
 

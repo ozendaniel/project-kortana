@@ -6,19 +6,37 @@ import { useCartStore } from '../stores/cartStore';
 import AddressInput from './AddressInput';
 import RestaurantCard from './RestaurantCard';
 
+const CUISINE_OPTIONS = [
+  'American', 'Chinese', 'Italian', 'Japanese', 'Korean', 'Mexican',
+  'Thai', 'Indian', 'Mediterranean', 'Pizza', 'Burgers', 'Sushi',
+  'Vietnamese', 'Seafood', 'Dessert', 'Breakfast', 'Healthy', 'Vegan',
+];
+
+const RADIUS_OPTIONS = [
+  { label: '2 km', value: 2 },
+  { label: '5 km', value: 5 },
+  { label: '8 km', value: 8 },
+  { label: '15 km', value: 15 },
+  { label: '25 km', value: 25 },
+];
+
 export default function RestaurantSearch() {
   const navigate = useNavigate();
   const [address, setAddress] = useState('');
   const [nameQuery, setNameQuery] = useState('');
+  const [cuisine, setCuisine] = useState('');
+  const [radius, setRadius] = useState(8);
   const setDeliveryAddress = useCartStore((s) => s.setDeliveryAddress);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['restaurants', address, nameQuery],
-    queryFn: () => searchRestaurants(address, nameQuery || undefined),
+    queryKey: ['restaurants', address, nameQuery, cuisine, radius],
+    queryFn: () => searchRestaurants(address, nameQuery || undefined, {
+      radius,
+      cuisine: cuisine || undefined,
+    }),
     enabled: !!address,
   });
 
-  // Store geocoded address in cart when search results come back
   useEffect(() => {
     if (data?.location) {
       setDeliveryAddress({
@@ -29,48 +47,86 @@ export default function RestaurantSearch() {
     }
   }, [data?.location?.lat, data?.location?.lng]);
 
-  const handleAddressSet = (addr: string) => {
-    setAddress(addr);
-  };
-
-  const handleRestaurantClick = (id: string) => {
-    navigate(`/restaurant/${id}`);
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-up">
+      {/* Hero */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Find the best price</h1>
-        <p className="text-gray-500">Compare DoorDash and Seamless prices for your order</p>
+        <h1 className="font-display text-4xl md:text-5xl text-text-primary tracking-tight italic">
+          Find the best price
+        </h1>
+        <p className="text-text-secondary text-sm mt-2 max-w-md">
+          Compare DoorDash and Seamless for every order. Same food, different prices.
+        </p>
       </div>
 
-      <AddressInput onAddressSet={handleAddressSet} />
+      {/* Address */}
+      <AddressInput onAddressSet={setAddress} />
 
+      {/* Filters */}
       {address && (
-        <div>
+        <div className="animate-fade-in space-y-3">
           <input
             type="text"
             value={nameQuery}
             onChange={(e) => setNameQuery(e.target.value)}
-            placeholder="Filter by restaurant name..."
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search by name..."
+            className="w-full px-4 py-2.5 bg-surface border border-border-subtle rounded-sm text-sm transition-colors"
           />
+          <div className="flex gap-3">
+            <select
+              value={cuisine}
+              onChange={(e) => setCuisine(e.target.value)}
+              className="flex-1 px-3 py-2 bg-surface border border-border-subtle rounded-sm text-sm text-text-secondary transition-colors"
+            >
+              <option value="">All cuisines</option>
+              {CUISINE_OPTIONS.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <select
+              value={radius}
+              onChange={(e) => setRadius(Number(e.target.value))}
+              className="px-3 py-2 bg-surface border border-border-subtle rounded-sm text-sm text-text-secondary transition-colors"
+            >
+              {RADIUS_OPTIONS.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
       )}
 
-      {isLoading && <p className="text-gray-400">Searching restaurants...</p>}
-      {error && <p className="text-red-500">Error searching restaurants. Try again.</p>}
-
-      {data?.restaurants && (
-        <div className="space-y-3">
-          <p className="text-sm text-gray-400">{data.restaurants.length} restaurants found</p>
-          {data.restaurants.map((r) => (
-            <RestaurantCard
-              key={r.id}
-              restaurant={r}
-              onClick={() => handleRestaurantClick(r.id)}
-            />
+      {/* Loading */}
+      {isLoading && (
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="skeleton h-14 rounded-sm" style={{ animationDelay: `${i * 100}ms` }} />
           ))}
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <p className="text-coral text-sm font-mono">Error searching. Try again.</p>
+      )}
+
+      {/* Results */}
+      {data?.restaurants && (
+        <div>
+          <div className="flex items-baseline justify-between mb-3">
+            <span className="text-xs font-mono text-text-muted tracking-wide uppercase">
+              {data.restaurants.length} restaurants
+            </span>
+          </div>
+          <div className="space-y-1 stagger">
+            {data.restaurants.map((r) => (
+              <RestaurantCard
+                key={r.id}
+                restaurant={r}
+                onClick={() => navigate(`/restaurant/${r.id}`)}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

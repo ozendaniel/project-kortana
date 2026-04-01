@@ -25,7 +25,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Architecture, data model, adapter interface, and build phases defined
 - Business model validated: average $2-3 savings per order makes $10/month a clear win at 5+ orders/month
 - Full project scaffold: React + Express + PostgreSQL + Playwright (2026-03-31)
-- Railway Postgres provisioned and all 4 migrations applied (restaurants, menus, menu_items, orders)
+- Railway Postgres provisioned and all 5 migrations applied (restaurants, menus, menu_items, orders, restaurant_discovery indexes)
 - DoorDash GraphQL queries captured from HAR file — 28 unique operations including homePageFacetFeed (search), storepageFeed (menu), addCartItem (cart)
 - Seamless/Grubhub REST API endpoints captured from HAR — 40+ endpoints cataloged with request/response samples in `server/src/adapters/seamless/endpoints/`
 - DoorDash adapter live-tested (2026-04-01): searchRestaurants returns ~57 restaurants, getMenu returns full menus (421 items for test restaurant). getFees returns live subtotal + total from DoorDash's PreviewOrderV2 (via main tab cart → detailedCartItems query). Falls back to estimated fees if live cart fails.
@@ -41,12 +41,20 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Non-blocking adapter init: server starts instantly, shows session status on Settings page. Login via portal when sessions expire.
 - WebSocket server on /ws for real-time browser frame streaming and auth status updates
 - Railway-ready: Dockerfile with Google Chrome, persistent volume support for session profiles, cross-platform Chrome path detection
+- Frontend redesigned with "Noir Receipt" aesthetic: dark theme (#0C0B0E base), Instrument Serif headings, JetBrains Mono prices, DM Sans UI text, electric lime (#C8FF2E) savings accent. Receipt-style comparison with dotted separators, winner stripe, staggered animations. Mobile-friendly with bottom cart bar.
+- Bulk restaurant discovery completed (2026-04-01): 616 Seamless restaurants via Manhattan grid search (35 points), 592 DoorDash restaurants via paginated feed (15 pages). Cross-platform dedup matched 33 restaurants. 1,175 total restaurants in DB.
+- DoorDash search component changed from `row.store` to `card.store` — facet component system updated
+- DoorDash discovery uses main tab with full SPA context (API tab returns empty feed due to Cloudflare). Headful Chrome required for discovery (headless gets 403).
+- Search filters: cuisine type dropdown and radius selector (1-25km) on restaurant search. Server-side filtering via bounding box + cuisine ILIKE on cuisine_tags array.
+- Migration 005 adds unique partial indexes on doordash_id and seamless_id for upsert support
+- Dedup enhanced with name-only matching fallback (for DoorDash restaurants without precise addresses) and dry-run mode
 
 **What's next:**
-1. Build automated deduplication pipeline (fuzzy matching restaurants + menu items across platforms)
-2. Seed more restaurants for broader NYC coverage
-3. Implement savings tracking (log comparisons/orders to DB)
-4. Deploy to Railway (Dockerfile ready, need persistent volume for session profiles)
+1. Implement savings tracking (log comparisons/orders to DB)
+2. Deploy to Railway (Dockerfile ready, need persistent volume for session profiles)
+3. Expand restaurant coverage: more DoorDash pages, cuisine-filtered queries, Brooklyn/Queens grids
+4. Enrich DoorDash restaurants with real addresses via storepageFeed (--enrich flag on discover script)
+5. Review 21 flagged dedup matches and tighten matching thresholds
 
 ## Architecture Decisions
 
@@ -84,7 +92,7 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - **Protection:** Cloudflare TLS fingerprinting — must use real Chrome via spawn + connectOverCDP (same as Seamless). Playwright's launchPersistentContext triggers bot detection.
 - **Browser approach:** Real Chrome spawned headless (--headless=new) on CDP port 9224. Dedicated API tab with route blocking (only allows /graphql + document requests) prevents DoorDash SPA from navigating and destroying page.evaluate context. Login handled via CDP screencast streamed to Kortana portal.
 - **Key queries:** homePageFacetFeed (search), storepageFeed (menu), addCartItem, createOrderFromCart
-- **Search response format:** Facet component system. Stores identified by `component.id === 'row.store'`. Name in `text.title`, store ID in `custom` (JSON string, key `store_id`), rating in `custom.rating.average_rating`, ETA in `text.custom[key='eta_display_string']`, URL in `events.click.data` (JSON).
+- **Search response format:** Facet component system. Stores identified by `component.id === 'card.store'` (changed from `row.store` circa 2026-04). Name in `text.title`, store ID in `custom` (JSON string, key `store_id`), rating in `custom.rating.average_rating`, ETA in `text.description`, URL in `events.click.data` (JSON). Pagination cursor in `page.next.data` (JSON string with base64 `cursor` field).
 - **Rate limiting:** DoorDash returns 429 aggressively. graphqlQuery retries with 4-15s exponential backoff. All adapter methods add 2-3s delays between calls.
 - **Fee extraction:** Read queries (search, menu) use the API tab. Cart mutations (addCartItem, detailedCartItems/orderCart) use the MAIN tab navigated to the store page, which has full DoorDash JS context. `detailedCartItems` calls `PreviewOrderV2` on the backend, which returns real subtotal + total with fees computed. Individual fee line items (delivery, service) may be null — compare using total. Falls back to estimated fees (15% service + $2.99 delivery) if live cart fails.
 - **Session persistence:** ~/.kortana/doordash-profile/
@@ -119,7 +127,7 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `server/src/scripts/parse-seamless-har.ts` | Script to extract REST endpoints from Chrome HAR files (Seamless) |
 | `server/src/scripts/seed-from-har.ts` | Seed DB with DoorDash restaurant/menu data from captured responses |
 | `server/src/scripts/seed-seamless-from-har.ts` | Seed DB with Seamless menu data from captured responses |
-| `server/src/db/migrations/` | SQL migration files (001-004), run via `npm run migrate` from server/ |
+| `server/src/db/migrations/` | SQL migration files (001-005), run via `npm run migrate` from server/ |
 | `server/src/services/auth-manager.ts` | Auth orchestrator: CDP screencast streaming, login flow management, session monitoring |
 | `server/src/services/ws-server.ts` | WebSocket server for real-time browser frame streaming and input forwarding |
 | `server/src/routes/auth.ts` | REST endpoints for auth status and logout |
@@ -127,6 +135,12 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `client/src/components/SettingsPage.tsx` | Platform connection management UI |
 | `client/src/components/BrowserView.tsx` | Canvas-based browser view with CDP screencast rendering and input forwarding |
 | `Dockerfile` | Docker build with Google Chrome for Railway deployment |
+| `client/src/app.css` | Design system: color tokens, font imports (Instrument Serif, DM Sans, JetBrains Mono), animations, receipt-style utilities |
+| `server/src/scripts/discover-seamless.ts` | Seamless bulk restaurant discovery via Manhattan grid search (35 points) |
+| `server/src/scripts/discover-doordash.ts` | DoorDash bulk restaurant discovery via paginated feed + optional --enrich for addresses |
+| `server/src/scripts/run-dedup.ts` | Cross-platform restaurant deduplication runner with --dry-run support |
+| `server/src/scripts/refresh-menus.ts` | Fetch live menus from adapters, upsert to DB, run item matching |
+| `server/src/services/deduplication.ts` | Restaurant dedup: geo-based + name-only matching with configurable thresholds |
 
 ## Competitive Landscape
 
@@ -163,6 +177,7 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - Platform adapter pattern: every platform implements the same interface
 - Environment variables for credentials (Phase 1), encrypted DB storage (Phase 4)
 - WIP commits are fine — clean up with rebase before any public release
+- Frontend design: "Noir Receipt" dark theme. Colors/fonts defined as CSS custom properties in `app.css` via Tailwind `@theme`. Use `font-display` (Instrument Serif) for headings, `font-mono` (JetBrains Mono) for prices/data, `font-body` (DM Sans) for UI. Platform prices always ordered DoorDash first, Seamless second.
 
 ## Reminders for Claude Code Sessions
 

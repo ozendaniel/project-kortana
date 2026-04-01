@@ -15,13 +15,16 @@ router.get('/search', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'address query parameter is required' });
     }
 
+    const radiusKm = Math.min(Math.max(parseFloat(req.query.radius as string) || 8, 1), 25);
+    const cuisine = req.query.cuisine as string | undefined;
+
     // Geocode the address
     const geo = await geocodeAddress(address);
     if (!geo) {
       return res.status(400).json({ error: 'Unable to geocode address' });
     }
 
-    // Build query — search by proximity and optional name filter
+    // Build query — search by proximity and optional filters
     let query = `
       SELECT id, canonical_name, address, lat, lng, cuisine_tags,
              doordash_id, seamless_id, doordash_url, seamless_url
@@ -30,9 +33,9 @@ router.get('/search', async (req: Request, res: Response) => {
     `;
     const params: unknown[] = [];
 
-    // Filter by proximity (rough bounding box ~3km)
-    const latDelta = 0.027; // ~3km
-    const lngDelta = 0.036;
+    // Filter by proximity (bounding box from radius parameter)
+    const latDelta = radiusKm / 111; // 1 degree lat ≈ 111km
+    const lngDelta = radiusKm / (111 * Math.cos(geo.lat * Math.PI / 180));
     params.push(geo.lat - latDelta, geo.lat + latDelta, geo.lng - lngDelta, geo.lng + lngDelta);
     query += ` AND lat BETWEEN $1 AND $2 AND lng BETWEEN $3 AND $4`;
 
@@ -42,7 +45,13 @@ router.get('/search', async (req: Request, res: Response) => {
       query += ` AND canonical_name ILIKE $${params.length}`;
     }
 
-    query += ' ORDER BY canonical_name LIMIT 50';
+    // Optional cuisine filter (matches any element in cuisine_tags array)
+    if (cuisine && typeof cuisine === 'string') {
+      params.push(`%${cuisine}%`);
+      query += ` AND array_to_string(cuisine_tags, ',') ILIKE $${params.length}`;
+    }
+
+    query += ' ORDER BY canonical_name LIMIT 500';
 
     const result = await db.query(query, params);
 

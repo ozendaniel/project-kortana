@@ -16,7 +16,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 
 ## Current Status
 
-**Phase:** Phase 1 — in progress. Both adapters implemented, comparison engine working end-to-end with seeded data and DB-based fee estimation.
+**Phase:** Phase 1 — in progress. Both live adapters working for search + menu. Comparison engine operational with live prices + estimated fees.
 
 **What's been done:**
 - Full competitive landscape research (MealMe pivoted to B2B API, FoodBoss is superficial — consumer "Kayak for food delivery" opportunity is unoccupied)
@@ -28,18 +28,21 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Railway Postgres provisioned and all 4 migrations applied (restaurants, menus, menu_items, orders)
 - DoorDash GraphQL queries captured from HAR file — 28 unique operations including homePageFacetFeed (search), storepageFeed (menu), addCartItem (cart)
 - Seamless/Grubhub REST API endpoints captured from HAR — 40+ endpoints cataloged with request/response samples in `server/src/adapters/seamless/endpoints/`
-- DoorDash adapter implemented: searchRestaurants (GraphQL homePageFacetFeed), getMenu (storepageFeed), getFees (addCartItem + cart parsing)
-- Seamless adapter implemented: searchRestaurants, getMenu, getFees via REST API with browser-based fetch (page.evaluate) to bypass PerimeterX bot detection
-- Comparison engine working: DB-based fallback calculates prices from seeded menu data + estimated fees (DoorDash 15% service, Seamless 22% service) when no live adapters are running. Live adapter path ready for when sessions are configured.
+- DoorDash adapter live-tested (2026-04-01): searchRestaurants returns ~57 restaurants, getMenu returns full menus (421 items for test restaurant). getFees uses live menu prices + estimated fee rates (15% service, $2.99 delivery). Cart-based real-time fees blocked by DoorDash CSRF requirements — deferred to Phase 2.
+- Seamless adapter live-tested (2026-03-31): searchRestaurants, getMenu, getFees all working via real Chrome CDP session + Grubhub API with real-time cart/bill for fees.
+- Both adapters use real Chrome via spawn + connectOverCDP (not launchPersistentContext) to bypass bot detection
+- DoorDash browser uses dedicated API tab with route blocking to prevent SPA navigation interference
+- DoorDash search uses facet component parsing (component.id === 'row.store', data in text/custom/events fields)
+- Comparison engine working: DB-based fallback calculates prices from seeded menu data + estimated fees when no live adapters are running. Live adapter path ready for when sessions are configured.
 - Frontend working: address search → geocoded location stored in cart → restaurant list → unified menu view → cart builder → comparison view with default address fallback
 - Seeded one restaurant (Grandma's Home 外婆家) with 72 DoorDash items + 29 Seamless items, cross-platform matched via matched_item_id
+- DoorDash adapter enabled in index.ts (requires DOORDASH_EMAIL in .env)
 
 **What's next:**
 1. Build automated deduplication pipeline (fuzzy matching restaurants + menu items across platforms)
-2. Test live DoorDash adapter with real session (requires manual OTP login in Playwright browser)
-3. Test live Seamless adapter with real session (email/password login)
-4. Seed more restaurants for broader NYC coverage
-5. Implement savings tracking (log comparisons/orders to DB)
+2. Seed more restaurants for broader NYC coverage
+3. Implement savings tracking (log comparisons/orders to DB)
+4. Implement DoorDash real-time cart fees (Phase 2 — requires full browser tab with CSRF context for addCartItem mutation)
 
 ## Architecture Decisions
 
@@ -73,10 +76,13 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 
 ### DoorDash
 - **Type:** GraphQL at doordash.com/graphql
-- **Auth:** Email + OTP → session cookies in persistent Chromium profile
-- **Protection:** Cloudflare TLS fingerprinting — must use real browser context (Playwright page.evaluate)
+- **Auth:** Email + OTP → session cookies in persistent Chrome profile
+- **Protection:** Cloudflare TLS fingerprinting — must use real Chrome via spawn + connectOverCDP (same as Seamless). Playwright's launchPersistentContext triggers bot detection.
+- **Browser approach:** Real Chrome spawned on CDP port 9224. Dedicated API tab with route blocking (only allows /graphql + document requests) prevents DoorDash SPA from navigating and destroying page.evaluate context.
 - **Key queries:** homePageFacetFeed (search), storepageFeed (menu), addCartItem, createOrderFromCart
-- **Starting point:** Fork GraphQL queries from existing DoorDash MCP servers on GitHub (search "doordash-mcp" by ashah360 or SpunkySarb)
+- **Search response format:** Facet component system. Stores identified by `component.id === 'row.store'`. Name in `text.title`, store ID in `custom` (JSON string, key `store_id`), rating in `custom.rating.average_rating`, ETA in `text.custom[key='eta_display_string']`, URL in `events.click.data` (JSON).
+- **Rate limiting:** DoorDash returns 429 aggressively. graphqlQuery retries with 4-15s exponential backoff. All adapter methods add 2-3s delays between calls.
+- **Fee limitation (Phase 1):** addCartItem mutation requires full browser context (CSRF, store-page referrer) that the API tab doesn't provide. Fees estimated from live menu prices + known rates (15% service, $2.99 delivery). Real-time cart fees deferred to Phase 2.
 - **Session persistence:** ~/.kortana/doordash-profile/
 
 ### Seamless / Grubhub

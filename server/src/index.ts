@@ -13,6 +13,7 @@ import savingsRouter from './routes/savings.js';
 import { scheduleDailySync } from './services/sync.js';
 import type { PlatformAdapter } from './adapters/types.js';
 import { SeamlessAdapter } from './adapters/seamless/adapter.js';
+import { DoorDashAdapter } from './adapters/doordash/adapter.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,10 +39,20 @@ const adapters = new Map<string, PlatformAdapter>();
 
 async function start(): Promise<void> {
   // Initialize platform adapters
-  // DoorDash: requires manual OTP login — enable when ready
-  // const doordash = new DoorDashAdapter();
-  // await doordash.initialize({ email: process.env.DOORDASH_EMAIL! });
-  // adapters.set('doordash', doordash);
+  // DoorDash: uses real Chrome via CDP. Requires OTP login on first run.
+  if (process.env.DOORDASH_EMAIL) {
+    try {
+      const doordash = new DoorDashAdapter();
+      await doordash.initialize({ email: process.env.DOORDASH_EMAIL });
+      adapters.set('doordash', doordash);
+      console.log('[Kortana] DoorDash adapter registered.');
+    } catch (err) {
+      console.error('[Kortana] DoorDash adapter failed to initialize:', err);
+      console.log('[Kortana] Continuing without DoorDash live adapter (will use DB estimates).');
+    }
+  } else {
+    console.log('[Kortana] DOORDASH_EMAIL not set — skipping DoorDash adapter.');
+  }
 
   // Seamless: email/password auth
   if (process.env.SEAMLESS_EMAIL) {

@@ -31,52 +31,50 @@ export async function matchMenuItems(restaurantId: string): Promise<{
     [restaurantId]
   );
 
-  const usedSeamlessIds = new Set<string>();
+  // Build a map of Seamless items by cleaned name for fast lookup
+  const slByCleanName = new Map<string, typeof slItems.rows[0]>();
+  for (const slItem of slItems.rows) {
+    slByCleanName.set(cleanItemName(slItem.canonical_name), slItem);
+  }
 
   for (const ddItem of ddItems.rows) {
     const cleanDD = cleanItemName(ddItem.canonical_name);
     let bestMatch: { id: string; score: number } | null = null;
 
-    for (const slItem of slItems.rows) {
-      if (usedSeamlessIds.has(slItem.id)) continue;
+    // Fast path: exact cleaned name match
+    const exactMatch = slByCleanName.get(cleanDD);
+    if (exactMatch) {
+      bestMatch = { id: exactMatch.id, score: 1.0 };
+    } else {
+      // Fuzzy match against all Seamless items
+      for (const slItem of slItems.rows) {
+        const cleanSL = cleanItemName(slItem.canonical_name);
+        const similarity = jaroWinkler(cleanDD, cleanSL);
 
-      const cleanSL = cleanItemName(slItem.canonical_name);
-
-      // Exact cleaned name match
-      if (cleanDD === cleanSL) {
-        bestMatch = { id: slItem.id, score: 1.0 };
-        break;
-      }
-
-      const similarity = jaroWinkler(cleanDD, cleanSL);
-
-      // High similarity → auto-match
-      if (similarity >= EXACT_MATCH_THRESHOLD) {
-        if (!bestMatch || similarity > bestMatch.score) {
-          bestMatch = { id: slItem.id, score: similarity };
-        }
-        continue;
-      }
-
-      // Moderate similarity + same category → match
-      if (similarity >= CATEGORY_MATCH_THRESHOLD && ddItem.category === slItem.category) {
-        if (!bestMatch || similarity > bestMatch.score) {
-          bestMatch = { id: slItem.id, score: similarity };
+        if (similarity >= EXACT_MATCH_THRESHOLD) {
+          if (!bestMatch || similarity > bestMatch.score) {
+            bestMatch = { id: slItem.id, score: similarity };
+          }
+        } else if (similarity >= CATEGORY_MATCH_THRESHOLD && ddItem.category === slItem.category) {
+          if (!bestMatch || similarity > bestMatch.score) {
+            bestMatch = { id: slItem.id, score: similarity };
+          }
         }
       }
     }
 
     if (bestMatch) {
-      // Link the two items
+      // Link DoorDash item → Seamless item (allows many DD items to match one SL item,
+      // which happens when DoorDash duplicates items across categories like "Popular")
       await db.query('UPDATE menu_items SET matched_item_id = $1 WHERE id = $2', [
         bestMatch.id,
         ddItem.id,
       ]);
-      await db.query('UPDATE menu_items SET matched_item_id = $1 WHERE id = $2', [
-        ddItem.id,
-        bestMatch.id,
-      ]);
-      usedSeamlessIds.add(bestMatch.id);
+      // Also set the reverse link if not already set
+      await db.query(
+        'UPDATE menu_items SET matched_item_id = $1 WHERE id = $2 AND matched_item_id IS NULL',
+        [ddItem.id, bestMatch.id]
+      );
       matched++;
     } else {
       unmatched++;

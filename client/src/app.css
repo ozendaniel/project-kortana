@@ -1,1 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-base: #0C0B0E;
+  --color-surface: #161519;
+  --color-surface-hover: #1E1D22;
+  --color-border: #2A2830;
+  --color-border-subtle: #1F1E23;
+
+  --color-text-primary: #E8E4DC;
+  --color-text-secondary: #8A8690;
+  --color-text-muted: #5C5862;
+
+  --color-lime: #C8FF2E;
+  --color-lime-dim: #A3D625;
+  --color-lime-glow: rgba(200, 255, 46, 0.08);
+
+  --color-coral: #FF6B5A;
+  --color-coral-dim: rgba(255, 107, 90, 0.12);
+
+  --color-dd: #E85D4A;
+  --color-dd-bg: rgba(232, 93, 74, 0.10);
+  --color-sl: #F0A050;
+  --color-sl-bg: rgba(240, 160, 80, 0.10);
+
+  --color-amber-accent: #FFB830;
+  --color-amber-bg: rgba(255, 184, 48, 0.08);
+
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Base */
+html {
+  background-color: var(--color-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-base);
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-base); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+
+/* Selection */
+::selection {
+  background: rgba(200, 255, 46, 0.25);
+  color: var(--color-text-primary);
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulseLime {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 255, 46, 0.15); }
+  50% { box-shadow: 0 0 0 6px rgba(200, 255, 46, 0); }
+}
+
+.animate-fade-up { animation: fadeUp 0.4s ease-out both; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out both; }
+.animate-slide-down { animation: slideDown 0.3s ease-out both; }
+.animate-count-up { animation: countUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Staggered children */
+.stagger > * { animation: fadeUp 0.35s ease-out both; }
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay: 100ms; }
+.stagger > *:nth-child(4) { animation-delay: 150ms; }
+.stagger > *:nth-child(5) { animation-delay: 200ms; }
+.stagger > *:nth-child(6) { animation-delay: 250ms; }
+.stagger > *:nth-child(7) { animation-delay: 300ms; }
+.stagger > *:nth-child(8) { animation-delay: 350ms; }
+
+/* Receipt dotted separator */
+.receipt-dots { border-bottom: 1px dashed var(--color-border); }
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 2px;
+}
+
+/* Winner card left stripe */
+.winner-stripe {
+  position: relative;
+}
+.winner-stripe::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--color-lime);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Dark inputs */
+input[type="text"], input[type="search"] {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+input::placeholder { color: var(--color-text-muted); }
+input[type="text"]:focus, input[type="search"]:focus {
+  border-color: var(--color-lime);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-lime);
+}
+
+/* Tabular price numbers */
+.price {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}

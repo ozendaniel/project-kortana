@@ -8,11 +8,16 @@ const PLATFORM_LABELS: Record<string, string> = {
   seamless: 'Seamless',
 };
 
-const STATUS_STYLES: Record<string, { dot: string; label: string; text: string }> = {
-  authenticated: { dot: 'bg-green-500', label: 'Connected', text: 'text-green-700' },
-  expired: { dot: 'bg-red-500', label: 'Session expired', text: 'text-red-700' },
-  logging_in: { dot: 'bg-yellow-500', label: 'Logging in...', text: 'text-yellow-700' },
-  not_configured: { dot: 'bg-gray-400', label: 'Not configured', text: 'text-gray-500' },
+const PLATFORM_ABBR: Record<string, string> = {
+  doordash: 'DD',
+  seamless: 'SL',
+};
+
+const STATUS_CONFIG: Record<string, { dot: string; label: string; labelColor: string }> = {
+  authenticated: { dot: 'bg-lime', label: 'Connected', labelColor: 'text-lime' },
+  expired: { dot: 'bg-coral', label: 'Expired', labelColor: 'text-coral' },
+  logging_in: { dot: 'bg-amber-accent', label: 'Logging in...', labelColor: 'text-amber-accent' },
+  not_configured: { dot: 'bg-text-muted', label: 'Not configured', labelColor: 'text-text-muted' },
 };
 
 export default function SettingsPage() {
@@ -38,51 +43,56 @@ export default function SettingsPage() {
   }, []);
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+    <div className="max-w-2xl mx-auto animate-fade-up">
+      <h1 className="font-display text-3xl text-text-primary tracking-tight italic mb-6">
+        Settings
+      </h1>
 
-      <section className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Platform Connections</h2>
-        <p className="text-sm text-gray-500 mb-6">
-          Connect your DoorDash and Seamless accounts to enable live price comparison.
-        </p>
+      <section className="bg-surface border border-border-subtle rounded-sm overflow-hidden">
+        <div className="px-5 py-3 border-b border-border-subtle">
+          <h2 className="text-xs font-mono font-semibold text-text-muted tracking-widest uppercase">
+            Platform Connections
+          </h2>
+        </div>
 
         {isLoading ? (
-          <div className="text-gray-500 text-sm">Loading...</div>
+          <div className="p-5 space-y-3">
+            <div className="skeleton h-14 rounded-sm" />
+            <div className="skeleton h-14 rounded-sm" />
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="divide-y divide-border-subtle">
             {['doordash', 'seamless'].map((platform) => {
               const status = authStatus?.[platform as keyof typeof authStatus] || 'not_configured';
-              const style = STATUS_STYLES[status] ?? STATUS_STYLES['not_configured']!;
+              const config = STATUS_CONFIG[status] ?? STATUS_CONFIG['not_configured']!;
               const canConnect = status === 'expired' || status === 'not_configured';
+              const accent = platform === 'doordash' ? 'text-dd bg-dd-bg' : 'text-sl bg-sl-bg';
 
               return (
-                <div
-                  key={platform}
-                  className="flex items-center justify-between p-4 rounded-lg border border-gray-100 bg-gray-50"
-                >
+                <div key={platform} className="flex items-center justify-between px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${style.dot}`} />
+                    <span className={`font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded-sm ${accent}`}>
+                      {PLATFORM_ABBR[platform]}
+                    </span>
                     <div>
-                      <div className="font-medium text-gray-900">
-                        {PLATFORM_LABELS[platform] || platform}
+                      <div className="text-sm font-medium text-text-primary">
+                        {PLATFORM_LABELS[platform]}
                       </div>
-                      <div className={`text-xs ${style.text}`}>{style.label}</div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+                        <span className={`text-[10px] font-mono ${config.labelColor}`}>
+                          {config.label}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   {canConnect && (
                     <button
                       onClick={() => setLoginPlatform(platform)}
-                      className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
+                      className="px-4 py-2 bg-surface-hover text-text-primary text-xs font-mono font-medium rounded-sm border border-border hover:border-lime hover:text-lime transition-colors tracking-wide"
                     >
                       Connect
                     </button>
-                  )}
-                  {status === 'authenticated' && (
-                    <span className="text-sm text-green-600 font-medium">Active</span>
-                  )}
-                  {status === 'logging_in' && (
-                    <span className="text-sm text-yellow-600">In progress...</span>
                   )}
                 </div>
               );
@@ -93,20 +103,20 @@ export default function SettingsPage() {
 
       {/* Login modal */}
       {loginPlatform && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-auto">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="font-semibold text-gray-900">
-                Connect {PLATFORM_LABELS[loginPlatform] || loginPlatform}
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-surface border border-border rounded-sm max-w-5xl w-full max-h-[90vh] overflow-auto animate-fade-up">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border-subtle">
+              <h3 className="text-xs font-mono font-semibold text-text-muted tracking-widest uppercase">
+                Connect {PLATFORM_LABELS[loginPlatform]}
               </h3>
               <button
                 onClick={() => setLoginPlatform(null)}
-                className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+                className="text-text-muted hover:text-text-primary text-sm transition-colors"
               >
                 &times;
               </button>
             </div>
-            <div className="p-6">
+            <div className="p-5">
               <BrowserView
                 platform={loginPlatform}
                 onComplete={handleLoginComplete}

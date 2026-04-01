@@ -12,90 +12,119 @@ interface ComparisonCardProps {
 }
 
 export default function ComparisonCard({ platform, comparison, isCheapest, savings }: ComparisonCardProps) {
-  const platformLabel = platform === 'doordash' ? 'DoorDash' : platform === 'seamless' ? 'Seamless' : 'Uber Eats';
-  const platformColor = platform === 'doordash' ? 'red' : platform === 'seamless' ? 'orange' : 'green';
+  const label = platform === 'doordash' ? 'DoorDash' : platform === 'seamless' ? 'Seamless' : 'Uber Eats';
+  const abbr = platform === 'doordash' ? 'DD' : 'SL';
+  const accent = platform === 'doordash' ? 'text-dd' : 'text-sl';
+  const accentBg = platform === 'doordash' ? 'bg-dd-bg' : 'bg-sl-bg';
+
+  const feeLines: Array<{ label: string; cents: number; highlight?: boolean }> = [
+    { label: 'Subtotal', cents: comparison.itemSubtotalCents },
+    { label: 'Delivery', cents: comparison.deliveryFeeCents },
+    { label: 'Service', cents: comparison.serviceFeeCents },
+  ];
+  if (comparison.smallOrderFeeCents > 0) {
+    feeLines.push({ label: 'Small order fee', cents: comparison.smallOrderFeeCents });
+  }
+  if (comparison.taxCents > 0) {
+    feeLines.push({ label: 'Tax', cents: comparison.taxCents });
+  }
+  if (comparison.discountCents > 0) {
+    feeLines.push({ label: 'Discount', cents: -comparison.discountCents, highlight: true });
+  }
 
   return (
     <div
-      className={`bg-white rounded-lg border-2 p-6 ${
-        isCheapest ? 'border-green-500 ring-2 ring-green-100' : 'border-gray-200'
+      className={`relative bg-surface border rounded-sm overflow-hidden transition-all ${
+        isCheapest
+          ? 'border-lime/30 winner-stripe'
+          : 'border-border-subtle'
       }`}
     >
-      <div className="flex items-center justify-between mb-4">
-        <h3 className={`text-lg font-semibold text-${platformColor}-600`}>{platformLabel}</h3>
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-3 border-b border-border-subtle">
+        <div className="flex items-center gap-2">
+          <span className={`font-mono text-xs font-semibold px-1.5 py-0.5 rounded-sm ${accentBg} ${accent}`}>
+            {abbr}
+          </span>
+          <span className="text-sm font-medium text-text-primary">{label}</span>
+        </div>
         {isCheapest && (
-          <span className="bg-green-100 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full">
-            Best Price {savings ? `— Save ${formatCents(savings)}` : ''}
+          <span className="text-[10px] font-mono font-bold text-lime tracking-wider uppercase animate-count-up">
+            Best Price
           </span>
         )}
       </div>
 
+      {/* Missing items warning */}
       {!comparison.available && comparison.missingItems.length > 0 && (
-        <div className="mb-3 p-2 bg-yellow-50 rounded text-sm text-yellow-700">
-          Missing: {comparison.missingItems.join(', ')}
+        <div className="px-5 py-2 bg-amber-bg border-b border-border-subtle">
+          <p className="text-xs text-amber-accent font-mono">
+            Missing: {comparison.missingItems.join(', ')}
+          </p>
         </div>
       )}
 
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span className="text-gray-500">Items subtotal</span>
-          <span>{formatCents(comparison.itemSubtotalCents)}</span>
+      {/* Fee breakdown — receipt style */}
+      <div className="px-5 py-4 space-y-0">
+        {feeLines.map((line, i) => (
+          <div key={i} className="flex justify-between py-1.5 receipt-dots last:border-0">
+            <span className="text-xs text-text-secondary">{line.label}</span>
+            <span className={`price text-xs ${line.highlight ? 'text-lime' : 'text-text-primary'}`}>
+              {line.highlight ? '-' : ''}{formatCents(Math.abs(line.cents))}
+            </span>
+          </div>
+        ))}
+
+        {/* Total */}
+        <div className="flex justify-between items-baseline pt-3 mt-2 border-t border-border">
+          <span className="text-xs font-mono text-text-secondary tracking-wide uppercase">Total</span>
+          <span className={`price text-xl font-bold ${isCheapest ? 'text-lime' : 'text-text-primary'}`}>
+            {formatCents(comparison.totalCents)}
+          </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">Delivery fee</span>
-          <span>{formatCents(comparison.deliveryFeeCents)}</span>
+
+        {/* Tip line */}
+        <div className="flex justify-between py-1 mt-1">
+          <span className="text-[10px] text-text-muted">w/ 5% tip</span>
+          <span className="price text-[10px] text-text-muted">
+            {formatCents(comparison.totalWithTipCents)}
+          </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">Service fee</span>
-          <span>{formatCents(comparison.serviceFeeCents)}</span>
-        </div>
-        {comparison.smallOrderFeeCents > 0 && (
-          <div className="flex justify-between">
-            <span className="text-gray-500">Small order fee</span>
-            <span>{formatCents(comparison.smallOrderFeeCents)}</span>
+
+        {/* Savings callout */}
+        {isCheapest && savings && savings > 0 && (
+          <div className="mt-3 py-2 px-3 bg-lime-glow border border-lime/15 rounded-sm animate-count-up">
+            <div className="flex items-baseline justify-between">
+              <span className="text-xs text-lime/70 font-mono">You save</span>
+              <span className="price text-lg font-bold text-lime">
+                {formatCents(savings)}
+              </span>
+            </div>
           </div>
         )}
-        {comparison.taxCents > 0 && (
-          <div className="flex justify-between">
-            <span className="text-gray-500">Tax</span>
-            <span>{formatCents(comparison.taxCents)}</span>
-          </div>
-        )}
-        {comparison.discountCents > 0 && (
-          <div className="flex justify-between text-green-600">
-            <span>Discount</span>
-            <span>-{formatCents(comparison.discountCents)}</span>
-          </div>
-        )}
-        <div className="flex justify-between pt-2 border-t border-gray-100 font-bold text-lg">
-          <span>Total</span>
-          <span>{formatCents(comparison.totalCents)}</span>
-        </div>
-        <div className="flex justify-between text-gray-400 text-xs">
-          <span>+ Optional tip (5%)</span>
-          <span>+{formatCents(comparison.tipCents)}</span>
-        </div>
-        <div className="flex justify-between text-gray-500 text-sm">
-          <span>Total w/ tip</span>
-          <span>{formatCents(comparison.totalWithTipCents)}</span>
-        </div>
+
         {comparison.estimatedDeliveryTime && (
-          <p className="text-gray-400 text-xs mt-1">{comparison.estimatedDeliveryTime}</p>
+          <p className="text-[10px] font-mono text-text-muted mt-2 tracking-wide">
+            ETA {comparison.estimatedDeliveryTime}
+          </p>
         )}
       </div>
 
-      <a
-        href={comparison.orderUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`mt-4 block w-full py-2.5 text-center font-medium rounded-lg transition-colors ${
-          isCheapest
-            ? 'bg-green-600 text-white hover:bg-green-700'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-        }`}
-      >
-        Order on {platformLabel}
-      </a>
+      {/* Order button */}
+      <div className="px-5 pb-5">
+        <a
+          href={comparison.orderUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`block w-full py-2.5 text-center text-sm font-semibold rounded-sm transition-colors ${
+            isCheapest
+              ? 'bg-lime text-base hover:bg-lime-dim'
+              : 'bg-surface-hover text-text-secondary border border-border hover:text-text-primary hover:border-border'
+          }`}
+        >
+          Order on {label}
+        </a>
+      </div>
     </div>
   );
 }

@@ -13,56 +13,64 @@ export default function CartPanel({ onCompare }: CartPanelProps) {
 
   if (items.length === 0) {
     return (
-      <div className="sticky top-8 bg-white rounded-lg border border-gray-200 p-4">
-        <h2 className="font-semibold text-gray-900 mb-2">Your Cart</h2>
-        <p className="text-sm text-gray-400">Add items from the menu to compare prices</p>
+      <div className="sticky top-24 bg-surface border border-border-subtle rounded-sm p-5">
+        <h2 className="text-xs font-mono font-semibold text-text-muted tracking-widest uppercase">
+          Cart
+        </h2>
+        <p className="text-xs text-text-muted mt-3">Add items to compare prices across platforms</p>
       </div>
     );
   }
 
   return (
-    <div className="sticky top-8 bg-white rounded-lg border border-gray-200 p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-gray-900">Your Cart</h2>
-        <button onClick={clearCart} className="text-xs text-gray-400 hover:text-red-500">
+    <div className="sticky top-24 bg-surface border border-border-subtle rounded-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-3 border-b border-border-subtle">
+        <h2 className="text-xs font-mono font-semibold text-text-muted tracking-widest uppercase">
+          Cart
+        </h2>
+        <button onClick={clearCart} className="text-[10px] font-mono text-text-muted hover:text-coral transition-colors tracking-wide uppercase">
           Clear
         </button>
       </div>
 
       {restaurantName && (
-        <p className="text-sm text-gray-500">{restaurantName}</p>
+        <div className="px-5 py-2 border-b border-border-subtle">
+          <p className="text-xs text-text-secondary truncate">{restaurantName}</p>
+        </div>
       )}
 
-      <div className="space-y-3">
+      {/* Items */}
+      <div className="px-5 py-3 space-y-3 max-h-80 overflow-y-auto">
         {items.map((item) => (
-          <div key={item.itemId} className="flex items-center justify-between">
+          <div key={item.itemId} className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
-              <div className="flex gap-2 text-xs text-gray-400">
-                {Object.entries(item.platforms).map(([p, v]) => (
-                  <span key={p}>
-                    {p === 'doordash' ? 'DD' : 'SL'}: {formatCents(v.priceCents * item.quantity)}
+              <p className="text-sm text-text-primary truncate">{item.name}</p>
+              <div className="flex gap-2 mt-0.5">
+                {Object.entries(item.platforms).sort(([a], [b]) => (a === 'doordash' ? -1 : b === 'doordash' ? 1 : 0)).map(([p, v]) => (
+                  <span key={p} className={`price text-[10px] ${p === 'doordash' ? 'text-dd' : 'text-sl'}`}>
+                    {formatCents(v.priceCents * item.quantity)}
                   </span>
                 ))}
               </div>
             </div>
-            <div className="flex items-center gap-2 ml-2">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => updateQuantity(item.itemId, item.quantity - 1)}
-                className="w-6 h-6 flex items-center justify-center rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className="w-5 h-5 flex items-center justify-center text-xs font-mono text-text-muted bg-base rounded-sm hover:text-text-primary transition-colors"
               >
-                -
+                &minus;
               </button>
-              <span className="text-sm w-4 text-center">{item.quantity}</span>
+              <span className="price text-xs w-4 text-center text-text-primary">{item.quantity}</span>
               <button
                 onClick={() => updateQuantity(item.itemId, item.quantity + 1)}
-                className="w-6 h-6 flex items-center justify-center rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className="w-5 h-5 flex items-center justify-center text-xs font-mono text-text-muted bg-base rounded-sm hover:text-text-primary transition-colors"
               >
                 +
               </button>
               <button
                 onClick={() => removeItem(item.itemId)}
-                className="text-gray-300 hover:text-red-500 ml-1"
+                className="w-5 h-5 flex items-center justify-center text-xs text-text-muted hover:text-coral transition-colors ml-1"
               >
                 &times;
               </button>
@@ -71,12 +79,15 @@ export default function CartPanel({ onCompare }: CartPanelProps) {
         ))}
       </div>
 
-      <button
-        onClick={onCompare}
-        className="w-full py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        Compare Prices
-      </button>
+      {/* Compare button */}
+      <div className="px-5 py-4 border-t border-border-subtle">
+        <button
+          onClick={onCompare}
+          className="w-full py-2.5 bg-lime text-base font-semibold text-sm rounded-sm hover:bg-lime-dim transition-colors tracking-wide"
+        >
+          Compare Prices
+        </button>
+      </div>
     </div>
   );
 }

@@ -23,12 +23,12 @@ export default function AuthBanner() {
   const names = expiredPlatforms.map(p => labels[p] || p).join(' and ');
 
   return (
-    <div className="bg-amber-50 border-b border-amber-200 px-6 py-3">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <span className="text-sm text-amber-800">
-          {names} session expired.{' '}
-          <a href="/settings" className="underline font-medium hover:text-amber-900">
-            Reconnect in Settings
+    <div className="bg-amber-bg border-b border-border animate-slide-down">
+      <div className="max-w-5xl mx-auto px-5 py-2.5 flex items-center justify-between">
+        <span className="text-xs font-mono text-amber-accent tracking-wide">
+          {names} session expired &mdash;{' '}
+          <a href="/settings" className="underline hover:text-text-primary transition-colors">
+            reconnect
           </a>
         </span>
         <button
@@ -37,9 +37,9 @@ export default function AuthBanner() {
             expiredPlatforms.forEach(p => next.add(p));
             setDismissed(next);
           }}
-          className="text-amber-600 hover:text-amber-800 text-sm"
+          className="text-text-muted hover:text-text-secondary text-xs transition-colors"
         >
-          Dismiss
+          &times;
         </button>
       </div>
     </div>

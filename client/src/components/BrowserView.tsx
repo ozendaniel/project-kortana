@@ -108,17 +108,17 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-3">
       {status === 'connecting' && (
-        <div className="text-gray-500 text-sm">Connecting to browser...</div>
+        <div className="text-xs font-mono text-text-muted tracking-wide">Connecting...</div>
       )}
       {status === 'complete' && (
-        <div className="text-green-600 font-medium">Login successful!</div>
+        <div className="text-xs font-mono text-lime tracking-wide animate-count-up">Login successful</div>
       )}
       {status === 'error' && (
-        <div className="text-red-600 font-medium">{errorMsg || 'Connection error. Try again.'}</div>
+        <div className="text-xs font-mono text-coral tracking-wide">{errorMsg || 'Connection error'}</div>
       )}
-      <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg bg-white">
+      <div className="border border-border rounded-sm overflow-hidden bg-base">
         <canvas
           ref={canvasRef}
           width={1280}
@@ -131,8 +131,8 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
           onWheel={handleWheel}
         />
       </div>
-      <p className="text-xs text-gray-400">
-        Click inside the browser view to interact. Complete the login flow, then confirm on your phone.
+      <p className="text-[10px] font-mono text-text-muted tracking-wide">
+        Click to interact. Complete login, then confirm on your phone.
       </p>
     </div>
   );

@@ -22,15 +22,22 @@ export default function MenuView() {
     enabled: !!id,
   });
 
-  // Set restaurant in cart when navigating to a new restaurant
   useEffect(() => {
     if (data?.restaurant && data.restaurant.id !== restaurantId) {
       setRestaurant(data.restaurant.id, data.restaurant.name);
     }
   }, [data?.restaurant?.id]);
 
-  if (isLoading) return <p className="text-gray-400">Loading menu...</p>;
-  if (error || !data) return <p className="text-red-500">Error loading menu.</p>;
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="skeleton h-16 rounded-sm" />
+        ))}
+      </div>
+    );
+  }
+  if (error || !data) return <p className="text-coral text-sm font-mono">Error loading menu.</p>;
 
   const { restaurant, menu } = data;
 
@@ -45,61 +52,112 @@ export default function MenuView() {
   };
 
   return (
-    <div className="flex gap-8">
-      <div className="flex-1 space-y-6">
+    <div className="flex gap-6 animate-fade-up">
+      {/* Menu */}
+      <div className="flex-1 min-w-0 space-y-6">
         <div>
-          <button onClick={() => navigate('/')} className="text-sm text-blue-600 hover:underline mb-2">
-            &larr; Back to search
+          <button
+            onClick={() => navigate('/')}
+            className="text-xs font-mono text-text-muted hover:text-text-secondary transition-colors mb-3 block tracking-wide"
+          >
+            &larr; BACK
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">{restaurant.name}</h1>
-          <p className="text-sm text-gray-500">{restaurant.address}</p>
+          <h1 className="font-display text-3xl text-text-primary tracking-tight italic">
+            {restaurant.name}
+          </h1>
+          {restaurant.address && (
+            <p className="text-xs text-text-muted mt-1">{restaurant.address}</p>
+          )}
         </div>
 
-        {menu.map((category) => (
-          <div key={category.category}>
-            <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+        {menu.map((category, catIdx) => (
+          <div key={category.category} style={{ animationDelay: `${catIdx * 80}ms` }} className="animate-fade-up">
+            <h2 className="text-xs font-mono font-semibold text-text-muted tracking-widest uppercase mb-3 pb-2 border-b border-border-subtle">
               {category.category}
             </h2>
-            <div className="space-y-3">
-              {category.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between bg-white rounded-lg border border-gray-200 p-4"
-                >
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{item.name}</h3>
-                    {item.description && (
-                      <p className="text-sm text-gray-400 mt-1 line-clamp-2">{item.description}</p>
-                    )}
-                    <div className="flex gap-4 mt-2 text-sm">
-                      {Object.entries(item.platforms).map(([platform, info]) => (
+            <div className="space-y-0.5">
+              {category.items.map((item) => {
+                const prices = Object.entries(item.platforms)
+                  .sort(([a], [b]) => (a === 'doordash' ? -1 : b === 'doordash' ? 1 : 0));
+                const priceDiff = prices.length === 2 && prices[0] && prices[1]
+                  ? Math.abs(prices[0][1].priceCents - prices[1][1].priceCents)
+                  : 0;
+
+                return (
+                  <div
+                    key={item.id}
+                    className="group flex items-center gap-3 py-3 px-3 -mx-3 rounded-sm hover:bg-surface transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <h3 className="text-sm font-medium text-text-primary truncate">
+                          {item.name}
+                        </h3>
+                        {priceDiff > 0 && (
+                          <span className="shrink-0 text-[10px] font-mono text-lime/60">
+                            {formatCents(priceDiff)} diff
+                          </span>
+                        )}
+                      </div>
+                      {item.description && (
+                        <p className="text-xs text-text-muted mt-0.5 line-clamp-1">{item.description}</p>
+                      )}
+                    </div>
+
+                    {/* Prices */}
+                    <div className="flex gap-3 shrink-0">
+                      {prices.map(([platform, info]) => (
                         <span
                           key={platform}
-                          className={`font-medium ${
-                            platform === 'doordash' ? 'text-red-600' : 'text-orange-600'
+                          className={`price text-xs font-medium ${
+                            platform === 'doordash' ? 'text-dd' : 'text-sl'
                           }`}
                         >
-                          {platform === 'doordash' ? 'DD' : 'SL'}: {formatCents(info.priceCents)}
+                          {formatCents(info.priceCents)}
                         </span>
                       ))}
                     </div>
+
+                    {/* Add button */}
+                    <button
+                      onClick={() => handleAddItem({ id: item.id, name: item.name, platforms: item.platforms })}
+                      className="opacity-0 group-hover:opacity-100 shrink-0 w-7 h-7 flex items-center justify-center text-sm font-mono font-bold text-lime bg-lime/10 border border-lime/20 rounded-sm hover:bg-lime/20 transition-all"
+                    >
+                      +
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleAddItem({ id: item.id, name: item.name, platforms: item.platforms })}
-                    className="ml-4 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Add
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}
       </div>
 
-      <div className="w-80 flex-shrink-0">
+      {/* Cart sidebar */}
+      <div className="w-72 shrink-0 hidden lg:block">
         <CartPanel onCompare={() => navigate('/compare')} />
       </div>
+
+      {/* Mobile cart bar */}
+      <MobileCartBar onCompare={() => navigate('/compare')} />
+    </div>
+  );
+}
+
+function MobileCartBar({ onCompare }: { onCompare: () => void }) {
+  const items = useCartStore((s) => s.items);
+  const total = items.reduce((sum, i) => sum + i.quantity, 0);
+  if (total === 0) return null;
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 lg:hidden z-40 bg-surface border-t border-border p-4 animate-slide-down">
+      <button
+        onClick={onCompare}
+        className="w-full py-3 bg-lime text-base font-semibold text-sm rounded-sm flex items-center justify-center gap-2"
+      >
+        <span className="font-mono">{total}</span>
+        <span>Compare Prices</span>
+      </button>
     </div>
   );
 }

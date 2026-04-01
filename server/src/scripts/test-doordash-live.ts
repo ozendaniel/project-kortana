@@ -151,14 +151,13 @@ async function main() {
         console.log(`\n✓ Menu loaded: ${menu.categories.length} categories, ${totalItems} items total.\n`);
 
         // ── Step 4: Get Fees ─────────────────────────────────────
-        // Pick a simple item (sides, drinks) less likely to have required modifiers
-        const simpleCategories = ['Side Orders', 'Sides', 'French Fries', 'Cold Beverages', 'Beverages', 'Drinks', 'Desserts'];
+        // Pick a simple item (sides, drinks, coffee) less likely to have required modifiers
+        const simpleCategories = ['Side Orders', 'Sides', 'Cold Beverages', 'Beverages', 'Coffee', 'Desserts', 'Soup'];
         let testItem = null;
         for (const targetCat of simpleCategories) {
           const cat = menu.categories.find(c => c.name.toLowerCase().includes(targetCat.toLowerCase()));
           if (cat?.items[0]) { testItem = cat.items[0]; break; }
         }
-        // Fallback: just pick the first item
         if (!testItem) testItem = menu.categories[0]?.items[0];
 
         if (testItem?.platformItemId) {

@@ -251,12 +251,11 @@ export class DoorDashAdapter implements PlatformAdapter {
   }
 
   /**
-   * Get fee estimates for a DoorDash order.
+   * Get real-time fees for a DoorDash order by building a cart on the main browser tab
+   * and fetching the order preview (detailedCartItems → PreviewOrderV2).
    *
-   * Phase 1: Uses live menu prices (from getMenu) for subtotal + estimated fee rates.
-   * DoorDash's addCartItem mutation requires full browser context (CSRF, referrer) that
-   * our API tab doesn't provide, so we can't get real-time cart fees yet.
-   * Phase 2 will implement full cart building via the main browser tab.
+   * Flow: navigate to store → addCartItem (main tab) → detailedCartItems → parse fees.
+   * Falls back to estimated fees if the live cart approach fails.
    */
   async getFees(params: {
     platformRestaurantId: string;
@@ -264,43 +263,166 @@ export class DoorDashAdapter implements PlatformAdapter {
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees> {
     try {
-      // Fetch the live menu to get current item prices
-      const menu = await this.getMenu(params.platformRestaurantId);
+      // Navigate main tab to the store page for full JS context
+      console.log(`[DoorDash] getFees: navigating to store ${params.platformRestaurantId}...`);
+      await this.browser.navigateToStore(params.platformRestaurantId);
 
-      // Build a map of platformItemId → priceCents
-      const priceMap = new Map<string, number>();
-      for (const cat of menu.categories) {
-        for (const item of cat.items) {
-          priceMap.set(item.platformItemId, item.priceCents);
-        }
-      }
+      const addCartQuery = loadQuery('addCartItem.graphql');
+      let cartId = '';
 
-      // Calculate subtotal from live menu prices
-      let subtotalCents = 0;
+      // Add each item to cart via the main tab
       for (const item of params.items) {
-        const price = priceMap.get(item.platformItemId);
-        if (price) {
-          subtotalCents += price * item.quantity;
+        const result = await this.browser.mainTabGraphqlQuery<any>('addCartItem', addCartQuery, {
+          addCartItemInput: {
+            storeId: params.platformRestaurantId,
+            menuId: '',
+            itemId: item.platformItemId,
+            itemName: '',
+            itemDescription: '',
+            currency: 'USD',
+            quantity: item.quantity,
+            nestedOptions: '[]',
+            specialInstructions: '',
+            substitutionPreference: 'substitute',
+            unitPrice: 0,
+            cartId,
+            isBundle: false,
+            bundleType: 'BUNDLE_TYPE_UNSPECIFIED',
+          },
+          lowPriorityBatchAddCartItemInput: [],
+          fulfillmentContext: {
+            shouldUpdateFulfillment: false,
+            fulfillmentType: 'Delivery',
+          },
+          monitoringContext: { isGroup: false },
+          cartContext: { isBundle: false },
+          returnCartFromOrderService: false,
+          shouldKeepOnlyOneActiveCart: false,
+        });
+
+        if (result?.errors?.length) {
+          console.warn(`[DoorDash] addCartItem warning: ${result.errors[0].message}`);
+        }
+
+        // Capture the cart ID for subsequent items and the preview query
+        const cart = result?.data?.addCartItemV2;
+        if (cart?.id) cartId = cart.id;
+
+        console.log(`[DoorDash] Added item ${item.platformItemId} to cart ${cartId || '(new)'}, subtotal=${cart?.subtotal}`);
+
+        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+      }
+
+      if (!cartId) {
+        console.warn('[DoorDash] getFees: no cart ID after adding items, falling back to estimates');
+        return this.estimateFees(params);
+      }
+
+      // Fetch the order preview with fee breakdown
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const detailedQuery = loadQuery('detailedCartItems.graphql');
+      const previewResult = await this.browser.mainTabGraphqlQuery<any>(
+        'detailedCartItems', detailedQuery, {
+          orderCartId: cartId,
+          isCardPayment: true,
+        }
+      );
+
+      if (previewResult?.errors?.length) {
+        console.warn(`[DoorDash] detailedCartItems error: ${previewResult.errors[0].message}`);
+        // If preview fails, try to get what we can from the cart
+      }
+
+      const preview = previewResult?.data?.orderCart;
+      if (!preview) {
+        console.warn('[DoorDash] getFees: orderCart preview returned null, falling back to estimates');
+        return this.estimateFees(params);
+      }
+
+      // Parse fee breakdown from the order preview
+      const subtotal = preview.subtotal || 0;
+      const total = preview.total || 0;
+      const orders = preview.orders || [];
+      let serviceFee = 0;
+      let deliveryFee = 0;
+      let smallOrderFee = 0;
+
+      // Try paymentLineItems first (has serviceFee, taxAmount)
+      const pli = orders[0]?.paymentLineItems;
+      if (pli) {
+        serviceFee = pli.serviceFee || 0;
+        console.log(`[DoorDash] paymentLineItems: subtotal=${pli.subtotal}, serviceFee=${pli.serviceFee}, tax=${pli.taxAmount}, subtotalTax=${pli.subtotalTaxAmount}, feesTax=${pli.feesTaxAmount}`);
+      }
+
+      // Try lineItems for itemized fee breakdown
+      if (orders[0]?.lineItems?.length) {
+        for (const li of orders[0].lineItems) {
+          const label = (li.label || '').toLowerCase();
+          const amount = li.finalMoney?.unitAmount || 0;
+          console.log(`[DoorDash] lineItem: "${li.label}" = ${li.finalMoney?.displayString} (${amount})`);
+          if (label.includes('delivery')) deliveryFee = amount;
+          else if (label.includes('service')) serviceFee = amount || serviceFee;
+          else if (label.includes('small order')) smallOrderFee = amount;
         }
       }
 
-      // Estimate fees using known DoorDash rates
-      const serviceFeeCents = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
-      const deliveryFeeCents = DOORDASH_DELIVERY_FEE_CENTS;
-      const totalCents = subtotalCents + serviceFeeCents + deliveryFeeCents;
+      // If we have a total from the preview, use it — even if individual fees aren't itemized
+      if (total > 0) {
+        // Compute implied fees from total - subtotal when breakdown isn't available
+        const impliedFees = total - subtotal;
+        if (serviceFee === 0 && deliveryFee === 0 && impliedFees > 0) {
+          // DoorDash total includes: subtotal + delivery + service + tax
+          // Without itemized breakdown, assign the full difference as combined fees
+          console.log(`[DoorDash] No itemized fees, implied total fees: ${impliedFees} cents`);
+        }
 
-      console.log(`[DoorDash] getFees (estimated): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}, total=${totalCents}`);
+        console.log(`[DoorDash] getFees (live): subtotal=${subtotal}, delivery=${deliveryFee}, service=${serviceFee}, total=${total}`);
+        return {
+          subtotalCents: subtotal,
+          deliveryFeeCents: deliveryFee,
+          serviceFeeCents: serviceFee,
+          smallOrderFeeCents: smallOrderFee,
+          totalCents: total,
+          estimatedDeliveryTime: preview.asapMinutesRange
+            ? `${preview.asapMinutesRange[0]}-${preview.asapMinutesRange[1]} min`
+            : undefined,
+        };
+      }
 
-      return {
-        subtotalCents,
-        deliveryFeeCents,
-        serviceFeeCents,
-        smallOrderFeeCents: 0,
-        totalCents,
-      };
+      // Preview returned but total is zero — fall back to estimates
+      console.warn('[DoorDash] getFees: preview returned zero total, falling back to estimates');
+      return this.estimateFees(params);
     } catch (err) {
-      console.error('[DoorDash] getFees error:', err);
-      return { subtotalCents: 0, deliveryFeeCents: 0, serviceFeeCents: 0, smallOrderFeeCents: 0, totalCents: 0 };
+      console.error('[DoorDash] getFees live error:', err);
+      console.log('[DoorDash] Falling back to estimated fees');
+      return this.estimateFees(params);
     }
+  }
+
+  /** Fallback: estimate fees from live menu prices + known DoorDash fee rates */
+  private async estimateFees(params: {
+    platformRestaurantId: string;
+    items: Array<{ platformItemId: string; quantity: number }>;
+  }): Promise<PlatformFees> {
+    const menu = await this.getMenu(params.platformRestaurantId);
+    const priceMap = new Map<string, number>();
+    for (const cat of menu.categories) {
+      for (const item of cat.items) {
+        priceMap.set(item.platformItemId, item.priceCents);
+      }
+    }
+
+    let subtotalCents = 0;
+    for (const item of params.items) {
+      const price = priceMap.get(item.platformItemId);
+      if (price) subtotalCents += price * item.quantity;
+    }
+
+    const serviceFeeCents = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
+    const deliveryFeeCents = DOORDASH_DELIVERY_FEE_CENTS;
+    const totalCents = subtotalCents + serviceFeeCents + deliveryFeeCents;
+
+    console.log(`[DoorDash] getFees (estimated fallback): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}, total=${totalCents}`);
+    return { subtotalCents, deliveryFeeCents, serviceFeeCents, smallOrderFeeCents: 0, totalCents };
   }
 }

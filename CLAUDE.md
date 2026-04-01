@@ -28,7 +28,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Railway Postgres provisioned and all 4 migrations applied (restaurants, menus, menu_items, orders)
 - DoorDash GraphQL queries captured from HAR file — 28 unique operations including homePageFacetFeed (search), storepageFeed (menu), addCartItem (cart)
 - Seamless/Grubhub REST API endpoints captured from HAR — 40+ endpoints cataloged with request/response samples in `server/src/adapters/seamless/endpoints/`
-- DoorDash adapter live-tested (2026-04-01): searchRestaurants returns ~57 restaurants, getMenu returns full menus (421 items for test restaurant). getFees uses live menu prices + estimated fee rates (15% service, $2.99 delivery). Cart-based real-time fees blocked by DoorDash CSRF requirements — deferred to Phase 2.
+- DoorDash adapter live-tested (2026-04-01): searchRestaurants returns ~57 restaurants, getMenu returns full menus (421 items for test restaurant). getFees returns live subtotal + total from DoorDash's PreviewOrderV2 (via main tab cart → detailedCartItems query). Falls back to estimated fees if live cart fails.
 - Seamless adapter live-tested (2026-03-31): searchRestaurants, getMenu, getFees all working via real Chrome CDP session + Grubhub API with real-time cart/bill for fees.
 - Both adapters use real Chrome via spawn + connectOverCDP (not launchPersistentContext) to bypass bot detection
 - DoorDash browser uses dedicated API tab with route blocking to prevent SPA navigation interference
@@ -42,7 +42,6 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 1. Build automated deduplication pipeline (fuzzy matching restaurants + menu items across platforms)
 2. Seed more restaurants for broader NYC coverage
 3. Implement savings tracking (log comparisons/orders to DB)
-4. Implement DoorDash real-time cart fees (Phase 2 — requires full browser tab with CSRF context for addCartItem mutation)
 
 ## Architecture Decisions
 
@@ -82,7 +81,7 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - **Key queries:** homePageFacetFeed (search), storepageFeed (menu), addCartItem, createOrderFromCart
 - **Search response format:** Facet component system. Stores identified by `component.id === 'row.store'`. Name in `text.title`, store ID in `custom` (JSON string, key `store_id`), rating in `custom.rating.average_rating`, ETA in `text.custom[key='eta_display_string']`, URL in `events.click.data` (JSON).
 - **Rate limiting:** DoorDash returns 429 aggressively. graphqlQuery retries with 4-15s exponential backoff. All adapter methods add 2-3s delays between calls.
-- **Fee limitation (Phase 1):** addCartItem mutation requires full browser context (CSRF, store-page referrer) that the API tab doesn't provide. Fees estimated from live menu prices + known rates (15% service, $2.99 delivery). Real-time cart fees deferred to Phase 2.
+- **Fee extraction:** Read queries (search, menu) use the API tab. Cart mutations (addCartItem, detailedCartItems/orderCart) use the MAIN tab navigated to the store page, which has full DoorDash JS context. `detailedCartItems` calls `PreviewOrderV2` on the backend, which returns real subtotal + total with fees computed. Individual fee line items (delivery, service) may be null — compare using total. Falls back to estimated fees (15% service + $2.99 delivery) if live cart fails.
 - **Session persistence:** ~/.kortana/doordash-profile/
 
 ### Seamless / Grubhub

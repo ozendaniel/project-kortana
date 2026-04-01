@@ -139,6 +139,94 @@ export class DoorDashBrowser {
     throw new Error(`GraphQL query ${operationName} failed after ${maxRetries} retries`);
   }
 
+  /**
+   * Navigate the main tab to a store page and wait for full load.
+   * This gives the main tab full DoorDash JS context (CSRF, session state)
+   * needed for cart mutations.
+   */
+  async navigateToStore(storeId: string): Promise<void> {
+    const page = await this.ensurePage();
+    const currentUrl = page.url();
+    // Only navigate if not already on this store's page
+    if (!currentUrl.includes(`/store/${storeId}`)) {
+      await page.goto(`${DOORDASH_URL}/store/${storeId}`, {
+        waitUntil: 'networkidle',
+        timeout: 30000,
+      });
+      // Let DoorDash's JS fully initialize (sets CSRF tokens, session context)
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+  }
+
+  /**
+   * Execute a GraphQL query from the MAIN tab (not the API tab).
+   * Use this for cart mutations that require full DoorDash JS context.
+   * Handles page navigation retries.
+   */
+  async mainTabGraphqlQuery<T = unknown>(
+    operationName: string,
+    query: string,
+    variables: Record<string, unknown> = {},
+    maxRetries = 3
+  ): Promise<T> {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const page = await this.ensurePage();
+
+      let result: any;
+      try {
+        result = await page.evaluate(
+          async ({ url, operationName, query, variables }) => {
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ operationName, query, variables }),
+            });
+            if (!response.ok) {
+              const text = await response.text().catch(() => '');
+              return { __error: true, status: response.status, statusText: response.statusText, body: text.substring(0, 500) };
+            }
+            return response.json();
+          },
+          { url: GRAPHQL_URL, operationName, query, variables }
+        );
+      } catch (err: any) {
+        const isRecoverable = err.message?.includes('Execution context was destroyed')
+          || err.message?.includes('navigation')
+          || err.message?.includes('has been closed')
+          || err.message?.includes('Target closed');
+        if (isRecoverable && attempt < maxRetries) {
+          console.log(`[DoorDash] Main tab context lost on ${operationName}, waiting for settle...`);
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          // Page may have navigated — wait for it to stabilize
+          try {
+            const p = await this.ensurePage();
+            await p.waitForLoadState('domcontentloaded', { timeout: 10000 }).catch(() => {});
+          } catch { /* page may still be navigating */ }
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          continue;
+        }
+        throw err;
+      }
+
+      // Check for rate limiting
+      if (result && typeof result === 'object' && '__error' in result) {
+        const err = result as { status: number; statusText: string; body: string };
+        if (err.status === 429 && attempt < maxRetries) {
+          const delay = (attempt + 1) * 4000 + Math.random() * 3000;
+          console.log(`[DoorDash] 429 rate limited on ${operationName} (main tab), retrying in ${(delay / 1000).toFixed(1)}s`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+        throw new Error(`GraphQL ${err.status}: ${err.statusText} ${err.body}`);
+      }
+
+      return result as T;
+    }
+
+    throw new Error(`Main tab GraphQL ${operationName} failed after ${maxRetries} retries`);
+  }
+
   /** Navigate to DoorDash homepage to trigger login / verify session */
   async navigateHome(): Promise<void> {
     const page = await this.ensurePage();

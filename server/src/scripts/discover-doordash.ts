@@ -83,71 +83,174 @@ async function upsertRestaurant(rest: {
   return result.rows[0]?.is_insert ? 'inserted' : 'updated';
 }
 
+/** Parse card.store facets from DoorDash homePageFacetFeed response */
+function parseStoresFromFeed(feed: any): Array<{
+  platformId: string; name: string; cuisines: string[];
+  rating?: number; deliveryTime?: string; imageUrl?: string; platformUrl: string;
+}> {
+  const stores: Array<any> = [];
+  if (!feed?.body) return stores;
+
+  for (const section of feed.body) {
+    if (!section.body) continue;
+    for (const facet of section.body) {
+      const compId = facet.component?.id;
+      if (compId !== 'row.store' && compId !== 'card.store') continue;
+
+      let customData: any = {};
+      try {
+        customData = typeof facet.custom === 'string' ? JSON.parse(facet.custom) : (facet.custom || {});
+      } catch { /* not valid JSON */ }
+
+      const storeId = customData.store_id;
+      const name = facet.text?.title;
+      if (!storeId || !name) continue;
+
+      let platformUrl = `https://www.doordash.com/store/${storeId}`;
+      try {
+        const clickData = typeof facet.events?.click?.data === 'string'
+          ? JSON.parse(facet.events.click.data) : facet.events?.click?.data;
+        if (clickData?.uri) platformUrl = `https://www.doordash.com/${clickData.uri}`;
+      } catch { /* use default */ }
+
+      const textCustomMap: Record<string, string> = {};
+      if (Array.isArray(facet.text?.custom)) {
+        for (const kv of facet.text.custom) {
+          if (kv.key && kv.value) textCustomMap[kv.key] = kv.value;
+        }
+      }
+      const etaStr = textCustomMap['eta_display_string'] || facet.text?.description || '';
+      const timeMatch = etaStr.match(/(\d+\s*min)/);
+
+      const cuisineStr = (facet.text?.description || '').replace(/^\s*•\s*/, '').replace(/\d.*/, '').trim();
+      const cuisines = cuisineStr ? cuisineStr.split(/\s*,\s*/).filter(Boolean) : [];
+
+      stores.push({
+        platformId: String(storeId),
+        name,
+        cuisines,
+        rating: customData.rating?.average_rating,
+        deliveryTime: timeMatch ? timeMatch[1] : undefined,
+        imageUrl: facet.images?.main?.uri,
+        platformUrl,
+      });
+    }
+  }
+  return stores;
+}
+
 async function runGridSearch(adapter: DoorDashAdapter) {
-  console.log(`[Discover-DD] Starting grid search with ${GRID_POINTS.length} points`);
+  console.log(`[Discover-DD] Starting feed pagination (bypassing API tab — using main tab)`);
+
+  const browser = adapter.getBrowser();
+  const searchQuery = loadQuery('homePageFacetFeed.graphql');
 
   let totalInserted = 0;
   let totalUpdated = 0;
-  let failedPoints = 0;
   const seenIds = new Set<string>();
+  let cursor = '';
+  let page = 0;
+  const MAX_PAGES = 20;
 
-  for (let i = 0; i < GRID_POINTS.length; i++) {
-    const point = GRID_POINTS[i];
-    const progress = `[${i + 1}/${GRID_POINTS.length}]`;
+  // Navigate main tab to DoorDash homepage with full SPA load
+  // This sets cookies, CSRF tokens, and delivery context that the GraphQL endpoint needs
+  const mainPage = browser.getPage();
+  if (mainPage) {
+    console.log('[Discover-DD] Loading DoorDash homepage for full context...');
+    await mainPage.goto('https://www.doordash.com/', { waitUntil: 'networkidle', timeout: 30000 }).catch(() => {});
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    console.log('[Discover-DD] Homepage loaded. Starting feed queries.');
+  }
+
+  // Paginate the feed from the user's current default address
+  while (page < MAX_PAGES) {
+    page++;
+    const progress = `[Page ${page}/${MAX_PAGES}]`;
 
     try {
-      const restaurants = await adapter.searchRestaurants({
-        address: '',
-        lat: point.lat,
-        lng: point.lng,
-      });
+      const result = await browser.mainTabGraphqlQuery<any>('homePageFacetFeed', searchQuery, {
+        cursor,
+        filterQuery: '',
+        displayHeader: false,
+        isDebug: false,
+        cuisineFilterVerticalIds: '',
+      }, 1); // maxRetries=1
+
+      const feed = result?.data?.homePageFacetFeed;
+
+      // Debug: show response structure
+      if (page === 1) {
+        console.log(`${progress} Feed body: ${feed?.body ? `${feed.body.length} sections` : 'null'}`);
+        if (feed?.body) {
+          for (const sec of feed.body) {
+            const types = new Map<string, number>();
+            for (const f of (sec.body || [])) {
+              const id = f.component?.id || 'unknown';
+              types.set(id, (types.get(id) || 0) + 1);
+            }
+            console.log(`  Section: ${sec.body?.length || 0} items -`, Object.fromEntries(types));
+          }
+        } else {
+          console.log(`  Raw keys:`, result ? Object.keys(result) : 'null');
+          console.log(`  Data keys:`, result?.data ? Object.keys(result.data) : 'null');
+          const raw = JSON.stringify(result).substring(0, 500);
+          console.log(`  Response preview: ${raw}`);
+        }
+      }
+
+      const stores = parseStoresFromFeed(feed);
+
+      if (stores.length === 0) {
+        console.log(`${progress} No more stores in feed. Stopping.`);
+        break;
+      }
 
       let pointNew = 0;
       let pointUpdated = 0;
 
-      for (const rest of restaurants) {
-        if (seenIds.has(rest.platformId)) continue;
-        seenIds.add(rest.platformId);
+      for (const store of stores) {
+        if (seenIds.has(store.platformId)) continue;
+        seenIds.add(store.platformId);
 
-        // Use search grid point as approximate location
         const action = await upsertRestaurant({
-          ...rest,
-          lat: rest.lat || point.lat,
-          lng: rest.lng || point.lng,
+          ...store,
+          address: '',
+          lat: 40.748, // default address approximate
+          lng: -73.997,
         });
 
-        if (action === 'inserted') {
-          pointNew++;
-          totalInserted++;
-        } else {
-          pointUpdated++;
-          totalUpdated++;
-        }
+        if (action === 'inserted') { pointNew++; totalInserted++; }
+        else { pointUpdated++; totalUpdated++; }
       }
 
       console.log(
-        `${progress} ${point.label}: ${restaurants.length} results, ${pointNew} new, ${pointUpdated} updated (${seenIds.size} unique total)`
+        `${progress} ${stores.length} stores, ${pointNew} new, ${pointUpdated} updated (${seenIds.size} unique total)`
       );
-    } catch (err) {
-      console.error(`${progress} ${point.label}: FAILED -`, err instanceof Error ? err.message : err);
-      failedPoints++;
 
-      // On 429, add extra cooldown
+      // Check for next page cursor
+      const nextCursor = feed?.page?.nextCursor || feed?.page?.cursor;
+      if (!nextCursor || nextCursor === cursor) {
+        console.log(`${progress} No next cursor. Done.`);
+        break;
+      }
+      cursor = nextCursor;
+    } catch (err) {
+      console.error(`${progress} FAILED -`, err instanceof Error ? err.message : err);
+
       if (err instanceof Error && err.message.includes('429')) {
         console.log(`${progress} Rate limited — cooling down 30s...`);
         await new Promise(resolve => setTimeout(resolve, 30000));
       }
+      break;
     }
 
-    // Rate limit: 6s + random jitter (DoorDash is aggressive)
-    if (i < GRID_POINTS.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 6000 + Math.random() * 2000));
-    }
+    // Rate limit: 6s + random jitter
+    await new Promise(resolve => setTimeout(resolve, 6000 + Math.random() * 2000));
   }
 
   const dbCount = await db.query('SELECT COUNT(*) FROM restaurants WHERE doordash_id IS NOT NULL');
-  console.log('\n=== Grid Search Complete ===');
-  console.log(`Grid points: ${GRID_POINTS.length} (${failedPoints} failed)`);
+  console.log('\n=== Discovery Complete ===');
+  console.log(`Pages fetched: ${page}`);
   console.log(`Unique restaurants found: ${seenIds.size}`);
   console.log(`New inserted: ${totalInserted}`);
   console.log(`Updated: ${totalUpdated}`);

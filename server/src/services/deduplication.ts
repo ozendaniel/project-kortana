@@ -158,14 +158,6 @@ async function mergeRestaurants(
   if (secondary.rows.length === 0) return;
 
   const s = secondary.rows[0];
-  await db.query(
-    `UPDATE restaurants SET
-       seamless_id = COALESCE(seamless_id, $1),
-       seamless_url = COALESCE(seamless_url, $2),
-       match_confidence = $3
-     WHERE id = $4`,
-    [s.seamless_id, s.seamless_url, confidence, primaryId]
-  );
 
   // Reassign menu data from secondary to primary
   await db.query(
@@ -177,8 +169,18 @@ async function mergeRestaurants(
     [primaryId, secondaryId]
   );
 
-  // Delete the secondary record
+  // Delete the secondary record BEFORE updating primary to avoid unique constraint
+  // violation on seamless_id (both records can't have the same value simultaneously)
   await db.query('DELETE FROM restaurants WHERE id = $1', [secondaryId]);
+
+  await db.query(
+    `UPDATE restaurants SET
+       seamless_id = COALESCE(seamless_id, $1),
+       seamless_url = COALESCE(seamless_url, $2),
+       match_confidence = $3
+     WHERE id = $4`,
+    [s.seamless_id, s.seamless_url, confidence, primaryId]
+  );
 }
 
 async function computeMenuOverlap(restId1: string, restId2: string): Promise<number> {

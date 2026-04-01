@@ -50,6 +50,7 @@ export class SeamlessAdapter implements PlatformAdapter {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
+    await this.browser.ensureConnected();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'origin': 'https://www.seamless.com',
@@ -334,7 +335,7 @@ export class SeamlessAdapter implements PlatformAdapter {
       };
     } catch (err) {
       console.error('[Seamless] getFees error:', err);
-      return { subtotalCents: 0, deliveryFeeCents: 0, serviceFeeCents: 0, smallOrderFeeCents: 0, totalCents: 0 };
+      throw new Error(`[Seamless] getFees failed: ${err instanceof Error ? err.message : err}`);
     }
   }
 }

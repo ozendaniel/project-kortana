@@ -110,6 +110,7 @@ export class DoorDashAdapter implements PlatformAdapter {
     cuisine?: string;
   }): Promise<PlatformRestaurant[]> {
     try {
+      await this.browser.ensureConnected();
       await this.setDeliveryAddress(params.lat, params.lng);
       await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
 
@@ -198,6 +199,7 @@ export class DoorDashAdapter implements PlatformAdapter {
 
   async getMenu(platformRestaurantId: string): Promise<PlatformMenu> {
     try {
+      await this.browser.ensureConnected();
       const query = loadQuery('storepageFeed.graphql');
       const result = await this.browser.graphqlQuery<{
         data: {
@@ -251,26 +253,55 @@ export class DoorDashAdapter implements PlatformAdapter {
   }
 
   /**
-   * Get real-time fees for a DoorDash order by building a cart on the main browser tab
-   * and fetching the order preview (detailedCartItems → PreviewOrderV2).
+   * Get fees for a DoorDash order.
    *
-   * Flow: navigate to store → addCartItem (main tab) → detailedCartItems → parse fees.
-   * Falls back to estimated fees if the live cart approach fails.
+   * Computes item subtotal from live menu prices (always accurate).
+   * Attempts live cart approach for real fee extraction, but the DoorDash cart
+   * accumulates items across requests (no captured removeCartItem mutation yet).
+   * When the cart has stale items, derives the fee RATE from the cart preview
+   * (fees/subtotal ratio) and applies it to the correct subtotal.
+   * Falls back to estimated fee rates if cart approach fails entirely.
    */
   async getFees(params: {
     platformRestaurantId: string;
     items: Array<{ platformItemId: string; quantity: number }>;
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees> {
+    await this.browser.ensureConnected();
+
+    // Step 1: Always compute subtotal from live menu prices (reliable, not affected by stale cart)
+    const menu = await this.getMenu(params.platformRestaurantId);
+    const priceMap = new Map<string, number>();
+    for (const cat of menu.categories) {
+      for (const item of cat.items) {
+        priceMap.set(item.platformItemId, item.priceCents);
+      }
+    }
+
+    let subtotalCents = 0;
+    for (const item of params.items) {
+      const price = priceMap.get(item.platformItemId);
+      if (price) subtotalCents += price * item.quantity;
+    }
+
+    console.log(`[DoorDash] getFees: computed subtotal from menu prices: ${subtotalCents} cents`);
+
+    if (subtotalCents === 0) {
+      console.warn('[DoorDash] getFees: subtotal is 0, items not found in menu');
+      return { subtotalCents: 0, deliveryFeeCents: 0, serviceFeeCents: 0, smallOrderFeeCents: 0, totalCents: 0 };
+    }
+
+    // Step 2: Try live cart approach to extract real fee rate
+    let feeRate: number | null = null;
+    let estimatedDeliveryTime: string | undefined;
     try {
-      // Navigate main tab to the store page for full JS context
       console.log(`[DoorDash] getFees: navigating to store ${params.platformRestaurantId}...`);
       await this.browser.navigateToStore(params.platformRestaurantId);
 
       const addCartQuery = loadQuery('addCartItem.graphql');
       let cartId = '';
 
-      // Add each item to cart via the main tab
+      // Add items to cart (may accumulate with stale items — we only use the fee rate)
       for (const item of params.items) {
         const result = await this.browser.mainTabGraphqlQuery<any>('addCartItem', addCartQuery, {
           addCartItemInput: {
@@ -300,103 +331,99 @@ export class DoorDashAdapter implements PlatformAdapter {
           shouldKeepOnlyOneActiveCart: false,
         });
 
-        if (result?.errors?.length) {
-          console.warn(`[DoorDash] addCartItem warning: ${result.errors[0].message}`);
-        }
-
-        // Capture the cart ID for subsequent items and the preview query
         const cart = result?.data?.addCartItemV2;
         if (cart?.id) cartId = cart.id;
-
-        console.log(`[DoorDash] Added item ${item.platformItemId} to cart ${cartId || '(new)'}, subtotal=${cart?.subtotal}`);
-
         await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
       }
 
-      if (!cartId) {
-        console.warn('[DoorDash] getFees: no cart ID after adding items, falling back to estimates');
-        return this.estimateFees(params);
-      }
+      if (cartId) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const detailedQuery = loadQuery('detailedCartItems.graphql');
+        const previewResult = await this.browser.mainTabGraphqlQuery<any>(
+          'detailedCartItems', detailedQuery, {
+            orderCartId: cartId,
+            isCardPayment: true,
+          }
+        );
 
-      // Fetch the order preview with fee breakdown
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const detailedQuery = loadQuery('detailedCartItems.graphql');
-      const previewResult = await this.browser.mainTabGraphqlQuery<any>(
-        'detailedCartItems', detailedQuery, {
-          orderCartId: cartId,
-          isCardPayment: true,
-        }
-      );
+        const preview = previewResult?.data?.orderCart;
+        if (preview) {
+          const cartSubtotal = preview.subtotal || 0;
+          const cartTotal = preview.total || 0;
 
-      if (previewResult?.errors?.length) {
-        console.warn(`[DoorDash] detailedCartItems error: ${previewResult.errors[0].message}`);
-        // If preview fails, try to get what we can from the cart
-      }
-
-      const preview = previewResult?.data?.orderCart;
-      if (!preview) {
-        console.warn('[DoorDash] getFees: orderCart preview returned null, falling back to estimates');
-        return this.estimateFees(params);
-      }
-
-      // Parse fee breakdown from the order preview
-      const subtotal = preview.subtotal || 0;
-      const total = preview.total || 0;
-      const orders = preview.orders || [];
-      let serviceFee = 0;
-      let deliveryFee = 0;
-      let smallOrderFee = 0;
-
-      // Try paymentLineItems first (has serviceFee, taxAmount)
-      const pli = orders[0]?.paymentLineItems;
-      if (pli) {
-        serviceFee = pli.serviceFee || 0;
-        console.log(`[DoorDash] paymentLineItems: subtotal=${pli.subtotal}, serviceFee=${pli.serviceFee}, tax=${pli.taxAmount}, subtotalTax=${pli.subtotalTaxAmount}, feesTax=${pli.feesTaxAmount}`);
-      }
-
-      // Try lineItems for itemized fee breakdown
-      if (orders[0]?.lineItems?.length) {
-        for (const li of orders[0].lineItems) {
-          const label = (li.label || '').toLowerCase();
-          const amount = li.finalMoney?.unitAmount || 0;
-          console.log(`[DoorDash] lineItem: "${li.label}" = ${li.finalMoney?.displayString} (${amount})`);
-          if (label.includes('delivery')) deliveryFee = amount;
-          else if (label.includes('service')) serviceFee = amount || serviceFee;
-          else if (label.includes('small order')) smallOrderFee = amount;
-        }
-      }
-
-      // If we have a total from the preview, use it — even if individual fees aren't itemized
-      if (total > 0) {
-        // Compute implied fees from total - subtotal when breakdown isn't available
-        const impliedFees = total - subtotal;
-        if (serviceFee === 0 && deliveryFee === 0 && impliedFees > 0) {
-          // DoorDash total includes: subtotal + delivery + service + tax
-          // Without itemized breakdown, assign the full difference as combined fees
-          console.log(`[DoorDash] No itemized fees, implied total fees: ${impliedFees} cents`);
-        }
-
-        console.log(`[DoorDash] getFees (live): subtotal=${subtotal}, delivery=${deliveryFee}, service=${serviceFee}, total=${total}`);
-        return {
-          subtotalCents: subtotal,
-          deliveryFeeCents: deliveryFee,
-          serviceFeeCents: serviceFee,
-          smallOrderFeeCents: smallOrderFee,
-          totalCents: total,
-          estimatedDeliveryTime: preview.asapMinutesRange
+          estimatedDeliveryTime = preview.asapMinutesRange
             ? `${preview.asapMinutesRange[0]}-${preview.asapMinutesRange[1]} min`
-            : undefined,
-        };
-      }
+            : undefined;
 
-      // Preview returned but total is zero — fall back to estimates
-      console.warn('[DoorDash] getFees: preview returned zero total, falling back to estimates');
-      return this.estimateFees(params);
+          // Extract fee rate from cart preview (fees / subtotal)
+          // This rate is valid even with stale items since fees scale proportionally
+          if (cartSubtotal > 0 && cartTotal > cartSubtotal) {
+            feeRate = (cartTotal - cartSubtotal) / cartSubtotal;
+            console.log(`[DoorDash] getFees: cart subtotal=${cartSubtotal}, total=${cartTotal}, derived fee rate=${(feeRate * 100).toFixed(1)}%`);
+          }
+
+          // Also try to extract itemized fees from lineItems/paymentLineItems
+          const orders = preview.orders || [];
+          const pli = orders[0]?.paymentLineItems;
+          let serviceFee = 0;
+          let deliveryFee = 0;
+          let smallOrderFee = 0;
+
+          if (pli?.serviceFee) serviceFee = pli.serviceFee;
+
+          if (orders[0]?.lineItems?.length) {
+            for (const li of orders[0].lineItems) {
+              const label = (li.label || '').toLowerCase();
+              const amount = li.finalMoney?.unitAmount || 0;
+              if (label.includes('delivery')) deliveryFee = amount;
+              else if (label.includes('service')) serviceFee = amount || serviceFee;
+              else if (label.includes('small order')) smallOrderFee = amount;
+            }
+          }
+
+          // If we got itemized fees AND the cart was clean (subtotal matches), use them directly
+          if (cartSubtotal === subtotalCents && (serviceFee > 0 || deliveryFee > 0)) {
+            const totalCents = subtotalCents + deliveryFee + serviceFee + smallOrderFee;
+            console.log(`[DoorDash] getFees (live itemized): subtotal=${subtotalCents}, delivery=${deliveryFee}, service=${serviceFee}, total=${totalCents}`);
+            return {
+              subtotalCents, deliveryFeeCents: deliveryFee, serviceFeeCents: serviceFee,
+              smallOrderFeeCents: smallOrderFee, totalCents, estimatedDeliveryTime,
+            };
+          }
+        }
+      }
     } catch (err) {
-      console.error('[DoorDash] getFees live error:', err);
-      console.log('[DoorDash] Falling back to estimated fees');
-      return this.estimateFees(params);
+      console.error('[DoorDash] getFees cart approach failed:', err);
     }
+
+    // Step 3: Apply fees — use derived rate from cart if available, otherwise use estimates
+    let deliveryFeeCents: number;
+    let serviceFeeCents: number;
+    let smallOrderFeeCents = 0;
+
+    if (feeRate !== null) {
+      // Use real fee rate derived from DoorDash's PreviewOrderV2.
+      // The cart total includes: subtotal + delivery + service + tax.
+      // Split: estimate service at 15% of subtotal, delivery = remainder (or $2.99 fallback).
+      const totalFees = Math.round(subtotalCents * feeRate);
+      serviceFeeCents = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
+      deliveryFeeCents = Math.max(0, totalFees - serviceFeeCents);
+      // If derived delivery seems unreasonable (>$10), cap at $2.99 and put rest in service
+      if (deliveryFeeCents > 1000) {
+        deliveryFeeCents = DOORDASH_DELIVERY_FEE_CENTS;
+        serviceFeeCents = totalFees - deliveryFeeCents;
+      }
+      console.log(`[DoorDash] getFees (live rate ${(feeRate * 100).toFixed(1)}%): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}`);
+    } else {
+      // Estimated fee rates
+      serviceFeeCents = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
+      deliveryFeeCents = DOORDASH_DELIVERY_FEE_CENTS;
+      if (subtotalCents < 1000) smallOrderFeeCents = 200;
+      console.log(`[DoorDash] getFees (estimated): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}`);
+    }
+
+    const totalCents = subtotalCents + deliveryFeeCents + serviceFeeCents + smallOrderFeeCents;
+    return { subtotalCents, deliveryFeeCents, serviceFeeCents, smallOrderFeeCents, totalCents, estimatedDeliveryTime };
   }
 
   /** Fallback: estimate fees from live menu prices + known DoorDash fee rates */

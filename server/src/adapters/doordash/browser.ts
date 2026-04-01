@@ -26,6 +26,12 @@ export class DoorDashBrowser {
       `--window-size=1280,720`,
     ], { stdio: 'ignore' });
 
+    this.chromeProcess.on('exit', (code) => {
+      // On Windows, Chrome's parent launcher process exits quickly (code 0)
+      // while child processes keep running. Don't null state here — ensureConnected handles it.
+      console.warn(`[DoorDash] Chrome launcher process exited with code ${code}`);
+    });
+
     // Give Chrome time to boot and open the debug port
     await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -33,6 +39,57 @@ export class DoorDashBrowser {
     this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
     this.context = this.browser.contexts()[0] || await this.browser.newContext();
     this.page = this.context.pages()[0] || await this.context.newPage();
+  }
+
+  /** Check if Chrome + CDP connection is alive, reconnect if not.
+   *  On Windows, Chrome's parent process exits quickly (code 0) while child
+   *  processes keep running. So we check Playwright connection + CDP port,
+   *  not the process handle. */
+  async ensureConnected(): Promise<void> {
+    // Check if Playwright connection is still valid
+    if (this.browser) {
+      try {
+        this.browser.contexts();
+        return; // Connection alive, nothing to do
+      } catch {
+        console.log('[DoorDash] Playwright connection lost');
+      }
+    }
+
+    // Check if CDP port is still responding (Chrome may still be running despite process handle gone)
+    let cdpAlive = false;
+    try {
+      const resp = await fetch(`http://localhost:${CDP_PORT}/json/version`);
+      cdpAlive = resp.ok;
+    } catch {
+      cdpAlive = false;
+    }
+
+    if (cdpAlive) {
+      // Chrome is running but Playwright disconnected — just reconnect
+      console.log('[DoorDash] Reconnecting Playwright to existing Chrome on CDP port...');
+      this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
+      this.context = this.browser.contexts()[0] || await this.browser.newContext();
+      this.page = this.context.pages()[0] || await this.context.newPage();
+      this.apiPage = null; // will be recreated on demand
+      return;
+    }
+
+    // Chrome is truly dead — full relaunch
+    console.log('[DoorDash] Chrome is down, relaunching...');
+    if (this.browser) {
+      try { await this.browser.close(); } catch { /* already dead */ }
+    }
+    if (this.chromeProcess && !this.chromeProcess.killed) {
+      this.chromeProcess.kill();
+    }
+    this.browser = null;
+    this.context = null;
+    this.page = null;
+    this.apiPage = null;
+    this.chromeProcess = null;
+
+    await this.launch();
   }
 
   async ensurePage(): Promise<Page> {

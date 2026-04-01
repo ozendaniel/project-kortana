@@ -61,8 +61,14 @@ export async function compareOrder(
       let comparison: PlatformComparison;
 
       if (adapter) {
-        // Live adapter: fetch real-time fees via API
-        comparison = await fetchLiveFees(adapter, rest, items, restaurantId, platform, deliveryAddress);
+        try {
+          // Live adapter: fetch real-time fees via API
+          comparison = await fetchLiveFees(adapter, rest, items, restaurantId, platform, deliveryAddress);
+        } catch (liveErr) {
+          // Live adapter failed — fall back to DB-based pricing
+          console.error(`[Compare] Live ${platform} failed, falling back to DB:`, liveErr);
+          comparison = await calculateFromDB(rest, items, restaurantId, platform);
+        }
       } else {
         // DB-based: calculate from seeded menu data + estimated fees
         comparison = await calculateFromDB(rest, items, restaurantId, platform);

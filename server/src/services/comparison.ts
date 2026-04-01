@@ -12,7 +12,11 @@ interface PlatformComparison {
   deliveryFeeCents: number;
   serviceFeeCents: number;
   smallOrderFeeCents: number;
-  totalCents: number;
+  taxCents: number;
+  discountCents: number;
+  tipCents: number;            // optional 5% tip estimate
+  totalCents: number;          // total before tip
+  totalWithTipCents: number;   // total including optional tip
   estimatedDeliveryTime?: string;
   missingItems: string[];
   orderUrl: string;
@@ -116,7 +120,11 @@ async function fetchLiveFees(
       deliveryFeeCents: 0,
       serviceFeeCents: 0,
       smallOrderFeeCents: 0,
+      taxCents: 0,
+      discountCents: 0,
+      tipCents: 0,
       totalCents: 0,
+      totalWithTipCents: 0,
       missingItems: missingItems.map((i) => i.name),
       orderUrl: rest[`${platform}_url`] || '',
     };
@@ -131,13 +139,19 @@ async function fetchLiveFees(
     deliveryAddress,
   });
 
+  const tipCents = Math.round(fees.subtotalCents * 0.05); // optional 5% tip
+
   return {
     available: missingItems.length === 0,
     itemSubtotalCents: fees.subtotalCents,
     deliveryFeeCents: fees.deliveryFeeCents,
     serviceFeeCents: fees.serviceFeeCents,
     smallOrderFeeCents: fees.smallOrderFeeCents,
+    taxCents: fees.taxCents,
+    discountCents: fees.discountCents,
+    tipCents,
     totalCents: fees.totalCents,
+    totalWithTipCents: fees.totalCents + tipCents,
     estimatedDeliveryTime: fees.estimatedDeliveryTime,
     missingItems: missingItems.map((i) => i.name),
     orderUrl: rest[`${platform}_url`] || '',
@@ -165,7 +179,11 @@ async function calculateFromDB(
       deliveryFeeCents: 0,
       serviceFeeCents: 0,
       smallOrderFeeCents: 0,
+      taxCents: 0,
+      discountCents: 0,
+      tipCents: 0,
       totalCents: 0,
+      totalWithTipCents: 0,
       missingItems: missingItems.map((i) => i.name),
       orderUrl: rest[`${platform}_url`] || '',
     };
@@ -203,7 +221,9 @@ async function calculateFromDB(
     if (subtotalCents < 1000) smallOrderFeeCents = 250; // $2.50 small order fee estimate
   }
 
-  const totalCents = subtotalCents + deliveryFeeCents + serviceFeeCents + smallOrderFeeCents;
+  const taxCents = Math.round(subtotalCents * 0.08875); // NYC sales tax estimate
+  const totalCents = subtotalCents + deliveryFeeCents + serviceFeeCents + smallOrderFeeCents + taxCents;
+  const tipCents = Math.round(subtotalCents * 0.05); // optional 5% tip
 
   return {
     available: missingItems.length === 0,
@@ -211,7 +231,11 @@ async function calculateFromDB(
     deliveryFeeCents,
     serviceFeeCents,
     smallOrderFeeCents,
+    taxCents,
+    discountCents: 0,
+    tipCents,
     totalCents,
+    totalWithTipCents: totalCents + tipCents,
     missingItems: missingItems.map((i) => i.name),
     orderUrl: rest[`${platform}_url`] || '',
   };

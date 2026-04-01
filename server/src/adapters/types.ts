@@ -81,6 +81,8 @@ export interface PlatformFees {
   deliveryFeeCents: number;
   serviceFeeCents: number;
   smallOrderFeeCents: number;
+  taxCents: number;
+  discountCents: number;       // positive = savings (shown as negative on UI)
   totalCents: number;
   estimatedDeliveryTime?: string;
 }

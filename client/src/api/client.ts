@@ -36,7 +36,11 @@ export interface PlatformComparison {
   deliveryFeeCents: number;
   serviceFeeCents: number;
   smallOrderFeeCents: number;
+  taxCents: number;
+  discountCents: number;
+  tipCents: number;
   totalCents: number;
+  totalWithTipCents: number;
   estimatedDeliveryTime?: string;
   missingItems: string[];
   orderUrl: string;

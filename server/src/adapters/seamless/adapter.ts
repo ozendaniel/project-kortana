@@ -306,11 +306,15 @@ export class SeamlessAdapter implements PlatformAdapter {
       const bill = await this.apiCall<{
         charges: {
           diner_subtotal: number;
+          diner_grand_total: number;
           fees: {
             total: number;
             delivery: number;
             service: number;
             fee_items: Array<{ type: string; calculated_amount: number }>;
+          };
+          taxes: {
+            total: number;
           };
         };
       }>(`/carts/${cartId}/bill`);
@@ -319,18 +323,22 @@ export class SeamlessAdapter implements PlatformAdapter {
       const subtotal = bill.charges?.diner_subtotal || 0;
       const deliveryFee = fees?.delivery || 0;
       const serviceFee = fees?.service || 0;
+      const taxCents = bill.charges?.taxes?.total || 0;
       const smallOrderFee = (fees?.fee_items || [])
         .filter(f => f.type === 'SMALL_ORDER')
         .reduce((a, f) => a + f.calculated_amount, 0);
 
-      const total = subtotal + (fees?.total || 0);
+      // Grand total includes subtotal + fees + tax (no tip)
+      const total = bill.charges?.diner_grand_total || (subtotal + (fees?.total || 0) + taxCents);
 
-      console.log(`[Seamless] getFees: subtotal=${subtotal}, delivery=${deliveryFee}, service=${serviceFee}, total=${total}`);
+      console.log(`[Seamless] getFees: subtotal=${subtotal}, delivery=${deliveryFee}, service=${serviceFee}, tax=${taxCents}, total=${total}`);
       return {
         subtotalCents: subtotal,
         deliveryFeeCents: deliveryFee,
         serviceFeeCents: serviceFee,
         smallOrderFeeCents: smallOrderFee,
+        taxCents,
+        discountCents: 0,
         totalCents: total,
       };
     } catch (err) {

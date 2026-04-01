@@ -55,12 +55,32 @@ export default function ComparisonCard({ platform, comparison, isCheapest, savin
             <span>{formatCents(comparison.smallOrderFeeCents)}</span>
           </div>
         )}
+        {comparison.taxCents > 0 && (
+          <div className="flex justify-between">
+            <span className="text-gray-500">Tax</span>
+            <span>{formatCents(comparison.taxCents)}</span>
+          </div>
+        )}
+        {comparison.discountCents > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Discount</span>
+            <span>-{formatCents(comparison.discountCents)}</span>
+          </div>
+        )}
         <div className="flex justify-between pt-2 border-t border-gray-100 font-bold text-lg">
           <span>Total</span>
           <span>{formatCents(comparison.totalCents)}</span>
         </div>
+        <div className="flex justify-between text-gray-400 text-xs">
+          <span>+ Optional tip (5%)</span>
+          <span>+{formatCents(comparison.tipCents)}</span>
+        </div>
+        <div className="flex justify-between text-gray-500 text-sm">
+          <span>Total w/ tip</span>
+          <span>{formatCents(comparison.totalWithTipCents)}</span>
+        </div>
         {comparison.estimatedDeliveryTime && (
-          <p className="text-gray-400 text-xs">{comparison.estimatedDeliveryTime}</p>
+          <p className="text-gray-400 text-xs mt-1">{comparison.estimatedDeliveryTime}</p>
         )}
       </div>
 

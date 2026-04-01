@@ -325,7 +325,7 @@ export class DoorDashAdapter implements PlatformAdapter {
 
     if (subtotalCents === 0) {
       console.warn('[DoorDash] getFees: subtotal is 0, items not found in menu');
-      return { subtotalCents: 0, deliveryFeeCents: 0, serviceFeeCents: 0, smallOrderFeeCents: 0, totalCents: 0 };
+      return { subtotalCents: 0, deliveryFeeCents: 0, serviceFeeCents: 0, smallOrderFeeCents: 0, taxCents: 0, discountCents: 0, totalCents: 0 };
     }
 
     // Step 2: Clear existing cart, add items, get preview
@@ -395,55 +395,64 @@ export class DoorDashAdapter implements PlatformAdapter {
             ? `${preview.asapMinutesRange[0]}-${preview.asapMinutesRange[1]} min`
             : undefined;
 
-          // Try to extract itemized fees
+          // Parse fees from preview data.
+          // DoorDash's PreviewOrderV2 provides:
+          //   subtotal: item prices
+          //   totalBeforeDiscountsAndCredits: subtotal + all fees (delivery + service + tax)
+          //   total: final amount after discounts/promos
+          // lineItems and paymentLineItems may be empty depending on account type.
+          const totalBeforeDiscounts = preview.totalBeforeDiscountsAndCredits || 0;
           const orders = preview.orders || [];
           const pli = orders[0]?.paymentLineItems;
+
           let serviceFee = pli?.serviceFee || 0;
+          let taxAmount = pli?.taxAmount || 0;
           let deliveryFee = 0;
           let smallOrderFee = 0;
+          let discountCents = 0;
 
+          // Try lineItems first for itemized breakdown
           if (orders[0]?.lineItems?.length) {
             for (const li of orders[0].lineItems) {
               const label = (li.label || '').toLowerCase();
               const amount = li.finalMoney?.unitAmount || 0;
+              const sign = li.finalMoney?.sign || '';
+              console.log(`[DoorDash] lineItem: "${li.label}" = ${li.finalMoney?.displayString} (${amount}, sign=${sign})`);
               if (label.includes('delivery')) deliveryFee = amount;
               else if (label.includes('service')) serviceFee = amount || serviceFee;
               else if (label.includes('small order')) smallOrderFee = amount;
+              else if (label.includes('tax')) taxAmount = amount || taxAmount;
+              else if (sign === 'NEGATIVE' || label.includes('discount') || label.includes('promo') || label.includes('off')) {
+                discountCents += amount;
+              }
             }
           }
 
-          // If cart was successfully cleared (subtotal matches our items), use live data directly
+          // If cart was successfully cleared (subtotal matches our items), use live data
           if (cartSubtotal === subtotalCents && cartTotal > 0) {
-            // When fees aren't itemized, derive from total
-            if (serviceFee === 0 && deliveryFee === 0 && cartTotal > cartSubtotal) {
-              const totalFees = cartTotal - cartSubtotal;
-              const estService = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
-              deliveryFee = Math.max(0, totalFees - estService);
+            // Derive fees from totalBeforeDiscountsAndCredits when lineItems are empty
+            if (serviceFee === 0 && deliveryFee === 0 && totalBeforeDiscounts > cartSubtotal) {
+              const totalFees = totalBeforeDiscounts - cartSubtotal;
+              // DoorDash service fee is typically ~15%, delivery varies
+              serviceFee = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
+              deliveryFee = Math.max(0, totalFees - serviceFee);
               if (deliveryFee > 1000) {
                 deliveryFee = DOORDASH_DELIVERY_FEE_CENTS;
                 serviceFee = totalFees - deliveryFee;
-              } else {
-                serviceFee = estService;
               }
             }
-            // When DoorDash total < subtotal (DashPass discount, promo), total is already accurate
-            console.log(`[DoorDash] getFees (live clean cart): subtotal=${cartSubtotal}, delivery=${deliveryFee}, service=${serviceFee}, total=${cartTotal}`);
+
+            // Derive discount from totalBeforeDiscountsAndCredits - total
+            if (discountCents === 0 && totalBeforeDiscounts > cartTotal) {
+              discountCents = totalBeforeDiscounts - cartTotal;
+            }
+
+            console.log(`[DoorDash] getFees (live): subtotal=${cartSubtotal}, delivery=${deliveryFee}, service=${serviceFee}, tax=${taxAmount}, discount=${discountCents}, total=${cartTotal}, totalBeforeDiscounts=${totalBeforeDiscounts}`);
             return {
               subtotalCents, deliveryFeeCents: deliveryFee, serviceFeeCents: serviceFee,
-              smallOrderFeeCents: smallOrderFee, totalCents: cartTotal, estimatedDeliveryTime,
+              smallOrderFeeCents: smallOrderFee, taxCents: taxAmount, discountCents,
+              totalCents: cartTotal, estimatedDeliveryTime,
             };
-          }
-
-          // Cart wasn't clean — derive fee rate and apply to our subtotal
-          if (cartSubtotal > 0 && cartTotal > cartSubtotal) {
-            const feeRate = (cartTotal - cartSubtotal) / cartSubtotal;
-            const totalFees = Math.round(subtotalCents * feeRate);
-            const svcFee = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
-            let dlvFee = Math.max(0, totalFees - svcFee);
-            if (dlvFee > 1000) dlvFee = DOORDASH_DELIVERY_FEE_CENTS;
-            const total = subtotalCents + svcFee + dlvFee;
-            console.log(`[DoorDash] getFees (derived rate ${(feeRate * 100).toFixed(1)}%): subtotal=${subtotalCents}, delivery=${dlvFee}, service=${svcFee}, total=${total}`);
-            return { subtotalCents, deliveryFeeCents: dlvFee, serviceFeeCents: svcFee, smallOrderFeeCents: 0, totalCents: total, estimatedDeliveryTime };
           }
         }
       }
@@ -455,9 +464,10 @@ export class DoorDashAdapter implements PlatformAdapter {
     const serviceFeeCents = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
     const deliveryFeeCents = DOORDASH_DELIVERY_FEE_CENTS;
     const smallOrderFeeCents = subtotalCents < 1000 ? 200 : 0;
-    const totalCents = subtotalCents + serviceFeeCents + deliveryFeeCents + smallOrderFeeCents;
-    console.log(`[DoorDash] getFees (estimated): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}, total=${totalCents}`);
-    return { subtotalCents, deliveryFeeCents, serviceFeeCents, smallOrderFeeCents, totalCents, estimatedDeliveryTime };
+    const taxCents = Math.round(subtotalCents * 0.08875); // NYC sales tax estimate
+    const totalCents = subtotalCents + serviceFeeCents + deliveryFeeCents + smallOrderFeeCents + taxCents;
+    console.log(`[DoorDash] getFees (estimated): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}, tax=${taxCents}, total=${totalCents}`);
+    return { subtotalCents, deliveryFeeCents, serviceFeeCents, smallOrderFeeCents, taxCents, discountCents: 0, totalCents, estimatedDeliveryTime };
   }
 
   /** Fallback: estimate fees from live menu prices + known DoorDash fee rates */

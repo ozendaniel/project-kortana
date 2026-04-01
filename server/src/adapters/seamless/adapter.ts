@@ -298,8 +298,10 @@ export class SeamlessAdapter implements PlatformAdapter {
           }),
         });
 
-        // Rate limit
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+        // Rate limit between items (skip after last item)
+        if (params.items.indexOf(item) < params.items.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
+        }
       }
 
       // 4. Get bill (fee breakdown)

@@ -33,6 +33,8 @@ const DOORDASH_DELIVERY_FEE_CENTS = 299; // $2.99 default
 export class DoorDashAdapter implements PlatformAdapter {
   platform = 'doordash' as const;
   private browser = new DoorDashBrowser();
+  private lastRequestTime = 0;
+  private static MIN_REQUEST_GAP_MS = 5000; // minimum 5s between comparisons to avoid 429
 
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
@@ -267,7 +269,7 @@ export class DoorDashAdapter implements PlatformAdapter {
           },
           cartFilter: { shouldIncludeSubmitted: false },
         },
-      });
+      }, 1); // maxRetries=1 to fail fast on 429
 
       const carts = listResult?.data?.listCarts || [];
       if (carts.length === 0) {
@@ -281,7 +283,8 @@ export class DoorDashAdapter implements PlatformAdapter {
         await this.browser.mainTabGraphqlQuery<any>(
           'deleteCart',
           `mutation deleteCart($cartId: ID!) { deleteCart(cartId: $cartId) }`,
-          { cartId: cart.id }
+          { cartId: cart.id },
+          1
         );
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -306,29 +309,17 @@ export class DoorDashAdapter implements PlatformAdapter {
   }): Promise<PlatformFees> {
     await this.browser.ensureConnected();
 
-    // Step 1: Compute subtotal from live menu prices (reliable)
-    const menu = await this.getMenu(params.platformRestaurantId);
-    const priceMap = new Map<string, number>();
-    for (const cat of menu.categories) {
-      for (const item of cat.items) {
-        priceMap.set(item.platformItemId, item.priceCents);
-      }
+    // Rate limit: wait if too soon after last request to avoid DoorDash 429s
+    const now = Date.now();
+    const elapsed = now - this.lastRequestTime;
+    if (elapsed < DoorDashAdapter.MIN_REQUEST_GAP_MS) {
+      const wait = DoorDashAdapter.MIN_REQUEST_GAP_MS - elapsed;
+      console.log(`[DoorDash] Rate limit cooldown: waiting ${(wait / 1000).toFixed(1)}s`);
+      await new Promise(resolve => setTimeout(resolve, wait));
     }
+    this.lastRequestTime = Date.now();
 
-    let subtotalCents = 0;
-    for (const item of params.items) {
-      const price = priceMap.get(item.platformItemId);
-      if (price) subtotalCents += price * item.quantity;
-    }
-
-    console.log(`[DoorDash] getFees: menu subtotal = ${subtotalCents} cents`);
-
-    if (subtotalCents === 0) {
-      console.warn('[DoorDash] getFees: subtotal is 0, items not found in menu');
-      return { subtotalCents: 0, deliveryFeeCents: 0, serviceFeeCents: 0, smallOrderFeeCents: 0, taxCents: 0, discountCents: 0, totalCents: 0 };
-    }
-
-    // Step 2: Clear existing cart, add items, get preview
+    // Clear cart, add items, get preview — subtotal comes from the clean cart itself
     let estimatedDeliveryTime: string | undefined;
     try {
       console.log(`[DoorDash] getFees: navigating to store ${params.platformRestaurantId}...`);
@@ -368,22 +359,24 @@ export class DoorDashAdapter implements PlatformAdapter {
           cartContext: { isBundle: false },
           returnCartFromOrderService: false,
           shouldKeepOnlyOneActiveCart: false,
-        });
+        }, 1); // maxRetries=1 to fail fast on 429
 
         const cart = result?.data?.addCartItemV2;
         if (cart?.id) cartId = cart.id;
         console.log(`[DoorDash] addCartItem: ${item.platformItemId}, cart=${cartId || '(new)'}, subtotal=${cart?.subtotal}`);
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+        if (params.items.indexOf(item) < params.items.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
+        }
       }
 
       if (cartId) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const detailedQuery = loadQuery('detailedCartItems.graphql');
         const previewResult = await this.browser.mainTabGraphqlQuery<any>(
           'detailedCartItems', detailedQuery, {
             orderCartId: cartId,
             isCardPayment: true,
-          }
+          }, 1 // maxRetries=1 to fail fast on 429
         );
 
         const preview = previewResult?.data?.orderCart;
@@ -428,13 +421,13 @@ export class DoorDashAdapter implements PlatformAdapter {
             }
           }
 
-          // If cart was successfully cleared (subtotal matches our items), use live data
-          if (cartSubtotal === subtotalCents && cartTotal > 0) {
+          // Cart was cleared before adding items — subtotal is accurate
+          if (cartSubtotal > 0 && cartTotal > 0) {
             // Derive fees from totalBeforeDiscountsAndCredits when lineItems are empty
             if (serviceFee === 0 && deliveryFee === 0 && totalBeforeDiscounts > cartSubtotal) {
               const totalFees = totalBeforeDiscounts - cartSubtotal;
               // DoorDash service fee is typically ~15%, delivery varies
-              serviceFee = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
+              serviceFee = Math.round(cartSubtotal * DOORDASH_SERVICE_FEE_RATE);
               deliveryFee = Math.max(0, totalFees - serviceFee);
               if (deliveryFee > 1000) {
                 deliveryFee = DOORDASH_DELIVERY_FEE_CENTS;
@@ -449,7 +442,7 @@ export class DoorDashAdapter implements PlatformAdapter {
 
             console.log(`[DoorDash] getFees (live): subtotal=${cartSubtotal}, delivery=${deliveryFee}, service=${serviceFee}, tax=${taxAmount}, discount=${discountCents}, total=${cartTotal}, totalBeforeDiscounts=${totalBeforeDiscounts}`);
             return {
-              subtotalCents, deliveryFeeCents: deliveryFee, serviceFeeCents: serviceFee,
+              subtotalCents: cartSubtotal, deliveryFeeCents: deliveryFee, serviceFeeCents: serviceFee,
               smallOrderFeeCents: smallOrderFee, taxCents: taxAmount, discountCents,
               totalCents: cartTotal, estimatedDeliveryTime,
             };
@@ -460,14 +453,9 @@ export class DoorDashAdapter implements PlatformAdapter {
       console.error('[DoorDash] getFees cart approach failed:', err);
     }
 
-    // Step 3: Full fallback — estimated fee rates on live subtotal
-    const serviceFeeCents = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
-    const deliveryFeeCents = DOORDASH_DELIVERY_FEE_CENTS;
-    const smallOrderFeeCents = subtotalCents < 1000 ? 200 : 0;
-    const taxCents = Math.round(subtotalCents * 0.08875); // NYC sales tax estimate
-    const totalCents = subtotalCents + serviceFeeCents + deliveryFeeCents + smallOrderFeeCents + taxCents;
-    console.log(`[DoorDash] getFees (estimated): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}, tax=${taxCents}, total=${totalCents}`);
-    return { subtotalCents, deliveryFeeCents, serviceFeeCents, smallOrderFeeCents, taxCents, discountCents: 0, totalCents, estimatedDeliveryTime };
+    // Step 2: Full fallback — throw so comparison service uses DB pricing (no API calls)
+    // Calling estimateFees here would trigger another getMenu() call that also gets 429'd
+    throw new Error('[DoorDash] getFees: live cart approach failed');
   }
 
   /** Fallback: estimate fees from live menu prices + known DoorDash fee rates */
@@ -491,9 +479,10 @@ export class DoorDashAdapter implements PlatformAdapter {
 
     const serviceFeeCents = Math.round(subtotalCents * DOORDASH_SERVICE_FEE_RATE);
     const deliveryFeeCents = DOORDASH_DELIVERY_FEE_CENTS;
-    const totalCents = subtotalCents + serviceFeeCents + deliveryFeeCents;
+    const taxCents = Math.round(subtotalCents * 0.08875);
+    const totalCents = subtotalCents + serviceFeeCents + deliveryFeeCents + taxCents;
 
-    console.log(`[DoorDash] getFees (estimated fallback): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}, total=${totalCents}`);
-    return { subtotalCents, deliveryFeeCents, serviceFeeCents, smallOrderFeeCents: 0, totalCents };
+    console.log(`[DoorDash] getFees (estimated fallback): subtotal=${subtotalCents}, delivery=${deliveryFeeCents}, service=${serviceFeeCents}, tax=${taxCents}, total=${totalCents}`);
+    return { subtotalCents, deliveryFeeCents, serviceFeeCents, smallOrderFeeCents: 0, taxCents, discountCents: 0, totalCents };
   }
 }

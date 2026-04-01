@@ -58,7 +58,8 @@ export async function compareOrder(
   if (rest.seamless_id) platforms.push('seamless');
   if (rest.ubereats_id) platforms.push('ubereats');
 
-  for (const platform of platforms) {
+  // Fetch all platforms in parallel for speed
+  const platformPromises = platforms.map(async (platform) => {
     const adapter = adapters?.get(platform);
 
     try {
@@ -66,15 +67,12 @@ export async function compareOrder(
 
       if (adapter) {
         try {
-          // Live adapter: fetch real-time fees via API
           comparison = await fetchLiveFees(adapter, rest, items, restaurantId, platform, deliveryAddress);
         } catch (liveErr) {
-          // Live adapter failed — fall back to DB-based pricing
           console.error(`[Compare] Live ${platform} failed, falling back to DB:`, liveErr);
           comparison = await calculateFromDB(rest, items, restaurantId, platform);
         }
       } else {
-        // DB-based: calculate from seeded menu data + estimated fees
         comparison = await calculateFromDB(rest, items, restaurantId, platform);
       }
 
@@ -85,7 +83,9 @@ export async function compareOrder(
     } catch (err) {
       console.error(`[Compare] Error for ${platform}:`, err);
     }
-  }
+  });
+
+  await Promise.all(platformPromises);
 
   // 3. Determine cheapest
   if (totals.length > 0) {

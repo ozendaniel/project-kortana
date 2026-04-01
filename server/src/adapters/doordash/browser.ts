@@ -221,11 +221,11 @@ export class DoorDashBrowser {
     // Only navigate if not already on this store's page
     if (!currentUrl.includes(`/store/${storeId}`)) {
       await page.goto(`${DOORDASH_URL}/store/${storeId}`, {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: 30000,
       });
-      // Let DoorDash's JS fully initialize (sets CSRF tokens, session context)
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Let DoorDash's JS initialize (CSRF tokens, session context)
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }
   }
 

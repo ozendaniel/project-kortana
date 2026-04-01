@@ -10,6 +10,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const [status, setStatus] = useState<'connecting' | 'streaming' | 'complete' | 'error'>('connecting');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const sendEvent = useCallback((event: object) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -52,13 +53,19 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
 
       if (msg.type === 'login_failed' && msg.platform === platform) {
         setStatus('error');
+        setErrorMsg(msg.reason || 'Login failed');
         onError(msg.reason || 'Login failed');
       }
     };
 
-    ws.onerror = () => {
+    ws.onerror = (e) => {
+      console.error('[BrowserView] WebSocket error:', e);
       setStatus('error');
       onError('WebSocket connection failed');
+    };
+
+    ws.onclose = (e) => {
+      console.log(`[BrowserView] WebSocket closed: code=${e.code} reason=${e.reason}`);
     };
 
     return () => {
@@ -109,7 +116,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
         <div className="text-green-600 font-medium">Login successful!</div>
       )}
       {status === 'error' && (
-        <div className="text-red-600 font-medium">Connection error. Try again.</div>
+        <div className="text-red-600 font-medium">{errorMsg || 'Connection error. Try again.'}</div>
       )}
       <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg bg-white">
         <canvas

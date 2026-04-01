@@ -43,8 +43,16 @@ const adapters = new Map<string, PlatformAdapter>();
 const authManager = new AuthManager();
 setAuthManager(authManager);
 
-async function start(): Promise<void> {
-  // Initialize platform adapters (non-blocking — no login wait)
+// Start HTTP server and WebSocket immediately — adapters initialize in background
+const server = app.listen(PORT, () => {
+  console.log(`[Kortana] Server running on http://localhost:${PORT}`);
+  console.log(`[Kortana] Health check: http://localhost:${PORT}/api/health`);
+});
+
+setupWebSocket(server, authManager);
+
+// Initialize platform adapters in background (don't block server startup)
+async function initAdapters(): Promise<void> {
   if (process.env.DOORDASH_EMAIL) {
     try {
       const doordash = new DoorDashAdapter();
@@ -91,17 +99,8 @@ async function start(): Promise<void> {
 
   // Start session monitoring
   authManager.startSessionMonitor();
-
-  // Start HTTP server and attach WebSocket
-  const server = app.listen(PORT, () => {
-    console.log(`[Kortana] Server running on http://localhost:${PORT}`);
-    console.log(`[Kortana] Health check: http://localhost:${PORT}/api/health`);
-  });
-
-  setupWebSocket(server, authManager);
 }
 
-start().catch((err) => {
-  console.error('[Kortana] Failed to start:', err);
-  process.exit(1);
+initAdapters().catch((err) => {
+  console.error('[Kortana] Adapter initialization failed:', err);
 });

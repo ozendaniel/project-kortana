@@ -58,52 +58,71 @@ interface MenuCategory {
 }
 
 function buildUnifiedMenu(rows: Array<Record<string, unknown>>): MenuCategory[] {
-  const itemMap = new Map<string, UnifiedMenuItem>();
-  const matchGroups = new Map<string, string>(); // matched_item_id -> canonical item id
+  // Union-Find to group all transitively matched items
+  const parent = new Map<string, string>();
+  function find(x: string): string {
+    if (!parent.has(x)) parent.set(x, x);
+    if (parent.get(x) !== x) parent.set(x, find(parent.get(x)!));
+    return parent.get(x)!;
+  }
+  function union(a: string, b: string): void {
+    const ra = find(a), rb = find(b);
+    if (ra !== rb) parent.set(rb, ra);
+  }
 
+  // Build connected components from matched_item_id links
   for (const row of rows) {
     const id = row.id as string;
     const matchedId = row.matched_item_id as string | null;
+    find(id); // ensure every item is registered
+    if (matchedId) union(id, matchedId);
+  }
 
-    // Determine canonical ID for this item group
-    let canonicalId: string;
-    if (matchedId && matchGroups.has(matchedId)) {
-      canonicalId = matchGroups.get(matchedId)!;
-    } else if (matchedId && itemMap.has(matchedId)) {
-      canonicalId = matchedId;
-    } else {
-      canonicalId = id;
-    }
+  // Group rows by their canonical (root) ID
+  const groups = new Map<string, Array<Record<string, unknown>>>();
+  for (const row of rows) {
+    const root = find(row.id as string);
+    if (!groups.has(root)) groups.set(root, []);
+    groups.get(root)!.push(row);
+  }
 
-    // Register the match group
-    if (matchedId) {
-      matchGroups.set(id, canonicalId);
-      matchGroups.set(matchedId, canonicalId);
-    }
+  // Build unified items from groups, skipping duplicate categories like "Most Ordered"
+  const itemMap = new Map<string, UnifiedMenuItem>();
+  const SKIP_CATEGORIES = new Set(['Most Ordered', 'Popular Items', 'Featured']);
 
-    // Get or create the unified item
-    if (!itemMap.has(canonicalId)) {
-      itemMap.set(canonicalId, {
-        id: canonicalId,
-        name: row.original_name as string,
-        description: row.description as string | undefined,
-        category: row.category as string,
-        platforms: {},
-      });
-    }
+  for (const [root, members] of groups) {
+    // Pick the best representative row (prefer non-duplicate category)
+    const representative = members.find(r => !SKIP_CATEGORIES.has(r.category as string)) || members[0];
 
-    const unified = itemMap.get(canonicalId)!;
-    unified.platforms[row.platform as string] = {
-      itemId: row.platform_item_id as string,
-      priceCents: row.price_cents as number,
-      available: row.available as boolean,
+    const unified: UnifiedMenuItem = {
+      id: root,
+      name: representative.original_name as string,
+      description: representative.description as string | undefined,
+      category: representative.category as string,
+      platforms: {},
     };
+
+    // Merge all platform entries from all members of this group
+    for (const row of members) {
+      const platform = row.platform as string;
+      // Prefer the non-duplicate-category version for each platform
+      if (!unified.platforms[platform] || SKIP_CATEGORIES.has(row.category as string) === false) {
+        unified.platforms[platform] = {
+          itemId: row.platform_item_id as string,
+          priceCents: row.price_cents as number,
+          available: row.available as boolean,
+        };
+      }
+    }
+
+    itemMap.set(root, unified);
   }
 
   // Group by category
   const categoryMap = new Map<string, UnifiedMenuItem[]>();
   for (const item of itemMap.values()) {
     const cat = item.category || 'Other';
+    if (SKIP_CATEGORIES.has(cat)) continue; // don't show duplicate categories
     if (!categoryMap.has(cat)) categoryMap.set(cat, []);
     categoryMap.get(cat)!.push(item);
   }

@@ -1,12 +1,10 @@
-import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
+import { chromium, type Browser, type BrowserContext, type Page, type CDPSession } from 'playwright';
 import { spawn, type ChildProcess } from 'child_process';
-import path from 'path';
-import os from 'os';
+import { findChromePath, getProfileDir, getChromeArgs } from '../../utils/chrome.js';
 
-const PROFILE_DIR = path.join(os.homedir(), '.kortana', 'doordash-profile');
+const PROFILE_DIR = getProfileDir('doordash');
 const DOORDASH_URL = 'https://www.doordash.com';
 const GRAPHQL_URL = 'https://www.doordash.com/graphql';
-const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const CDP_PORT = 9224; // Seamless uses 9223
 
 export class DoorDashBrowser {
@@ -17,14 +15,9 @@ export class DoorDashBrowser {
   private chromeProcess: ChildProcess | null = null;
 
   async launch(): Promise<void> {
-    // Spawn real Chrome (no Playwright automation flags) — same pattern that works for Seamless
-    this.chromeProcess = spawn(CHROME_PATH, [
-      `--remote-debugging-port=${CDP_PORT}`,
-      `--user-data-dir=${PROFILE_DIR}`,
-      '--no-first-run',
-      '--no-default-browser-check',
-      `--window-size=1280,720`,
-    ], { stdio: 'ignore' });
+    const chromePath = findChromePath();
+    const args = getChromeArgs({ cdpPort: CDP_PORT, profileDir: PROFILE_DIR, headless: true });
+    this.chromeProcess = spawn(chromePath, args, { stdio: 'ignore' });
 
     this.chromeProcess.on('exit', (code) => {
       // On Windows, Chrome's parent launcher process exits quickly (code 0)
@@ -339,6 +332,28 @@ export class DoorDashBrowser {
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
     return false;
+  }
+
+  /** Get the main page for external use (auth manager screencast) */
+  getPage(): Page | null {
+    return this.page;
+  }
+
+  /** Get context for external use */
+  getContext(): BrowserContext | null {
+    return this.context;
+  }
+
+  /** Create a CDP session for the given page (used for screencast) */
+  async createCDPSession(page?: Page): Promise<CDPSession> {
+    const target = page || this.page;
+    if (!target) throw new Error('No page available for CDP session');
+    return await target.context().newCDPSession(target);
+  }
+
+  /** Get the login URL for this platform */
+  getLoginUrl(): string {
+    return DOORDASH_URL;
   }
 
   async close(): Promise<void> {

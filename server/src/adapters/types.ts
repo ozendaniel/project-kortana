@@ -1,4 +1,5 @@
 export type Platform = 'doordash' | 'seamless' | 'ubereats';
+export type AuthStatus = 'authenticated' | 'expired' | 'logging_in' | 'not_configured';
 
 export interface PlatformCredentials {
   email: string;

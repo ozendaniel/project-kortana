@@ -5,6 +5,7 @@ import type {
   PlatformRestaurant,
   PlatformMenu,
   PlatformFees,
+  AuthStatus,
 } from '../types.js';
 
 const API_BASE = 'https://api-gtm.grubhub.com';
@@ -12,6 +13,7 @@ const API_BASE = 'https://api-gtm.grubhub.com';
 export class SeamlessAdapter implements PlatformAdapter {
   platform = 'seamless' as const;
   private browser = new SeamlessBrowser();
+  private authStatus: AuthStatus = 'not_configured';
   private sessionCookie = '';
   private perimeterXToken = '';
   private authToken = '';
@@ -20,29 +22,48 @@ export class SeamlessAdapter implements PlatformAdapter {
     await this.browser.launch();
     const loggedIn = await this.browser.isLoggedIn();
 
-    if (!loggedIn) {
-      console.log('[Seamless] Session expired or not found. Please log in manually in the browser window.');
-      console.log('[Seamless] Waiting up to 2 minutes for login...');
-      await this.browser.navigateHome();
-      const success = await this.browser.waitForLogin(120000);
-      if (!success) {
-        console.error('[Seamless] Login timed out after 2 minutes. Adapter will not be available.');
-        return;
-      }
-      console.log('[Seamless] Login detected!');
-    } else {
+    if (loggedIn) {
       console.log('[Seamless] Existing session found and valid.');
+      this.authStatus = 'authenticated';
+      // Extract auth tokens
+      this.authToken = await this.browser.getAuthToken();
+      this.sessionCookie = await this.browser.getSessionCookies();
+      this.perimeterXToken = await this.browser.getPerimeterXToken();
+      console.log(`[Seamless] Auth token: ${this.authToken ? 'found' : 'missing'}`);
+    } else {
+      console.log('[Seamless] Session expired or not found. Login via Settings page.');
+      this.authStatus = 'expired';
     }
+  }
 
-    // Extract auth token from localStorage and session cookies
+  getStatus(): AuthStatus {
+    return this.authStatus;
+  }
+
+  setStatus(status: AuthStatus): void {
+    this.authStatus = status;
+  }
+
+  getBrowser(): SeamlessBrowser {
+    return this.browser;
+  }
+
+  /** Refresh auth tokens after a successful login */
+  async refreshTokens(): Promise<void> {
     this.authToken = await this.browser.getAuthToken();
     this.sessionCookie = await this.browser.getSessionCookies();
     this.perimeterXToken = await this.browser.getPerimeterXToken();
-    console.log(`[Seamless] Adapter initialized successfully. Auth token: ${this.authToken ? 'found' : 'missing'}`);
+    console.log(`[Seamless] Tokens refreshed. Auth token: ${this.authToken ? 'found' : 'missing'}`);
   }
 
   async isSessionValid(): Promise<boolean> {
     return this.browser.isLoggedIn();
+  }
+
+  private ensureAuthenticated(): void {
+    if (this.authStatus !== 'authenticated') {
+      throw new Error('Seamless session expired. Please reconnect in Settings.');
+    }
   }
 
   /** Make an authenticated REST call to Seamless/Grubhub API */
@@ -94,6 +115,7 @@ export class SeamlessAdapter implements PlatformAdapter {
     cuisine?: string;
   }): Promise<PlatformRestaurant[]> {
     try {
+      this.ensureAuthenticated();
       const searchParams = new URLSearchParams({
         orderMethod: 'delivery',
         locationMode: 'DELIVERY',
@@ -247,6 +269,7 @@ export class SeamlessAdapter implements PlatformAdapter {
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees> {
     try {
+      this.ensureAuthenticated();
       // 1. Create a new cart
       const cart = await this.apiCall<{ id: string }>('/carts', {
         method: 'POST',

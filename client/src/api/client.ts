@@ -93,6 +93,20 @@ export async function getSavings(): Promise<SavingsData> {
   return data;
 }
 
+export interface AuthStatusResponse {
+  doordash: string;
+  seamless: string;
+}
+
+export async function getAuthStatus(): Promise<AuthStatusResponse> {
+  const { data } = await api.get('/auth/status');
+  return data;
+}
+
+export async function logoutPlatform(platform: string): Promise<void> {
+  await api.post(`/auth/logout/${platform}`);
+}
+
 export async function logOrder(order: {
   restaurantId: string;
   platformUsed: string;

@@ -10,7 +10,10 @@ import menusRouter from './routes/menus.js';
 import compareRouter, { setAdapters } from './routes/compare.js';
 import ordersRouter from './routes/orders.js';
 import savingsRouter from './routes/savings.js';
+import authRouter, { setAuthManager } from './routes/auth.js';
 import { scheduleDailySync } from './services/sync.js';
+import { AuthManager } from './services/auth-manager.js';
+import { setupWebSocket } from './services/ws-server.js';
 import type { PlatformAdapter } from './adapters/types.js';
 import { SeamlessAdapter } from './adapters/seamless/adapter.js';
 import { DoorDashAdapter } from './adapters/doordash/adapter.js';
@@ -33,19 +36,24 @@ app.use('/api/menus', menusRouter);
 app.use('/api/compare', compareRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/savings', savingsRouter);
+app.use('/api/auth', authRouter);
 
 // Platform adapter registry
 const adapters = new Map<string, PlatformAdapter>();
+const authManager = new AuthManager();
+setAuthManager(authManager);
 
 async function start(): Promise<void> {
-  // Initialize platform adapters
-  // DoorDash: uses real Chrome via CDP. Requires OTP login on first run.
+  // Initialize platform adapters (non-blocking — no login wait)
   if (process.env.DOORDASH_EMAIL) {
     try {
       const doordash = new DoorDashAdapter();
       await doordash.initialize({ email: process.env.DOORDASH_EMAIL });
       adapters.set('doordash', doordash);
-      console.log('[Kortana] DoorDash adapter registered.');
+      authManager.registerPlatform('doordash', doordash.getBrowser(), doordash.getStatus(), async () => {
+        doordash.setStatus('authenticated');
+      });
+      console.log(`[Kortana] DoorDash adapter registered (${doordash.getStatus()}).`);
     } catch (err) {
       console.error('[Kortana] DoorDash adapter failed to initialize:', err);
       console.log('[Kortana] Continuing without DoorDash live adapter (will use DB estimates).');
@@ -54,7 +62,6 @@ async function start(): Promise<void> {
     console.log('[Kortana] DOORDASH_EMAIL not set — skipping DoorDash adapter.');
   }
 
-  // Seamless: email/password auth
   if (process.env.SEAMLESS_EMAIL) {
     try {
       const seamless = new SeamlessAdapter();
@@ -63,7 +70,11 @@ async function start(): Promise<void> {
         password: process.env.SEAMLESS_PASSWORD,
       });
       adapters.set('seamless', seamless);
-      console.log('[Kortana] Seamless adapter registered.');
+      authManager.registerPlatform('seamless', seamless.getBrowser(), seamless.getStatus(), async () => {
+        seamless.setStatus('authenticated');
+        await seamless.refreshTokens();
+      });
+      console.log(`[Kortana] Seamless adapter registered (${seamless.getStatus()}).`);
     } catch (err) {
       console.error('[Kortana] Seamless adapter failed to initialize:', err);
       console.log('[Kortana] Continuing without Seamless live adapter (will use DB estimates).');
@@ -78,10 +89,16 @@ async function start(): Promise<void> {
   // Schedule daily sync
   scheduleDailySync(adapters);
 
-  app.listen(PORT, () => {
+  // Start session monitoring
+  authManager.startSessionMonitor();
+
+  // Start HTTP server and attach WebSocket
+  const server = app.listen(PORT, () => {
     console.log(`[Kortana] Server running on http://localhost:${PORT}`);
     console.log(`[Kortana] Health check: http://localhost:${PORT}/api/health`);
   });
+
+  setupWebSocket(server, authManager);
 }
 
 start().catch((err) => {

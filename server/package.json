@@ -16,7 +16,8 @@
     "helmet": "^8.0.0",
     "node-cron": "^3.0.3",
     "pg": "^8.13.1",
-    "playwright": "^1.50.1"
+    "playwright": "^1.50.1",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -24,6 +25,7 @@
     "@types/node": "^22.12.0",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.11.11",
+    "@types/ws": "^8.18.1",
     "nodemon": "^3.1.9",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"

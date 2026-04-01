@@ -37,11 +37,16 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Frontend working: address search → geocoded location stored in cart → restaurant list → unified menu view → cart builder → comparison view with default address fallback
 - Seeded one restaurant (Grandma's Home 外婆家) with 72 DoorDash items + 29 Seamless items, cross-platform matched via matched_item_id
 - DoorDash adapter enabled in index.ts (requires DOORDASH_EMAIL in .env)
+- Portal-based authentication: Chrome runs headless (--headless=new), login flows are streamed to the Kortana frontend via CDP screencast over WebSocket. Users complete Google OAuth directly in the Settings page. No visible browser windows.
+- Non-blocking adapter init: server starts instantly, shows session status on Settings page. Login via portal when sessions expire.
+- WebSocket server on /ws for real-time browser frame streaming and auth status updates
+- Railway-ready: Dockerfile with Google Chrome, persistent volume support for session profiles, cross-platform Chrome path detection
 
 **What's next:**
 1. Build automated deduplication pipeline (fuzzy matching restaurants + menu items across platforms)
 2. Seed more restaurants for broader NYC coverage
 3. Implement savings tracking (log comparisons/orders to DB)
+4. Deploy to Railway (Dockerfile ready, need persistent volume for session profiles)
 
 ## Architecture Decisions
 
@@ -50,7 +55,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 | Stack | React + Express + PostgreSQL + Playwright | Need persistent browser sessions for platform APIs — serverless (Vercel) can't maintain Playwright instances |
 | Hosting | Express on Railway, React on Vercel or Railway static | Railway supports persistent processes + managed Postgres |
 | Platform API approach | Reverse-engineered internal APIs via Playwright | No official consumer APIs exist. DoorDash uses GraphQL, Seamless uses REST. Pattern proven by DoorDash MCP servers on GitHub |
-| Auth model (public product) | Account linking (Artemis model) — users provide platform credentials | Same pattern used by Artemis/AutoRes for Resy/OpenTable. Store tokens, discard raw passwords |
+| Auth model | Portal-based login via CDP screencast — users complete Google OAuth in the Kortana web UI | Chrome runs headless, login page is streamed to frontend canvas via WebSocket. Same pattern as Artemis (embedded auth flow). |
 | Deduplication | Automated fuzzy matching (Jaro-Winkler + geocoding + menu fingerprinting) | All-NYC scope requires automated matching from day one |
 | Menu refresh | Daily batch sync at 3 AM ET | Balances data freshness vs bot detection risk. Fees are fetched real-time at comparison time |
 | Price comparison scope | Item price + delivery fee + service fee | Does not include tip estimate or subscription benefits (DashPass etc.) in MVP |
@@ -77,7 +82,7 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - **Type:** GraphQL at doordash.com/graphql
 - **Auth:** Email + OTP → session cookies in persistent Chrome profile
 - **Protection:** Cloudflare TLS fingerprinting — must use real Chrome via spawn + connectOverCDP (same as Seamless). Playwright's launchPersistentContext triggers bot detection.
-- **Browser approach:** Real Chrome spawned on CDP port 9224. Dedicated API tab with route blocking (only allows /graphql + document requests) prevents DoorDash SPA from navigating and destroying page.evaluate context.
+- **Browser approach:** Real Chrome spawned headless (--headless=new) on CDP port 9224. Dedicated API tab with route blocking (only allows /graphql + document requests) prevents DoorDash SPA from navigating and destroying page.evaluate context. Login handled via CDP screencast streamed to Kortana portal.
 - **Key queries:** homePageFacetFeed (search), storepageFeed (menu), addCartItem, createOrderFromCart
 - **Search response format:** Facet component system. Stores identified by `component.id === 'row.store'`. Name in `text.title`, store ID in `custom` (JSON string, key `store_id`), rating in `custom.rating.average_rating`, ETA in `text.custom[key='eta_display_string']`, URL in `events.click.data` (JSON).
 - **Rate limiting:** DoorDash returns 429 aggressively. graphqlQuery retries with 4-15s exponential backoff. All adapter methods add 2-3s delays between calls.
@@ -115,6 +120,13 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `server/src/scripts/seed-from-har.ts` | Seed DB with DoorDash restaurant/menu data from captured responses |
 | `server/src/scripts/seed-seamless-from-har.ts` | Seed DB with Seamless menu data from captured responses |
 | `server/src/db/migrations/` | SQL migration files (001-004), run via `npm run migrate` from server/ |
+| `server/src/services/auth-manager.ts` | Auth orchestrator: CDP screencast streaming, login flow management, session monitoring |
+| `server/src/services/ws-server.ts` | WebSocket server for real-time browser frame streaming and input forwarding |
+| `server/src/routes/auth.ts` | REST endpoints for auth status and logout |
+| `server/src/utils/chrome.ts` | Cross-platform Chrome path detection and spawn arg builder |
+| `client/src/components/SettingsPage.tsx` | Platform connection management UI |
+| `client/src/components/BrowserView.tsx` | Canvas-based browser view with CDP screencast rendering and input forwarding |
+| `Dockerfile` | Docker build with Google Chrome for Railway deployment |
 
 ## Competitive Landscape
 

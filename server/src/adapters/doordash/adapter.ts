@@ -5,6 +5,7 @@ import type {
   PlatformRestaurant,
   PlatformMenu,
   PlatformFees,
+  AuthStatus,
 } from '../types.js';
 import fs from 'fs';
 import path from 'path';
@@ -33,6 +34,7 @@ const DOORDASH_DELIVERY_FEE_CENTS = 299; // $2.99 default
 export class DoorDashAdapter implements PlatformAdapter {
   platform = 'doordash' as const;
   private browser = new DoorDashBrowser();
+  private authStatus: AuthStatus = 'not_configured';
   private lastRequestTime = 0;
   private static MIN_REQUEST_GAP_MS = 5000; // minimum 5s between comparisons to avoid 429
 
@@ -40,22 +42,25 @@ export class DoorDashAdapter implements PlatformAdapter {
     await this.browser.launch();
     const loggedIn = await this.browser.isLoggedIn();
 
-    if (!loggedIn) {
-      console.log('[DoorDash] Session expired or not found. Manual login required.');
-      console.log('[DoorDash] Browser window opened — please log in with OTP.');
-      console.log(`[DoorDash] Email: ${credentials.email}`);
-      console.log('[DoorDash] Waiting up to 3 minutes for login...');
-      await this.browser.navigateHome();
-
-      const success = await this.browser.waitForLogin(180000);
-      if (!success) {
-        console.warn('[DoorDash] Login timed out after 3 minutes. Adapter may not work correctly.');
-      } else {
-        console.log('[DoorDash] Login detected — session established.');
-      }
-    } else {
+    if (loggedIn) {
       console.log('[DoorDash] Existing session found and valid.');
+      this.authStatus = 'authenticated';
+    } else {
+      console.log('[DoorDash] Session expired or not found. Login via Settings page.');
+      this.authStatus = 'expired';
     }
+  }
+
+  getStatus(): AuthStatus {
+    return this.authStatus;
+  }
+
+  setStatus(status: AuthStatus): void {
+    this.authStatus = status;
+  }
+
+  getBrowser(): DoorDashBrowser {
+    return this.browser;
   }
 
   async isSessionValid(): Promise<boolean> {
@@ -104,6 +109,12 @@ export class DoorDashAdapter implements PlatformAdapter {
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
 
+  private ensureAuthenticated(): void {
+    if (this.authStatus !== 'authenticated') {
+      throw new Error('DoorDash session expired. Please reconnect in Settings.');
+    }
+  }
+
   async searchRestaurants(params: {
     address: string;
     lat: number;
@@ -112,6 +123,7 @@ export class DoorDashAdapter implements PlatformAdapter {
     cuisine?: string;
   }): Promise<PlatformRestaurant[]> {
     try {
+      this.ensureAuthenticated();
       await this.browser.ensureConnected();
       await this.setDeliveryAddress(params.lat, params.lng);
       await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
@@ -307,6 +319,7 @@ export class DoorDashAdapter implements PlatformAdapter {
     items: Array<{ platformItemId: string; quantity: number }>;
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees> {
+    this.ensureAuthenticated();
     await this.browser.ensureConnected();
 
     // Rate limit: wait if too soon after last request to avoid DoorDash 429s

@@ -10,10 +10,11 @@ const REVIEW_THRESHOLD = 0.60;
  * Run the restaurant deduplication pipeline.
  * Matches unmatched restaurants across platforms.
  */
-export async function deduplicateRestaurants(): Promise<{
+export async function deduplicateRestaurants(options?: { dryRun?: boolean }): Promise<{
   merged: number;
   flagged: number;
 }> {
+  const dryRun = options?.dryRun ?? false;
   let merged = 0;
   let flagged = 0;
 
@@ -65,12 +66,79 @@ export async function deduplicateRestaurants(): Promise<{
     }
 
     if (bestMatch && bestMatch.confidence >= AUTO_MERGE_THRESHOLD) {
-      // Merge: copy Seamless data into the DoorDash restaurant record
-      await mergeRestaurants(ddRest.id, bestMatch.id, bestMatch.confidence);
+      if (dryRun) {
+        console.log(`[Dedup] Would merge: "${ddRest.canonical_name}" <-> restaurant ${bestMatch.id} (${bestMatch.confidence.toFixed(2)})`);
+      } else {
+        await mergeRestaurants(ddRest.id, bestMatch.id, bestMatch.confidence);
+      }
       merged++;
     } else if (bestMatch && bestMatch.confidence >= REVIEW_THRESHOLD) {
       console.log(
         `[Dedup] Flagged for review: "${ddRest.canonical_name}" <-> restaurant ${bestMatch.id} (${bestMatch.confidence.toFixed(2)})`
+      );
+      flagged++;
+    }
+  }
+
+  // Pass 2: Name-only matching for DoorDash restaurants without real addresses.
+  // These have approximate lat/lng from the search grid point, so geo-based matching
+  // would reject valid matches. Use high name similarity + cuisine overlap instead.
+  const unmatchedDDNoAddr = await db.query(
+    `SELECT id, canonical_name, cuisine_tags, doordash_id
+     FROM restaurants
+     WHERE doordash_id IS NOT NULL AND seamless_id IS NULL
+       AND (address IS NULL OR address = '')`
+  );
+
+  // Refresh Seamless candidates (some may have been consumed by Pass 1)
+  const remainingSLCandidates = await db.query(
+    `SELECT id, canonical_name, cuisine_tags, seamless_id
+     FROM restaurants
+     WHERE seamless_id IS NOT NULL AND doordash_id IS NULL`
+  );
+
+  for (const ddRest of unmatchedDDNoAddr.rows) {
+    const cleanDD = cleanRestaurantName(ddRest.canonical_name);
+    let bestMatch: { id: string; confidence: number; name: string } | null = null;
+
+    for (const slRest of remainingSLCandidates.rows) {
+      const cleanSL = cleanRestaurantName(slRest.canonical_name);
+      const nameSimilarity = jaroWinkler(cleanDD, cleanSL);
+
+      if (nameSimilarity < 0.88) continue;
+
+      // Check cuisine overlap as additional signal
+      const ddCuisines = new Set((ddRest.cuisine_tags || []).map((c: string) => c.toLowerCase()));
+      const slCuisines = new Set((slRest.cuisine_tags || []).map((c: string) => c.toLowerCase()));
+      let cuisineOverlap = 0;
+      if (ddCuisines.size > 0 && slCuisines.size > 0) {
+        let intersection = 0;
+        for (const c of ddCuisines) {
+          if (slCuisines.has(c)) intersection++;
+        }
+        cuisineOverlap = intersection / Math.min(ddCuisines.size, slCuisines.size);
+      }
+
+      // Require either very high name similarity or name + cuisine match
+      const confidence = nameSimilarity >= 0.95 ? 0.85
+        : (cuisineOverlap >= 0.3 ? 0.80 : 0.65);
+
+      if (confidence > (bestMatch?.confidence ?? 0)) {
+        bestMatch = { id: slRest.id, confidence, name: slRest.canonical_name };
+      }
+    }
+
+    if (bestMatch && bestMatch.confidence >= AUTO_MERGE_THRESHOLD) {
+      if (dryRun) {
+        console.log(`[Dedup] Would name-only merge: "${ddRest.canonical_name}" <-> "${bestMatch.name}" (${bestMatch.confidence.toFixed(2)})`);
+      } else {
+        await mergeRestaurants(ddRest.id, bestMatch.id, bestMatch.confidence);
+        console.log(`[Dedup] Name-only merge: "${ddRest.canonical_name}" <-> "${bestMatch.name}" (${bestMatch.confidence.toFixed(2)})`);
+      }
+      merged++;
+    } else if (bestMatch && bestMatch.confidence >= REVIEW_THRESHOLD) {
+      console.log(
+        `[Dedup] Name-only flagged: "${ddRest.canonical_name}" <-> "${bestMatch.name}" (${bestMatch.confidence.toFixed(2)})`
       );
       flagged++;
     }

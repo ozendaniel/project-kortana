@@ -149,7 +149,8 @@ export class DoorDashAdapter implements PlatformAdapter {
       for (const section of feed.body) {
         if (!section.body) continue;
         for (const facet of section.body) {
-          if (facet.component?.id !== 'row.store') continue;
+          const compId = facet.component?.id;
+          if (compId !== 'row.store' && compId !== 'card.store') continue;
 
           let customData: any = {};
           try {

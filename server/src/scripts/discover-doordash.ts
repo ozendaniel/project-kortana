@@ -139,33 +139,43 @@ function parseStoresFromFeed(feed: any): Array<{
   return stores;
 }
 
+/** Extract pagination cursor from DoorDash feed response.
+ *  Cursor is nested: page.next.data is a JSON string containing a base64 "cursor" field. */
+function extractCursor(feedPage: any): string | null {
+  try {
+    const nextData = feedPage?.next?.data;
+    if (!nextData) return null;
+    const parsed = typeof nextData === 'string' ? JSON.parse(nextData) : nextData;
+    return parsed?.cursor || null;
+  } catch { return null; }
+}
+
 async function runGridSearch(adapter: DoorDashAdapter) {
-  console.log(`[Discover-DD] Starting feed pagination (bypassing API tab — using main tab)`);
+  console.log(`[Discover-DD] Starting paginated feed discovery (main tab)`);
 
   const browser = adapter.getBrowser();
   const searchQuery = loadQuery('homePageFacetFeed.graphql');
 
-  let totalInserted = 0;
-  let totalUpdated = 0;
-  const seenIds = new Set<string>();
-  let cursor = '';
-  let page = 0;
-  const MAX_PAGES = 20;
-
-  // Navigate main tab to DoorDash homepage with full SPA load
-  // This sets cookies, CSRF tokens, and delivery context that the GraphQL endpoint needs
+  // Navigate main tab to DoorDash homepage with full SPA load.
+  // This sets cookies, CSRF tokens, and delivery context that the GraphQL endpoint needs.
   const mainPage = browser.getPage();
   if (mainPage) {
     console.log('[Discover-DD] Loading DoorDash homepage for full context...');
     await mainPage.goto('https://www.doordash.com/', { waitUntil: 'networkidle', timeout: 30000 }).catch(() => {});
     await new Promise(resolve => setTimeout(resolve, 5000));
-    console.log('[Discover-DD] Homepage loaded. Starting feed queries.');
+    console.log('[Discover-DD] Homepage loaded.');
   }
 
-  // Paginate the feed from the user's current default address
-  while (page < MAX_PAGES) {
-    page++;
-    const progress = `[Page ${page}/${MAX_PAGES}]`;
+  let totalInserted = 0;
+  let totalUpdated = 0;
+  const seenIds = new Set<string>();
+  let cursor = '';
+  let pageNum = 0;
+  const MAX_PAGES = 15;
+
+  while (pageNum < MAX_PAGES) {
+    pageNum++;
+    const progress = `[Page ${pageNum}]`;
 
     try {
       const result = await browser.mainTabGraphqlQuery<any>('homePageFacetFeed', searchQuery, {
@@ -174,36 +184,16 @@ async function runGridSearch(adapter: DoorDashAdapter) {
         displayHeader: false,
         isDebug: false,
         cuisineFilterVerticalIds: '',
-      }, 1); // maxRetries=1
+      }, 1);
 
       const feed = result?.data?.homePageFacetFeed;
 
-      // Debug: show response structure
-      if (page === 1) {
-        console.log(`${progress} Feed body: ${feed?.body ? `${feed.body.length} sections` : 'null'}`);
-        if (feed?.body) {
-          for (const sec of feed.body) {
-            const types = new Map<string, number>();
-            for (const f of (sec.body || [])) {
-              const id = f.component?.id || 'unknown';
-              types.set(id, (types.get(id) || 0) + 1);
-            }
-            console.log(`  Section: ${sec.body?.length || 0} items -`, Object.fromEntries(types));
-          }
-        } else {
-          console.log(`  Raw keys:`, result ? Object.keys(result) : 'null');
-          console.log(`  Data keys:`, result?.data ? Object.keys(result.data) : 'null');
-          const raw = JSON.stringify(result).substring(0, 500);
-          console.log(`  Response preview: ${raw}`);
-        }
+      if (!feed?.body) {
+        console.log(`${progress} Empty feed body. Stopping.`);
+        break;
       }
 
       const stores = parseStoresFromFeed(feed);
-
-      if (stores.length === 0) {
-        console.log(`${progress} No more stores in feed. Stopping.`);
-        break;
-      }
 
       let pointNew = 0;
       let pointUpdated = 0;
@@ -227,9 +217,15 @@ async function runGridSearch(adapter: DoorDashAdapter) {
         `${progress} ${stores.length} stores, ${pointNew} new, ${pointUpdated} updated (${seenIds.size} unique total)`
       );
 
-      // Check for next page cursor
-      const nextCursor = feed?.page?.nextCursor || feed?.page?.cursor;
-      if (!nextCursor || nextCursor === cursor) {
+      // Stop if no new unique stores found on this page
+      if (pointNew === 0 && pointUpdated === 0 && stores.length > 0) {
+        console.log(`${progress} No new stores. Feed exhausted.`);
+        break;
+      }
+
+      // Extract next page cursor
+      const nextCursor = extractCursor(feed?.page);
+      if (!nextCursor) {
         console.log(`${progress} No next cursor. Done.`);
         break;
       }
@@ -244,13 +240,13 @@ async function runGridSearch(adapter: DoorDashAdapter) {
       break;
     }
 
-    // Rate limit: 6s + random jitter
-    await new Promise(resolve => setTimeout(resolve, 6000 + Math.random() * 2000));
+    // Rate limit: 5s + random jitter
+    await new Promise(resolve => setTimeout(resolve, 5000 + Math.random() * 2000));
   }
 
   const dbCount = await db.query('SELECT COUNT(*) FROM restaurants WHERE doordash_id IS NOT NULL');
   console.log('\n=== Discovery Complete ===');
-  console.log(`Pages fetched: ${page}`);
+  console.log(`Pages fetched: ${pageNum}`);
   console.log(`Unique restaurants found: ${seenIds.size}`);
   console.log(`New inserted: ${totalInserted}`);
   console.log(`Updated: ${totalUpdated}`);

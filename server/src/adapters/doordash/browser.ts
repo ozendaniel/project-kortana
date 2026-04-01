@@ -42,21 +42,33 @@ export class DoorDashBrowser {
   }
 
   /** Check if Chrome + CDP connection is alive, reconnect if not.
-   *  On Windows, Chrome's parent process exits quickly (code 0) while child
-   *  processes keep running. So we check Playwright connection + CDP port,
-   *  not the process handle. */
+   *  Tests the actual context with an async operation — browser.contexts()
+   *  alone returns stale objects even when the context is dead. */
   async ensureConnected(): Promise<void> {
-    // Check if Playwright connection is still valid
-    if (this.browser) {
+    // Deep health check: try an actual async operation on the context
+    if (this.browser && this.context) {
       try {
-        this.browser.contexts();
-        return; // Connection alive, nothing to do
+        // pages() is sync but newPage()/title() would throw on dead context.
+        // Check if existing page is usable with a lightweight async call.
+        const pages = this.context.pages();
+        const livePage = pages.find(p => !p.isClosed());
+        if (livePage) {
+          await livePage.title(); // throws if context is dead
+          return;
+        }
+        // No live pages but context might still work — try creating one
+        this.page = await this.context.newPage(); // throws if context is dead
+        this.apiPage = null;
+        return;
       } catch {
-        console.log('[DoorDash] Playwright connection lost');
+        console.log('[DoorDash] Browser context is dead, reconnecting...');
+        this.context = null;
+        this.page = null;
+        this.apiPage = null;
       }
     }
 
-    // Check if CDP port is still responding (Chrome may still be running despite process handle gone)
+    // Try reconnecting Playwright to Chrome via CDP
     let cdpAlive = false;
     try {
       const resp = await fetch(`http://localhost:${CDP_PORT}/json/version`);
@@ -66,12 +78,14 @@ export class DoorDashBrowser {
     }
 
     if (cdpAlive) {
-      // Chrome is running but Playwright disconnected — just reconnect
-      console.log('[DoorDash] Reconnecting Playwright to existing Chrome on CDP port...');
+      console.log('[DoorDash] Reconnecting Playwright to Chrome CDP...');
+      if (this.browser) {
+        try { await this.browser.close(); } catch { /* stale */ }
+      }
       this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
       this.context = this.browser.contexts()[0] || await this.browser.newContext();
       this.page = this.context.pages()[0] || await this.context.newPage();
-      this.apiPage = null; // will be recreated on demand
+      this.apiPage = null;
       return;
     }
 

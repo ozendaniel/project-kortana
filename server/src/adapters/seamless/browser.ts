@@ -40,21 +40,26 @@ export class SeamlessBrowser {
   }
 
   /** Check if Chrome + CDP connection is alive, reconnect if not.
-   *  On Windows, Chrome's parent process exits quickly (code 0) while child
-   *  processes keep running. So we check Playwright connection + CDP port,
-   *  not the process handle. */
+   *  Tests the actual context with an async operation — browser.contexts()
+   *  alone returns stale objects even when the context is dead. */
   async ensureConnected(): Promise<void> {
-    // Check if Playwright connection is still valid
-    if (this.browser) {
+    if (this.browser && this.context) {
       try {
-        this.browser.contexts();
-        return; // Connection alive
+        const pages = this.context.pages();
+        const livePage = pages.find(p => !p.isClosed());
+        if (livePage) {
+          await livePage.title();
+          return;
+        }
+        this.page = await this.context.newPage();
+        return;
       } catch {
-        console.log('[Seamless] Playwright connection lost');
+        console.log('[Seamless] Browser context is dead, reconnecting...');
+        this.context = null;
+        this.page = null;
       }
     }
 
-    // Check if CDP port is still responding
     let cdpAlive = false;
     try {
       const resp = await fetch(`http://localhost:${CDP_PORT}/json/version`);
@@ -64,14 +69,16 @@ export class SeamlessBrowser {
     }
 
     if (cdpAlive) {
-      console.log('[Seamless] Reconnecting Playwright to existing Chrome on CDP port...');
+      console.log('[Seamless] Reconnecting Playwright to Chrome CDP...');
+      if (this.browser) {
+        try { await this.browser.close(); } catch { /* stale */ }
+      }
       this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
       this.context = this.browser.contexts()[0] || await this.browser.newContext();
       this.page = this.context.pages()[0] || await this.context.newPage();
       return;
     }
 
-    // Chrome is truly dead — full relaunch
     console.log('[Seamless] Chrome is down, relaunching...');
     if (this.browser) {
       try { await this.browser.close(); } catch { /* already dead */ }

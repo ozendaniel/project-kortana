@@ -34,6 +34,19 @@ export function getProfileDir(platform: string): string {
   return path.join(base, `${platform}-profile`);
 }
 
+/** Remove Chrome profile lock files left behind by killed containers (Railway redeploys). */
+export function cleanProfileLocks(profileDir: string): void {
+  const lockFiles = ['SingletonLock', 'SingletonSocket', 'SingletonCookie'];
+  for (const name of lockFiles) {
+    const lockPath = path.join(profileDir, name);
+    try {
+      fs.unlinkSync(lockPath);
+    } catch {
+      // File doesn't exist or already removed — fine
+    }
+  }
+}
+
 export function getChromeArgs(opts: {
   cdpPort: number;
   profileDir: string;

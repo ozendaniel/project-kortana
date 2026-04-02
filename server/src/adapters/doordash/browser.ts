@@ -1,6 +1,6 @@
 import { chromium, type Browser, type BrowserContext, type Page, type CDPSession } from 'playwright';
 import { spawn, type ChildProcess } from 'child_process';
-import { findChromePath, getProfileDir, getChromeArgs } from '../../utils/chrome.js';
+import { findChromePath, getProfileDir, getChromeArgs, cleanProfileLocks } from '../../utils/chrome.js';
 
 const PROFILE_DIR = getProfileDir('doordash');
 const DOORDASH_URL = 'https://www.doordash.com';
@@ -15,6 +15,7 @@ export class DoorDashBrowser {
   private chromeProcess: ChildProcess | null = null;
 
   async launch(): Promise<void> {
+    cleanProfileLocks(PROFILE_DIR);
     const chromePath = findChromePath();
     const args = getChromeArgs({ cdpPort: CDP_PORT, profileDir: PROFILE_DIR, headless: true });
     this.chromeProcess = spawn(chromePath, args, { stdio: 'ignore' });

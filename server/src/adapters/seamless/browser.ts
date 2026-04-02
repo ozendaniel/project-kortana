@@ -79,13 +79,19 @@ export class SeamlessBrowser {
       if (this.browser) {
         try { await this.browser.close(); } catch { /* stale */ }
       }
-      this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
-      this.context = this.browser.contexts()[0] || await this.browser.newContext();
-      this.page = this.context.pages()[0] || await this.context.newPage();
-      return;
+      try {
+        this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`, { timeout: 10000 });
+        this.context = this.browser.contexts()[0] || await this.browser.newContext();
+        this.page = this.context.pages()[0] || await this.context.newPage();
+        return;
+      } catch (err) {
+        console.log(`[Seamless] CDP reconnect failed (${err instanceof Error ? err.message.substring(0, 60) : err}), full relaunch...`);
+      }
+    } else {
+      console.log('[Seamless] Chrome CDP not responding...');
     }
 
-    console.log('[Seamless] Chrome is down, relaunching...');
+    console.log('[Seamless] Relaunching Chrome...');
     if (this.browser) {
       try { await this.browser.close(); } catch { /* already dead */ }
     }

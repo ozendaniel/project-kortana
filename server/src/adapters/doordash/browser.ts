@@ -88,15 +88,20 @@ export class DoorDashBrowser {
       if (this.browser) {
         try { await this.browser.close(); } catch { /* stale */ }
       }
-      this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
-      this.context = this.browser.contexts()[0] || await this.browser.newContext();
-      this.page = this.context.pages()[0] || await this.context.newPage();
-      this.apiPage = null;
-      return;
+      try {
+        this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`, { timeout: 10000 });
+        this.context = this.browser.contexts()[0] || await this.browser.newContext();
+        this.page = this.context.pages()[0] || await this.context.newPage();
+        this.apiPage = null;
+        return;
+      } catch (err) {
+        console.log(`[DoorDash] CDP reconnect failed (${err instanceof Error ? err.message.substring(0, 60) : err}), full relaunch...`);
+      }
+    } else {
+      console.log('[DoorDash] Chrome CDP not responding...');
     }
 
-    // Chrome is truly dead — full relaunch
-    console.log('[DoorDash] Chrome is down, relaunching...');
+    console.log('[DoorDash] Relaunching Chrome...');
     if (this.browser) {
       try { await this.browser.close(); } catch { /* already dead */ }
     }

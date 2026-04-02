@@ -48,6 +48,10 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Search filters: cuisine type dropdown and radius selector (1-25km) on restaurant search. Server-side filtering via bounding box + cuisine ILIKE on cuisine_tags array.
 - Migration 005 adds unique partial indexes on doordash_id and seamless_id for upsert support
 - Dedup enhanced with name-only matching fallback (for DoorDash restaurants without precise addresses) and dry-run mode
+- Multi-location grouping (2026-04-02): Search API groups restaurants by canonical_name. Each result includes `locations[]` array with `{id, address}` per physical location. Frontend RestaurantCard shows expandable location list for chains (▸/▾ chevron). Single-location cards show address directly.
+- Chain name normalization: nameCleaner.ts has CHAIN_ALIASES map (40+ entries) for canonical chain forms (McDonald's, Dunkin', 7-Eleven, Chipotle, etc.). Fixed dash regex to avoid stripping "7-Eleven" to "7".
+- Seamless paginated discovery: adapter has searchRestaurantsPaginated() with page/sort/facet control. Discovery script does multi-pass: default paginated search + cuisine-filtered passes for categories hitting the 500-result API cap.
+- Dedup improvements: in-memory menu cache (avoids per-pair DB queries), relaxed geo thresholds (400m radius), more nuanced name-only confidence tiers
 
 - Deployed to Railway (2026-04-01): kortana-web-production.up.railway.app. Dockerfile with Google Chrome Stable, persistent volume at /data for Chrome profiles, railway.toml with healthcheck. Express serves built client in production (static + SPA fallback).
 - Railway Chrome fixes: --disable-dev-shm-usage (64MB /dev/shm in Docker), profile lock file cleanup on launch (SingletonLock persists across redeploys), CDP reconnect timeout with fallback to full relaunch, memory-saving Chrome flags for Linux.

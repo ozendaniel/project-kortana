@@ -177,6 +177,90 @@ export class SeamlessAdapter implements PlatformAdapter {
     }
   }
 
+  /**
+   * Paginated search with optional sort/facet control.
+   * Used by discovery scripts to iterate through all results.
+   */
+  async searchRestaurantsPaginated(params: {
+    lat: number;
+    lng: number;
+    pageNum?: number;
+    pageSize?: number;
+    sortSetId?: string;
+    facet?: string;
+    query?: string;
+  }): Promise<{ restaurants: PlatformRestaurant[]; totalPages: number; currentPage: number }> {
+    this.ensureAuthenticated();
+    const searchParams = new URLSearchParams({
+      orderMethod: 'delivery',
+      locationMode: 'DELIVERY',
+      facetSet: 'umamiV6',
+      pageSize: String(params.pageSize || 100),
+      pageNum: String(params.pageNum || 1),
+      hideHateos: 'true',
+      searchMetrics: 'true',
+      location: `POINT(${params.lng} ${params.lat})`,
+      preciseLocation: 'true',
+      sortSetId: params.sortSetId || 'umamiV3',
+      countOmittingTimes: 'true',
+    });
+
+    if (params.query) {
+      searchParams.set('queryText', params.query);
+    }
+    if (params.facet) {
+      searchParams.set('facet', params.facet);
+    }
+
+    const result = await this.apiCall<{
+      search_result: {
+        results: Array<{
+          restaurant_id: string;
+          name: string;
+          logo: string;
+          address: {
+            street_address: string;
+            locality: string;
+            region: string;
+            latitude: string;
+            longitude: string;
+          };
+          cuisines: string[];
+          ratings: { rating_count: number; average_rating: number };
+          delivery_time_estimate: number;
+          delivery_fee: { amount: number };
+          restaurant_url: string;
+        }>;
+        pager: {
+          total_pages: number;
+          current_page: number;
+        };
+      };
+    }>(`/restaurants/search?${searchParams.toString()}`);
+
+    const restaurants: PlatformRestaurant[] = (result.search_result?.results || []).map(r => ({
+      platformId: r.restaurant_id,
+      name: r.name,
+      address: [r.address?.street_address, r.address?.locality, r.address?.region].filter(Boolean).join(', '),
+      lat: parseFloat(r.address?.latitude || '0'),
+      lng: parseFloat(r.address?.longitude || '0'),
+      cuisines: r.cuisines || [],
+      rating: r.ratings?.average_rating,
+      deliveryTime: r.delivery_time_estimate ? `${r.delivery_time_estimate} min` : undefined,
+      deliveryFee: r.delivery_fee?.amount,
+      imageUrl: r.logo,
+      platformUrl: `https://www.seamless.com${r.restaurant_url || '/menu/' + r.restaurant_id}`,
+    }));
+
+    const pager = result.search_result?.pager || { total_pages: 1, current_page: 1 };
+
+    return {
+      restaurants,
+      totalPages: pager.total_pages,
+      currentPage: pager.current_page,
+    };
+  }
+
   async getMenu(platformRestaurantId: string): Promise<PlatformMenu> {
     try {
       // Get restaurant info (includes menu category IDs)

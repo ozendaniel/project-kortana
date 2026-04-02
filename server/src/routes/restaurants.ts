@@ -51,18 +51,54 @@ router.get('/search', async (req: Request, res: Response) => {
       query += ` AND array_to_string(cuisine_tags, ',') ILIKE $${params.length}`;
     }
 
-    query += ' ORDER BY canonical_name';
+    query += ' ORDER BY canonical_name, address';
 
     const result = await db.query(query, params);
 
-    const restaurants = result.rows.map((r) => ({
-      id: r.id,
-      name: r.canonical_name,
-      address: r.address,
-      cuisines: r.cuisine_tags || [],
+    // Group restaurants by canonical_name so multi-location chains appear as one entry
+    const grouped = new Map<string, {
+      ids: string[];
+      name: string;
+      locations: Array<{ id: string; address: string }>;
+      cuisines: string[];
+      hasDoorDash: boolean;
+      hasSeamless: boolean;
+    }>();
+
+    for (const r of result.rows) {
+      const key = r.canonical_name;
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          ids: [],
+          name: r.canonical_name,
+          locations: [],
+          cuisines: r.cuisine_tags || [],
+          hasDoorDash: false,
+          hasSeamless: false,
+        });
+      }
+      const group = grouped.get(key)!;
+      group.ids.push(r.id);
+      if (r.address) {
+        group.locations.push({ id: r.id, address: r.address });
+      }
+      if (r.doordash_id) group.hasDoorDash = true;
+      if (r.seamless_id) group.hasSeamless = true;
+      // Merge cuisines from all locations
+      for (const c of (r.cuisine_tags || [])) {
+        if (!group.cuisines.includes(c)) group.cuisines.push(c);
+      }
+    }
+
+    const restaurants = Array.from(grouped.values()).map((g) => ({
+      id: g.ids[0], // Primary ID (first location)
+      name: g.name,
+      address: g.locations[0]?.address || '',
+      locations: g.locations,
+      cuisines: g.cuisines,
       platforms: {
-        doordash: r.doordash_id ? { available: true } : undefined,
-        seamless: r.seamless_id ? { available: true } : undefined,
+        doordash: g.hasDoorDash ? { available: true } : undefined,
+        seamless: g.hasSeamless ? { available: true } : undefined,
       },
     }));
 

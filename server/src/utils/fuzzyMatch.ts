@@ -65,17 +65,23 @@ export function computeMatchConfidence(params: {
   // Phone match alone is near-certain
   if (phoneMatch) return 0.95;
 
+  // Very high name similarity + reasonably close
+  if (nameSimilarity >= 0.90 && distanceMeters <= 300) return 0.90;
+
   // High name similarity + very close
-  if (nameSimilarity >= 0.85 && distanceMeters <= 50) return 0.90;
+  if (nameSimilarity >= 0.85 && distanceMeters <= 150) return 0.88;
 
   // Good name + close + menu overlap
   if (nameSimilarity >= 0.80 && distanceMeters <= 100 && menuOverlap >= 0.50) return 0.85;
 
+  // Good name + close (within ~1 block)
+  if (nameSimilarity >= 0.80 && distanceMeters <= 200) return 0.82;
+
   // Decent name + close = probable but flag for review
-  if (nameSimilarity >= 0.75 && distanceMeters <= 100) return 0.70;
+  if (nameSimilarity >= 0.75 && distanceMeters <= 150) return 0.70;
 
   // Low confidence
-  if (nameSimilarity >= 0.60 && distanceMeters <= 200) return 0.50;
+  if (nameSimilarity >= 0.60 && distanceMeters <= 400) return 0.50;
 
   return 0.0;
 }

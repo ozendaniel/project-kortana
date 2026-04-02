@@ -9,6 +9,7 @@ export interface Restaurant {
   id: string;
   name: string;
   address: string;
+  locations?: Array<{ id: string; address: string }>;
   cuisines: string[];
   platforms: {
     doordash?: { available: boolean; deliveryTime?: string; deliveryFee?: number };

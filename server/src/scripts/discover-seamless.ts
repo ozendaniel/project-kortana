@@ -85,60 +85,112 @@ async function main() {
     process.exit(1);
   }
 
-  let totalFound = 0;
   let totalInserted = 0;
   let totalUpdated = 0;
   let failedPoints = 0;
   const seenIds = new Set<string>();
 
-  for (let i = 0; i < GRID_POINTS.length; i++) {
-    const point = GRID_POINTS[i];
-    const progress = `[${i + 1}/${GRID_POINTS.length}]`;
+  // Cuisine facets that hit the 500-result API cap — need separate passes to surface hidden restaurants
+  const CAPPED_CUISINES = ['Fast Food', 'American', 'Healthy', 'Asian', 'Italian', 'Pizza'];
+  const MAX_PAGES_PER_POINT = 6; // API caps at 500 total_results; at pageSize=100 that's 5 pages + 1 safety
+
+  /**
+   * Run a paginated search for a single grid point + optional facet.
+   * Returns the number of new unique restaurants found.
+   */
+  async function searchGridPoint(
+    point: { lat: number; lng: number; label: string },
+    pointIndex: number,
+    passLabel: string,
+    facet?: string
+  ): Promise<{ newCount: number; error: boolean }> {
+    const progress = `[${pointIndex + 1}/${GRID_POINTS.length}]`;
+    let pointNew = 0;
+    let pageNum = 1;
 
     try {
-      const restaurants = await adapter.searchRestaurants({
-        address: '',
-        lat: point.lat,
-        lng: point.lng,
-      });
+      while (pageNum <= MAX_PAGES_PER_POINT) {
+        const { restaurants, totalPages } = await adapter.searchRestaurantsPaginated({
+          lat: point.lat,
+          lng: point.lng,
+          pageNum,
+          pageSize: 100,
+          facet,
+        });
 
-      let pointNew = 0;
-      let pointUpdated = 0;
+        if (restaurants.length === 0) break;
 
-      for (const rest of restaurants) {
-        if (seenIds.has(rest.platformId)) continue;
-        seenIds.add(rest.platformId);
+        for (const rest of restaurants) {
+          if (seenIds.has(rest.platformId)) continue;
+          seenIds.add(rest.platformId);
 
-        const action = await upsertRestaurant(rest);
-        if (action === 'inserted') {
-          pointNew++;
-          totalInserted++;
-        } else {
-          pointUpdated++;
-          totalUpdated++;
+          const action = await upsertRestaurant(rest);
+          if (action === 'inserted') {
+            pointNew++;
+            totalInserted++;
+          } else {
+            totalUpdated++;
+          }
         }
-        totalFound++;
-      }
 
-      console.log(
-        `${progress} ${point.label}: ${restaurants.length} results, ${pointNew} new, ${pointUpdated} updated (${seenIds.size} unique total)`
-      );
+        console.log(
+          `${progress} ${passLabel} ${point.label} p${pageNum}/${totalPages}: ${restaurants.length} results, ${pointNew} new (${seenIds.size} unique total)`
+        );
+
+        if (pageNum >= totalPages) break;
+        pageNum++;
+
+        // Rate limit between pages
+        await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 1500));
+      }
     } catch (err) {
-      console.error(`${progress} ${point.label}: FAILED -`, err instanceof Error ? err.message : err);
-      failedPoints++;
+      console.error(`${progress} ${passLabel} ${point.label}: FAILED -`, err instanceof Error ? err.message : err);
+      return { newCount: pointNew, error: true };
     }
 
-    // Rate limit: 3s + random jitter
+    return { newCount: pointNew, error: false };
+  }
+
+  // Pass 1: Default sort, no cuisine filter — paginated
+  console.log('\n=== Pass 1: Default paginated search ===');
+  for (let i = 0; i < GRID_POINTS.length; i++) {
+    const { error } = await searchGridPoint(GRID_POINTS[i], i, '[default]');
+    if (error) failedPoints++;
+
+    // Rate limit between grid points
     if (i < GRID_POINTS.length - 1) {
       await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 1500));
     }
   }
 
+  const afterPass1 = seenIds.size;
+  console.log(`\n[Pass 1 done] ${afterPass1} unique restaurants`);
+
+  // Pass 2: Cuisine-filtered passes for categories that hit the 500 API cap
+  for (const cuisine of CAPPED_CUISINES) {
+    const beforePass = seenIds.size;
+    console.log(`\n=== Cuisine pass: ${cuisine} ===`);
+
+    for (let i = 0; i < GRID_POINTS.length; i++) {
+      await searchGridPoint(GRID_POINTS[i], i, `[${cuisine}]`, `cuisine:${cuisine}`);
+
+      // Rate limit between grid points
+      if (i < GRID_POINTS.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 1500));
+      }
+    }
+
+    const gained = seenIds.size - beforePass;
+    console.log(`[${cuisine} done] +${gained} new restaurants (${seenIds.size} total)`);
+
+    // If a cuisine pass finds very few new restaurants, the remaining passes will likely be similar — but run them all for thoroughness
+  }
+
   // Final stats
   const dbCount = await db.query('SELECT COUNT(*) FROM restaurants WHERE seamless_id IS NOT NULL');
   console.log('\n=== Discovery Complete ===');
-  console.log(`Grid points: ${GRID_POINTS.length} (${failedPoints} failed)`);
-  console.log(`Unique restaurants found: ${seenIds.size}`);
+  console.log(`Grid points: ${GRID_POINTS.length} (${failedPoints} failed in pass 1)`);
+  console.log(`Unique restaurants found: ${seenIds.size} (${afterPass1} from default, +${seenIds.size - afterPass1} from cuisine passes)`);
   console.log(`New inserted: ${totalInserted}`);
   console.log(`Updated: ${totalUpdated}`);
   console.log(`Total Seamless restaurants in DB: ${dbCount.rows[0].count}`);

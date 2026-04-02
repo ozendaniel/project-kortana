@@ -123,7 +123,7 @@ export default function RestaurantSearch() {
               <RestaurantCard
                 key={r.id}
                 restaurant={r}
-                onClick={() => navigate(`/restaurant/${r.id}`)}
+                onClick={(locationId) => navigate(`/restaurant/${locationId || r.id}`)}
               />
             ))}
           </div>

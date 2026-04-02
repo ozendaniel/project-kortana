@@ -49,9 +49,17 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Migration 005 adds unique partial indexes on doordash_id and seamless_id for upsert support
 - Dedup enhanced with name-only matching fallback (for DoorDash restaurants without precise addresses) and dry-run mode
 
+- Deployed to Railway (2026-04-01): kortana-web-production.up.railway.app. Dockerfile with Google Chrome Stable, persistent volume at /data for Chrome profiles, railway.toml with healthcheck. Express serves built client in production (static + SPA fallback).
+- Railway Chrome fixes: --disable-dev-shm-usage (64MB /dev/shm in Docker), profile lock file cleanup on launch (SingletonLock persists across redeploys), CDP reconnect timeout with fallback to full relaunch, memory-saving Chrome flags for Linux.
+- Railway memory constraint: container can't run two Chrome instances simultaneously. Auth manager suspends other platform browsers during login, restores them after.
+- DoorDash .graphql files copied to dist/ in build step (tsc doesn't copy non-TS files).
+- Login poll fix: replaced isLoggedIn() (which navigated the page away) with checkSession() (inspects current page state without navigating) in the screencast login flow.
+- Seamless portal login partially working: screencast renders, login form is stable, clicks forward correctly. Still has an error during Google OAuth flow — needs debugging (as of 2026-04-01).
+- DoorDash session authenticated on Railway via persistent volume.
+
 **What's next:**
-1. Implement savings tracking (log comparisons/orders to DB)
-2. Deploy to Railway (Dockerfile ready, need persistent volume for session profiles)
+1. Fix Seamless portal login on Railway (Google OAuth flow through screencast)
+2. Implement savings tracking (log comparisons/orders to DB)
 3. Expand restaurant coverage: more DoorDash pages, cuisine-filtered queries, Brooklyn/Queens grids
 4. Enrich DoorDash restaurants with real addresses via storepageFeed (--enrich flag on discover script)
 5. Review 21 flagged dedup matches and tighten matching thresholds
@@ -135,6 +143,8 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `client/src/components/SettingsPage.tsx` | Platform connection management UI |
 | `client/src/components/BrowserView.tsx` | Canvas-based browser view with CDP screencast rendering and input forwarding |
 | `Dockerfile` | Docker build with Google Chrome for Railway deployment |
+| `railway.toml` | Railway deployment config: Dockerfile builder, healthcheck, restart policy |
+| `.dockerignore` | Excludes node_modules, dist, .env, .git from Docker build context |
 | `client/src/app.css` | Design system: color tokens, font imports (Instrument Serif, DM Sans, JetBrains Mono), animations, receipt-style utilities |
 | `server/src/scripts/discover-seamless.ts` | Seamless bulk restaurant discovery via Manhattan grid search (35 points) |
 | `server/src/scripts/discover-doordash.ts` | DoorDash bulk restaurant discovery via paginated feed + optional --enrich for addresses |
@@ -168,6 +178,8 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - **Run migrations:** `cd server && npm run migrate`
 - **Seed test data:** `cd server && npx tsx src/scripts/seed-from-har.ts`
 - **Capture DoorDash queries:** Have user export HAR from Chrome DevTools, then `cd server && npx tsx src/scripts/parse-har.ts <path-to-har>`
+- **Railway deployment:** `railway up` from project root to deploy. Service: kortana-web. URL: kortana-web-production.up.railway.app. Persistent volume at `/data` for Chrome profiles. Railway CLI installed globally (`@railway/cli@4.35.2`).
+- **Redeploy:** `cd project-kortana && railway up` — builds via Dockerfile, ~75s. Check status: `railway service status`. Logs: `railway logs`.
 - **Letta (Claude Subconscious):** Running as a passive observer across Claude Code sessions to build persistent cross-session context. `.letta/` directory is gitignored — local runtime only, configure separately per machine.
 
 ## Conventions

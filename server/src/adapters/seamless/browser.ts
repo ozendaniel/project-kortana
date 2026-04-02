@@ -23,13 +23,26 @@ export class SeamlessBrowser {
       console.warn(`[Seamless] Chrome launcher process exited with code ${code}`);
     });
 
-    // Give Chrome a moment to start and open the debug port
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Wait for Chrome CDP port to be ready (headless takes longer on Windows)
+    await this.waitForCDP();
 
     // Connect Playwright via CDP — no automation banners
     this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
     this.context = this.browser.contexts()[0] || await this.browser.newContext();
     this.page = this.context.pages()[0] || await this.context.newPage();
+  }
+
+  /** Poll until Chrome CDP port is accepting connections */
+  private async waitForCDP(timeoutMs = 15000): Promise<void> {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      try {
+        const resp = await fetch(`http://localhost:${CDP_PORT}/json/version`);
+        if (resp.ok) return;
+      } catch { /* not ready yet */ }
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    throw new Error(`Chrome CDP not ready on port ${CDP_PORT} after ${timeoutMs}ms`);
   }
 
   /** Check if Chrome + CDP connection is alive, reconnect if not.

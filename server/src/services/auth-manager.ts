@@ -92,8 +92,10 @@ export class AuthManager {
       // Navigate to login page
       const loginUrl = state.browser.getLoginUrl();
       console.log(`[AuthManager] ${platform}: navigating to ${loginUrl}...`);
-      await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      console.log(`[AuthManager] ${platform}: page loaded, starting screencast...`);
+      await page.goto(loginUrl, { waitUntil: 'load', timeout: 30000 });
+      // Give login page JS time to initialize
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log(`[AuthManager] ${platform}: page loaded (${page.url()}), starting screencast...`);
 
       // Start CDP screencast
       const cdp = await state.browser.createCDPSession(page);

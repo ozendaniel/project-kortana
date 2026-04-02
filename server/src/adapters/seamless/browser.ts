@@ -212,7 +212,7 @@ export class SeamlessBrowser {
 
   /** Get the login URL for this platform */
   getLoginUrl(): string {
-    return SEAMLESS_URL;
+    return `${SEAMLESS_URL}/login`;
   }
 
   async close(): Promise<void> {

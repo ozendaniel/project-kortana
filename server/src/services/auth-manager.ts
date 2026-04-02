@@ -13,6 +13,7 @@ interface PlatformState {
   activeWs: WebSocket | null;
   loginPollInterval: ReturnType<typeof setInterval> | null;
   onLoginSuccess?: () => Promise<void>;
+  _suspendedPlatforms?: string[];
 }
 
 export class AuthManager {
@@ -67,6 +68,20 @@ export class AuthManager {
 
     state.status = 'logging_in';
     state.activeWs = ws;
+
+    // Free memory: close other platform browsers during login
+    // Two Chrome instances exceed Railway's container memory, causing "Target crashed"
+    const suspendedPlatforms: string[] = [];
+    for (const [name, other] of this.platforms) {
+      if (name !== platform && other.status !== 'logging_in') {
+        try {
+          console.log(`[AuthManager] Suspending ${name} browser to free memory for ${platform} login...`);
+          await other.browser.close();
+          suspendedPlatforms.push(name);
+        } catch { /* already closed */ }
+      }
+    }
+    state._suspendedPlatforms = suspendedPlatforms;
 
     try {
       console.log(`[AuthManager] ${platform}: ensuring browser connection...`);
@@ -139,6 +154,8 @@ export class AuthManager {
       console.error(`[AuthManager] startLogin(${platform}) failed:`, msg);
       state.status = 'expired';
       ws.send(JSON.stringify({ type: 'login_failed', platform, reason: msg }));
+      // Restore suspended browsers on failure too
+      await this.restoreSuspended(state);
     }
   }
 
@@ -170,6 +187,9 @@ export class AuthManager {
       }
     }
 
+    // Restore suspended platform browsers
+    await this.restoreSuspended(state);
+
     if (state.activeWs?.readyState === 1) {
       if (success) {
         state.activeWs.send(JSON.stringify({ type: 'login_complete', platform }));
@@ -184,6 +204,23 @@ export class AuthManager {
 
   async stopLogin(platform: string): Promise<void> {
     await this.finishLogin(platform, false, 'Login cancelled by user');
+  }
+
+  private async restoreSuspended(state: PlatformState): Promise<void> {
+    if (!state._suspendedPlatforms?.length) return;
+    for (const name of state._suspendedPlatforms) {
+      const other = this.platforms.get(name);
+      if (other) {
+        try {
+          console.log(`[AuthManager] Restoring ${name} browser...`);
+          await other.browser.ensureConnected();
+          console.log(`[AuthManager] ${name} browser restored.`);
+        } catch (err) {
+          console.error(`[AuthManager] Failed to restore ${name}:`, err);
+        }
+      }
+    }
+    state._suspendedPlatforms = [];
   }
 
   /** Forward mouse/keyboard events from the portal to the browser */

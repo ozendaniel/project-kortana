@@ -2,7 +2,7 @@ FROM node:20-slim
 
 # Install Google Chrome Stable (real Chrome, not Chromium — matches TLS fingerprint)
 RUN apt-get update && apt-get install -y \
-  wget gnupg ca-certificates \
+  wget gnupg ca-certificates fonts-liberation \
   && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
   && apt-get update \
@@ -14,7 +14,7 @@ RUN npx playwright install-deps chromium
 
 WORKDIR /app
 
-# Copy package files and install
+# Copy package files and install dependencies
 COPY package*.json ./
 COPY server/package*.json ./server/
 COPY client/package*.json ./client/
@@ -24,7 +24,7 @@ RUN npm run install:all
 COPY . .
 RUN npm run build
 
-# Serve client static files from Express in production
+ENV NODE_ENV=production
 EXPOSE 3001
 
 CMD ["node", "server/dist/index.js"]

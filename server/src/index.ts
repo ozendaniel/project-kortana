@@ -1,6 +1,12 @@
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') });
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load .env from project root (works from both dev and production paths)
+dotenv.config({ path: path.resolve(__dirname, '..', '..', '.env') });
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -22,8 +28,22 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
+const isProd = process.env.NODE_ENV === 'production';
+app.use(helmet({
+  contentSecurityPolicy: isProd ? {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'", "wss:", "ws:"],
+    },
+  } : false,
+}));
+if (!isProd) {
+  app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
+}
 app.use(express.json());
 
 // Routes
@@ -38,10 +58,24 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/savings', savingsRouter);
 app.use('/api/auth', authRouter);
 
+// In production, serve built client files from the same Express server
+if (isProd) {
+  const clientDist = path.resolve(__dirname, '..', '..', 'client', 'dist');
+  app.use(express.static(clientDist));
+}
+
 // Platform adapter registry
 const adapters = new Map<string, PlatformAdapter>();
 const authManager = new AuthManager();
 setAuthManager(authManager);
+
+// SPA fallback: non-API routes serve index.html (client-side routing)
+if (isProd) {
+  const clientDist = path.resolve(__dirname, '..', '..', 'client', 'dist');
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 // Start HTTP server and WebSocket immediately — adapters initialize in background
 const server = app.listen(PORT, () => {

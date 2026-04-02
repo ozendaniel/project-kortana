@@ -197,12 +197,18 @@ export class AuthManager {
     try {
       switch (event.type) {
         case 'mouse_click':
+          console.log(`[AuthManager] ${platform}: click at (${event.x}, ${event.y})`);
           await page.mouse.click(event.x, event.y);
+          // Log URL after click in case of navigation
+          setTimeout(async () => {
+            try { console.log(`[AuthManager] ${platform}: page URL after click: ${page.url()}`); } catch {}
+          }, 1500);
           break;
         case 'mouse_move':
           await page.mouse.move(event.x, event.y);
           break;
         case 'key_press':
+          console.log(`[AuthManager] ${platform}: key_press ${event.key}`);
           await page.keyboard.press(event.key);
           break;
         case 'key_type':
@@ -213,7 +219,7 @@ export class AuthManager {
           break;
       }
     } catch (err) {
-      // Input events can fail during page navigation — non-fatal
+      console.log(`[AuthManager] ${platform}: input error: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
     }
   }
 

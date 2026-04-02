@@ -62,22 +62,18 @@ export function getChromeArgs(opts: {
   ];
 
   if (headless) {
-    args.push('--headless=new');
+    // On Linux with a virtual display (Xvfb), run headful instead —
+    // Google blocks headless Chrome OAuth with "browser not secure" error
+    if (!(process.platform === 'linux' && process.env.DISPLAY)) {
+      args.push('--headless=new');
+    }
   }
 
   if (process.platform === 'linux') {
     args.push(
-      '--no-sandbox',
-      '--disable-gpu',
-      '--disable-dev-shm-usage',
-      '--disable-extensions',
-      '--disable-background-networking',
-      '--disable-default-apps',
-      '--disable-sync',
-      '--disable-translate',
-      '--metrics-recording-only',
-      '--mute-audio',
-      '--no-first-run',
+      '--no-sandbox',            // Required: Docker runs as root
+      '--disable-dev-shm-usage', // Required: Docker has 64MB /dev/shm
+      '--disable-gpu',           // No GPU in Docker container
     );
   }
 

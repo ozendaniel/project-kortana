@@ -54,12 +54,11 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Railway memory constraint: container can't run two Chrome instances simultaneously. Auth manager suspends other platform browsers during login, restores them after.
 - DoorDash .graphql files copied to dist/ in build step (tsc doesn't copy non-TS files).
 - Login poll fix: replaced isLoggedIn() (which navigated the page away) with checkSession() (inspects current page state without navigating) in the screencast login flow.
-- Seamless portal login partially working: screencast renders, login form is stable, clicks forward correctly. Still has an error during Google OAuth flow — needs debugging (as of 2026-04-01).
-- DoorDash session authenticated on Railway via persistent volume.
+- Seamless portal login fully working on Railway (2026-04-02): Google OAuth via popup handled by screencast switching (auth-manager detects popup, switches CDP screencast + input routing to it, reverts on close). Xvfb virtual display in Docker so Chrome runs headful (Google blocks headless OAuth). Stripped unnecessary automation Chrome flags (--disable-extensions, --disable-sync, etc.) to reduce bot detection. Race condition fix: finishLogin guards against re-entry so stop_login from component unmount doesn't override successful auth.
+- Both DoorDash and Seamless sessions authenticated on Railway via persistent volume.
 
 **What's next:**
-1. Fix Seamless portal login on Railway (Google OAuth flow through screencast)
-2. Implement savings tracking (log comparisons/orders to DB)
+1. Implement savings tracking (log comparisons/orders to DB)
 3. Expand restaurant coverage: more DoorDash pages, cuisine-filtered queries, Brooklyn/Queens grids
 4. Enrich DoorDash restaurants with real addresses via storepageFeed (--enrich flag on discover script)
 5. Review 21 flagged dedup matches and tighten matching thresholds
@@ -71,7 +70,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 | Stack | React + Express + PostgreSQL + Playwright | Need persistent browser sessions for platform APIs — serverless (Vercel) can't maintain Playwright instances |
 | Hosting | Express on Railway, React on Vercel or Railway static | Railway supports persistent processes + managed Postgres |
 | Platform API approach | Reverse-engineered internal APIs via Playwright | No official consumer APIs exist. DoorDash uses GraphQL, Seamless uses REST. Pattern proven by DoorDash MCP servers on GitHub |
-| Auth model | Portal-based login via CDP screencast — users complete Google OAuth in the Kortana web UI | Chrome runs headless, login page is streamed to frontend canvas via WebSocket. Same pattern as Artemis (embedded auth flow). |
+| Auth model | Portal-based login via CDP screencast — users complete Google OAuth in the Kortana web UI | Chrome runs headful on Xvfb (virtual display), login page streamed to frontend canvas via WebSocket. Popup handling switches screencast to OAuth popups and back. |
 | Deduplication | Automated fuzzy matching (Jaro-Winkler + geocoding + menu fingerprinting) | All-NYC scope requires automated matching from day one |
 | Menu refresh | Daily batch sync at 3 AM ET | Balances data freshness vs bot detection risk. Fees are fetched real-time at comparison time |
 | Price comparison scope | Item price + delivery fee + service fee | Does not include tip estimate or subscription benefits (DashPass etc.) in MVP |

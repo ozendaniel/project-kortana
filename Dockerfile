@@ -2,7 +2,7 @@ FROM node:20-slim
 
 # Install Google Chrome Stable (real Chrome, not Chromium — matches TLS fingerprint)
 RUN apt-get update && apt-get install -y \
-  wget gnupg ca-certificates fonts-liberation \
+  wget gnupg ca-certificates fonts-liberation xvfb \
   && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
   && apt-get update \
@@ -25,6 +25,8 @@ COPY . .
 RUN npm run build
 
 ENV NODE_ENV=production
+ENV DISPLAY=:99
 EXPOSE 3001
 
-CMD ["node", "server/dist/index.js"]
+# Start Xvfb virtual display so Chrome runs headful (Google blocks headless OAuth)
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1280x720x24 -ac -nolisten tcp & sleep 1 && node server/dist/index.js"]

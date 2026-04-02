@@ -14,6 +14,8 @@ interface PlatformState {
   loginPollInterval: ReturnType<typeof setInterval> | null;
   onLoginSuccess?: () => Promise<void>;
   _suspendedPlatforms?: string[];
+  _popupPage?: Page | null;
+  _popupCleanup?: () => void;
 }
 
 export class AuthManager {
@@ -52,6 +54,43 @@ export class AuthManager {
       if (!result[name]) result[name] = 'not_configured';
     }
     return result;
+  }
+
+  /** Switch CDP screencast to a different page (used for popup handling) */
+  private async switchScreencast(platform: string, state: PlatformState, targetPage: Page): Promise<void> {
+    // Stop existing screencast
+    if (state.cdpSession) {
+      try {
+        await state.cdpSession.send('Page.stopScreencast');
+        await state.cdpSession.detach();
+      } catch { /* already detached */ }
+      state.cdpSession = null;
+    }
+
+    const cdp = await targetPage.context().newCDPSession(targetPage);
+    state.cdpSession = cdp;
+
+    cdp.on('Page.screencastFrame', async (params: any) => {
+      if (state.activeWs?.readyState === 1) {
+        state.activeWs.send(JSON.stringify({
+          type: 'frame',
+          platform,
+          data: params.data,
+          width: params.metadata.deviceWidth,
+          height: params.metadata.deviceHeight,
+        }));
+      }
+      try {
+        await cdp.send('Page.screencastFrameAck', { sessionId: params.sessionId });
+      } catch { /* CDP session may be detached */ }
+    });
+
+    await cdp.send('Page.startScreencast', {
+      format: 'jpeg',
+      quality: 70,
+      maxWidth: 1280,
+      maxHeight: 720,
+    });
   }
 
   async startLogin(platform: string, ws: WebSocket): Promise<void> {
@@ -132,6 +171,40 @@ export class AuthManager {
       });
       console.log(`[AuthManager] ${platform}: screencast started, waiting for frames...`);
 
+      // Handle popups (e.g., Google OAuth opens in a new window)
+      const context = state.browser.getContext();
+      if (context) {
+        const popupHandler = async (popup: Page) => {
+          console.log(`[AuthManager] ${platform}: popup opened: ${popup.url()}`);
+          try {
+            await popup.waitForLoadState('domcontentloaded', { timeout: 15000 });
+            console.log(`[AuthManager] ${platform}: popup loaded: ${popup.url()}`);
+            state._popupPage = popup;
+            await this.switchScreencast(platform, state, popup);
+            console.log(`[AuthManager] ${platform}: screencast switched to popup`);
+
+            popup.on('close', async () => {
+              console.log(`[AuthManager] ${platform}: popup closed, reverting to main page`);
+              state._popupPage = null;
+              const mainPage = state.browser.getPage();
+              if (mainPage && !mainPage.isClosed() && state.status === 'logging_in') {
+                try {
+                  await this.switchScreencast(platform, state, mainPage);
+                  console.log(`[AuthManager] ${platform}: screencast back on main page`);
+                } catch (err) {
+                  console.error(`[AuthManager] ${platform}: failed to switch back:`, err);
+                }
+              }
+            });
+          } catch (err) {
+            console.error(`[AuthManager] ${platform}: popup handling error:`, err);
+          }
+        };
+
+        context.on('page', popupHandler);
+        state._popupCleanup = () => context.off('page', popupHandler);
+      }
+
       // Poll for login completion
       state.loginPollInterval = setInterval(async () => {
         try {
@@ -165,6 +238,17 @@ export class AuthManager {
   private async finishLogin(platform: string, success: boolean, reason?: string): Promise<void> {
     const state = this.platforms.get(platform);
     if (!state) return;
+
+    // Guard against re-entry: if login already finished, don't override the result.
+    // This prevents stop_login (from component unmount) from reverting a successful login.
+    if (state.status !== 'logging_in') return;
+
+    // Clean up popup handling
+    if (state._popupCleanup) {
+      state._popupCleanup();
+      state._popupCleanup = undefined;
+    }
+    state._popupPage = null;
 
     // Stop screencast
     if (state.cdpSession) {
@@ -231,8 +315,9 @@ export class AuthManager {
     const state = this.platforms.get(platform);
     if (!state || state.status !== 'logging_in') return;
 
-    const page = state.browser.getPage();
-    if (!page) return;
+    // Route input to popup (e.g., Google OAuth) if one is active, otherwise main page
+    const page = state._popupPage || state.browser.getPage();
+    if (!page || page.isClosed()) return;
 
     try {
       switch (event.type) {

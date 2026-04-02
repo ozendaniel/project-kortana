@@ -172,7 +172,19 @@ export class SeamlessBrowser {
 
   /** Check auth state WITHOUT navigating — safe to call during login flow */
   async checkSession(): Promise<boolean> {
-    return this.hasAuthSession();
+    if (await this.hasAuthSession()) return true;
+
+    // Fallback: if page navigated away from /login to seamless.com, login succeeded
+    // (handles cases where Grubhub changed localStorage key format)
+    try {
+      const page = await this.ensurePage();
+      const url = page.url();
+      if (url.includes('seamless.com') && !url.includes('/login')) {
+        return true;
+      }
+    } catch {}
+
+    return false;
   }
 
   /** Check if Grubhub authenticated session exists in localStorage */

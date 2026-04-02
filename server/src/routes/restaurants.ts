@@ -51,7 +51,7 @@ router.get('/search', async (req: Request, res: Response) => {
       query += ` AND array_to_string(cuisine_tags, ',') ILIKE $${params.length}`;
     }
 
-    query += ' ORDER BY canonical_name LIMIT 500';
+    query += ' ORDER BY canonical_name';
 
     const result = await db.query(query, params);
 

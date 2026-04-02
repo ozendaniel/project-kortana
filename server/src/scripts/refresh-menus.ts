@@ -13,54 +13,8 @@ import { db } from '../db/client.js';
 import { DoorDashAdapter } from '../adapters/doordash/adapter.js';
 import { SeamlessAdapter } from '../adapters/seamless/adapter.js';
 import { matchMenuItems } from '../services/matching.js';
-import { cleanRestaurantName } from '../utils/nameCleaner.js';
-import type { PlatformAdapter, PlatformMenu } from '../adapters/types.js';
-
-async function upsertMenu(
-  restaurantId: string,
-  platform: string,
-  menu: PlatformMenu
-): Promise<number> {
-  const menuResult = await db.query(
-    `INSERT INTO menus (restaurant_id, platform, raw_data, fetched_at)
-     VALUES ($1, $2, $3, NOW())
-     ON CONFLICT (restaurant_id, platform)
-     DO UPDATE SET raw_data = $3, fetched_at = NOW()
-     RETURNING id`,
-    [restaurantId, platform, JSON.stringify(menu)]
-  );
-
-  const menuId = menuResult.rows[0].id;
-
-  // Clear old items and insert fresh
-  await db.query('DELETE FROM menu_items WHERE menu_id = $1', [menuId]);
-
-  let count = 0;
-  for (const category of menu.categories) {
-    for (const item of category.items) {
-      await db.query(
-        `INSERT INTO menu_items
-         (menu_id, restaurant_id, platform, canonical_name, original_name, description, price_cents, category, platform_item_id, modifiers)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-        [
-          menuId,
-          restaurantId,
-          platform,
-          cleanRestaurantName(item.name),
-          item.name,
-          item.description || null,
-          item.priceCents,
-          category.name,
-          item.platformItemId,
-          null,
-        ]
-      );
-      count++;
-    }
-  }
-
-  return count;
-}
+import { upsertMenu } from '../services/menu-upsert.js';
+import type { PlatformAdapter } from '../adapters/types.js';
 
 async function main() {
   const targetId = process.argv[2];

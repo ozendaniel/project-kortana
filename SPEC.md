@@ -105,6 +105,7 @@ CREATE TABLE restaurants (
   seamless_url    TEXT,
   ubereats_url    TEXT,
   match_confidence DECIMAL(3,2),          -- 0.00-1.00, fuzzy match confidence score
+  platform_status JSONB DEFAULT '{}',     -- Per-platform status e.g. {"seamless": "delisted"}
   last_synced_at  TIMESTAMPTZ,
   created_at      TIMESTAMPTZ DEFAULT NOW()
 );

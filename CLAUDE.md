@@ -25,7 +25,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Architecture, data model, adapter interface, and build phases defined
 - Business model validated: average $2-3 savings per order makes $10/month a clear win at 5+ orders/month
 - Full project scaffold: React + Express + PostgreSQL + Playwright (2026-03-31)
-- Railway Postgres provisioned and all 5 migrations applied (restaurants, menus, menu_items, orders, restaurant_discovery indexes)
+- Railway Postgres provisioned and all 6 migrations applied (restaurants, menus, menu_items, orders, restaurant_discovery indexes, platform_status)
 - DoorDash GraphQL queries captured from HAR file — 28 unique operations including homePageFacetFeed (search), storepageFeed (menu), addCartItem (cart)
 - Seamless/Grubhub REST API endpoints captured from HAR — 40+ endpoints cataloged with request/response samples in `server/src/adapters/seamless/endpoints/`
 - DoorDash adapter live-tested (2026-04-01): searchRestaurants returns ~57 restaurants, getMenu returns full menus (421 items for test restaurant). getFees returns live subtotal + total from DoorDash's PreviewOrderV2 (via main tab cart → detailedCartItems query). Falls back to estimated fees if live cart fails.
@@ -54,6 +54,8 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Dedup improvements: in-memory menu cache (avoids per-pair DB queries), relaxed geo thresholds (400m radius), more nuanced name-only confidence tiers
 - DoorDash expanded discovery (2026-04-02): 3-pass script (deep pagination + cuisine verticals + text search) with checkpoint/resume, early termination, escalating 429 cooldowns. Pass 1 (36 pages) found 911 new, Pass 3 (text search) found 410 new. Total: 2,029 DoorDash restaurants. Cuisine vertical filtering (Pass 2) was ineffective — returns same feed regardless of vertical ID.
 - Dedup rewrite (2026-04-02): Replaced O(n²) brute-force with multi-key blocking (exact cleaned name, geohash-6 + neighbors, name prefix 3-char, phone number). 21,464 comparisons vs 10.9M brute force (512x reduction). Completes in <1s scoring + ~2min DB merges. Merged 358 restaurants, flagged 408 for review. DB now has 533 cross-platform matched restaurants, 7,597 total rows.
+- Seamless menu bulk population (2026-04-02): populate-seamless-menus.ts fetched menus for all 533 matched restaurants. 251 restaurants populated with 50,879 menu items. 268 ghost restaurants marked as `platform_status.seamless = "delisted"` (appear in Seamless search but return 404/empty menus — confirmed manually). Shared upsertMenu() utility extracted to services/menu-upsert.ts with batched INSERTs. Fixed bug: refresh-menus.ts was using cleanRestaurantName() for item canonical names instead of cleanItemName().
+- Migration 006 adds `platform_status JSONB` column to restaurants table for tracking per-platform listing status (e.g. `{"seamless": "delisted"}`). Ghost restaurants auto-excluded from future populate runs.
 
 - Deployed to Railway (2026-04-01): kortana-web-production.up.railway.app. Dockerfile with Google Chrome Stable, persistent volume at /data for Chrome profiles, railway.toml with healthcheck. Express serves built client in production (static + SPA fallback).
 - Railway Chrome fixes: --disable-dev-shm-usage (64MB /dev/shm in Docker), profile lock file cleanup on launch (SingletonLock persists across redeploys), CDP reconnect timeout with fallback to full relaunch, memory-saving Chrome flags for Linux.
@@ -64,11 +66,13 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Both DoorDash and Seamless sessions authenticated on Railway via persistent volume.
 
 **What's next:**
-1. Implement savings tracking (log comparisons/orders to DB)
-2. Enrich DoorDash restaurants with real addresses via `--enrich` flag (enables geohash blocking in dedup for higher-confidence matches)
-3. Review 408 flagged dedup matches and tighten matching thresholds
-4. Expand coverage to Brooklyn/Queens via additional saved DoorDash addresses
-5. Run Seamless paginated discovery for broader coverage (current 6,101 may have more)
+1. DoorDash menu bulk population for the 251 matched restaurants that now have Seamless menus — enables cross-platform item matching and price comparison
+2. Run cross-platform item matching after DoorDash menus are populated (matchMenuItems on all matched restaurants)
+3. Implement savings tracking (log comparisons/orders to DB)
+4. Enrich DoorDash restaurants with real addresses via `--enrich` flag (enables geohash blocking in dedup for higher-confidence matches)
+5. Review 408 flagged dedup matches and tighten matching thresholds
+6. Expand coverage to Brooklyn/Queens via additional saved DoorDash addresses
+7. Run Seamless menu population for remaining ~5,568 Seamless-only restaurants (and Seamless discovery for broader coverage)
 
 ## Architecture Decisions
 
@@ -141,7 +145,7 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `server/src/scripts/parse-seamless-har.ts` | Script to extract REST endpoints from Chrome HAR files (Seamless) |
 | `server/src/scripts/seed-from-har.ts` | Seed DB with DoorDash restaurant/menu data from captured responses |
 | `server/src/scripts/seed-seamless-from-har.ts` | Seed DB with Seamless menu data from captured responses |
-| `server/src/db/migrations/` | SQL migration files (001-005), run via `npm run migrate` from server/ |
+| `server/src/db/migrations/` | SQL migration files (001-006), run via `npm run migrate` from server/ |
 | `server/src/services/auth-manager.ts` | Auth orchestrator: CDP screencast streaming, login flow management, session monitoring |
 | `server/src/services/ws-server.ts` | WebSocket server for real-time browser frame streaming and input forwarding |
 | `server/src/routes/auth.ts` | REST endpoints for auth status and logout |
@@ -156,6 +160,8 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `server/src/scripts/discover-doordash.ts` | DoorDash 3-pass discovery (deep pagination + cuisine verticals + text search) with checkpoint/resume, early termination, --enrich for addresses |
 | `server/src/scripts/run-dedup.ts` | Cross-platform restaurant deduplication runner with --dry-run support |
 | `server/src/scripts/refresh-menus.ts` | Fetch live menus from adapters, upsert to DB, run item matching |
+| `server/src/scripts/populate-seamless-menus.ts` | Seamless menu bulk population with --matched-only, --limit, --resume, --dry-run. Marks ghost restaurants as delisted |
+| `server/src/services/menu-upsert.ts` | Shared upsertMenu() with batched INSERTs (used by refresh-menus.ts and populate script) |
 | `server/src/services/deduplication.ts` | Blocking-based O(n) restaurant dedup: 4 blocking strategies (exact name, geohash, prefix, phone) + Jaro-Winkler scoring |
 
 ## Competitive Landscape

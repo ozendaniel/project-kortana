@@ -22,16 +22,27 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
     wsRef.current = ws;
+    let gotFrame = false;
 
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: 'start_login', platform }));
       setStatus('streaming');
     };
 
+    // If no frame arrives within 45 seconds, show error (browser may be relaunching)
+    const frameTimeout = setTimeout(() => {
+      if (!gotFrame && ws.readyState === WebSocket.OPEN) {
+        setStatus('error');
+        setErrorMsg('Browser is starting up. Close and try again in a moment.');
+        onError('Browser startup timeout');
+      }
+    }, 45000);
+
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
 
       if (msg.type === 'frame' && msg.platform === platform) {
+        gotFrame = true;
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -69,6 +80,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     };
 
     return () => {
+      clearTimeout(frameTimeout);
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'stop_login', platform }));
       }

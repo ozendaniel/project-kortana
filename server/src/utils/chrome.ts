@@ -66,7 +66,19 @@ export function getChromeArgs(opts: {
   }
 
   if (process.platform === 'linux') {
-    args.push('--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage');
+    args.push(
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--disable-extensions',
+      '--disable-background-networking',
+      '--disable-default-apps',
+      '--disable-sync',
+      '--disable-translate',
+      '--metrics-recording-only',
+      '--mute-audio',
+      '--no-first-run',
+    );
   }
 
   return args;

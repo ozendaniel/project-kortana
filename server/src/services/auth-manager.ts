@@ -69,18 +69,27 @@ export class AuthManager {
     state.activeWs = ws;
 
     try {
+      console.log(`[AuthManager] ${platform}: ensuring browser connection...`);
       await state.browser.ensureConnected();
+      console.log(`[AuthManager] ${platform}: browser connected, getting page...`);
       const page = await state.browser.ensurePage();
 
       // Navigate to login page
       const loginUrl = state.browser.getLoginUrl();
+      console.log(`[AuthManager] ${platform}: navigating to ${loginUrl}...`);
       await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      console.log(`[AuthManager] ${platform}: page loaded, starting screencast...`);
 
       // Start CDP screencast
       const cdp = await state.browser.createCDPSession(page);
       state.cdpSession = cdp;
 
+      let frameCount = 0;
       cdp.on('Page.screencastFrame', async (params: any) => {
+        frameCount++;
+        if (frameCount <= 3 || frameCount % 50 === 0) {
+          console.log(`[AuthManager] ${platform}: screencast frame #${frameCount} (${params.metadata.deviceWidth}x${params.metadata.deviceHeight})`);
+        }
         if (state.activeWs?.readyState === 1) {
           state.activeWs.send(JSON.stringify({
             type: 'frame',
@@ -104,6 +113,7 @@ export class AuthManager {
         maxWidth: 1280,
         maxHeight: 720,
       });
+      console.log(`[AuthManager] ${platform}: screencast started, waiting for frames...`);
 
       // Poll for login completion
       state.loginPollInterval = setInterval(async () => {

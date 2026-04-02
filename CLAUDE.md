@@ -42,7 +42,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - WebSocket server on /ws for real-time browser frame streaming and auth status updates
 - Railway-ready: Dockerfile with Google Chrome, persistent volume support for session profiles, cross-platform Chrome path detection
 - Frontend redesigned with "Noir Receipt" aesthetic: dark theme (#0C0B0E base), Instrument Serif headings, JetBrains Mono prices, DM Sans UI text, electric lime (#C8FF2E) savings accent. Receipt-style comparison with dotted separators, winner stripe, staggered animations. Mobile-friendly with bottom cart bar.
-- Bulk restaurant discovery completed (2026-04-01): 616 Seamless restaurants via Manhattan grid search (35 points), 592 DoorDash restaurants via paginated feed (15 pages). Cross-platform dedup matched 33 restaurants. 1,175 total restaurants in DB.
+- Bulk restaurant discovery completed (2026-04-01): 616 Seamless restaurants via Manhattan grid search (35 points), initial 592 DoorDash restaurants via paginated feed (15 pages).
 - DoorDash search component changed from `row.store` to `card.store` — facet component system updated
 - DoorDash discovery uses main tab with full SPA context (API tab returns empty feed due to Cloudflare). Headful Chrome required for discovery (headless gets 403).
 - Search filters: cuisine type dropdown and radius selector (1-25km) on restaurant search. Server-side filtering via bounding box + cuisine ILIKE on cuisine_tags array.
@@ -52,6 +52,8 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Chain name normalization: nameCleaner.ts has CHAIN_ALIASES map (40+ entries) for canonical chain forms (McDonald's, Dunkin', 7-Eleven, Chipotle, etc.). Fixed dash regex to avoid stripping "7-Eleven" to "7".
 - Seamless paginated discovery: adapter has searchRestaurantsPaginated() with page/sort/facet control. Discovery script does multi-pass: default paginated search + cuisine-filtered passes for categories hitting the 500-result API cap.
 - Dedup improvements: in-memory menu cache (avoids per-pair DB queries), relaxed geo thresholds (400m radius), more nuanced name-only confidence tiers
+- DoorDash expanded discovery (2026-04-02): 3-pass script (deep pagination + cuisine verticals + text search) with checkpoint/resume, early termination, escalating 429 cooldowns. Pass 1 (36 pages) found 911 new, Pass 3 (text search) found 410 new. Total: 2,029 DoorDash restaurants. Cuisine vertical filtering (Pass 2) was ineffective — returns same feed regardless of vertical ID.
+- Dedup rewrite (2026-04-02): Replaced O(n²) brute-force with multi-key blocking (exact cleaned name, geohash-6 + neighbors, name prefix 3-char, phone number). 21,464 comparisons vs 10.9M brute force (512x reduction). Completes in <1s scoring + ~2min DB merges. Merged 358 restaurants, flagged 408 for review. DB now has 533 cross-platform matched restaurants, 7,597 total rows.
 
 - Deployed to Railway (2026-04-01): kortana-web-production.up.railway.app. Dockerfile with Google Chrome Stable, persistent volume at /data for Chrome profiles, railway.toml with healthcheck. Express serves built client in production (static + SPA fallback).
 - Railway Chrome fixes: --disable-dev-shm-usage (64MB /dev/shm in Docker), profile lock file cleanup on launch (SingletonLock persists across redeploys), CDP reconnect timeout with fallback to full relaunch, memory-saving Chrome flags for Linux.
@@ -63,9 +65,10 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 
 **What's next:**
 1. Implement savings tracking (log comparisons/orders to DB)
-3. Expand restaurant coverage: more DoorDash pages, cuisine-filtered queries, Brooklyn/Queens grids
-4. Enrich DoorDash restaurants with real addresses via storepageFeed (--enrich flag on discover script)
-5. Review 21 flagged dedup matches and tighten matching thresholds
+2. Enrich DoorDash restaurants with real addresses via `--enrich` flag (enables geohash blocking in dedup for higher-confidence matches)
+3. Review 408 flagged dedup matches and tighten matching thresholds
+4. Expand coverage to Brooklyn/Queens via additional saved DoorDash addresses
+5. Run Seamless paginated discovery for broader coverage (current 6,101 may have more)
 
 ## Architecture Decisions
 
@@ -75,7 +78,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 | Hosting | Express on Railway, React on Vercel or Railway static | Railway supports persistent processes + managed Postgres |
 | Platform API approach | Reverse-engineered internal APIs via Playwright | No official consumer APIs exist. DoorDash uses GraphQL, Seamless uses REST. Pattern proven by DoorDash MCP servers on GitHub |
 | Auth model | Portal-based login via CDP screencast — users complete Google OAuth in the Kortana web UI | Chrome runs headful on Xvfb (virtual display), login page streamed to frontend canvas via WebSocket. Popup handling switches screencast to OAuth popups and back. |
-| Deduplication | Automated fuzzy matching (Jaro-Winkler + geocoding + menu fingerprinting) | All-NYC scope requires automated matching from day one |
+| Deduplication | Multi-key blocking (exact name, geohash, prefix, phone) + Jaro-Winkler scoring | O(n) blocking replaces O(n²) brute force. 512x fewer comparisons, <1s scoring. Same confidence thresholds (0.80 auto-merge, 0.60 review). |
 | Menu refresh | Daily batch sync at 3 AM ET | Balances data freshness vs bot detection risk. Fees are fetched real-time at comparison time |
 | Price comparison scope | Item price + delivery fee + service fee | Does not include tip estimate or subscription benefits (DashPass etc.) in MVP |
 | Comparison UX | Build order once, see total per platform | Not side-by-side menu browsing — unified menu with per-platform prices per item |
@@ -150,10 +153,10 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `.dockerignore` | Excludes node_modules, dist, .env, .git from Docker build context |
 | `client/src/app.css` | Design system: color tokens, font imports (Instrument Serif, DM Sans, JetBrains Mono), animations, receipt-style utilities |
 | `server/src/scripts/discover-seamless.ts` | Seamless bulk restaurant discovery via Manhattan grid search (35 points) |
-| `server/src/scripts/discover-doordash.ts` | DoorDash bulk restaurant discovery via paginated feed + optional --enrich for addresses |
+| `server/src/scripts/discover-doordash.ts` | DoorDash 3-pass discovery (deep pagination + cuisine verticals + text search) with checkpoint/resume, early termination, --enrich for addresses |
 | `server/src/scripts/run-dedup.ts` | Cross-platform restaurant deduplication runner with --dry-run support |
 | `server/src/scripts/refresh-menus.ts` | Fetch live menus from adapters, upsert to DB, run item matching |
-| `server/src/services/deduplication.ts` | Restaurant dedup: geo-based + name-only matching with configurable thresholds |
+| `server/src/services/deduplication.ts` | Blocking-based O(n) restaurant dedup: 4 blocking strategies (exact name, geohash, prefix, phone) + Jaro-Winkler scoring |
 
 ## Competitive Landscape
 

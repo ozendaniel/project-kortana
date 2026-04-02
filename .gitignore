@@ -29,3 +29,6 @@ npm-debug.log*
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Discovery checkpoint data (local-only)
+server/data/

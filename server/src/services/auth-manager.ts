@@ -135,7 +135,8 @@ export class AuthManager {
       // Poll for login completion
       state.loginPollInterval = setInterval(async () => {
         try {
-          const loggedIn = await state.browser.isLoggedIn();
+          // Use checkSession() — does NOT navigate the page (isLoggedIn navigates away from login form)
+          const loggedIn = await state.browser.checkSession();
           if (loggedIn) {
             await this.finishLogin(platform, true);
           }

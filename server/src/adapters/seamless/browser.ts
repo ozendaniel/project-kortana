@@ -170,6 +170,11 @@ export class SeamlessBrowser {
     }
   }
 
+  /** Check auth state WITHOUT navigating — safe to call during login flow */
+  async checkSession(): Promise<boolean> {
+    return this.hasAuthSession();
+  }
+
   /** Check if Grubhub authenticated session exists in localStorage */
   private async hasAuthSession(): Promise<boolean> {
     try {

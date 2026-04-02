@@ -316,6 +316,24 @@ export class DoorDashBrowser {
     await page.goto(DOORDASH_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
   }
 
+  /** Check auth state WITHOUT navigating — safe to call during login flow */
+  async checkSession(): Promise<boolean> {
+    try {
+      const page = await this.ensurePage();
+      const url = page.url();
+      // If on the login or identity page, not logged in yet
+      if (url.includes('/consumer/login') || url.includes('/identity')) return false;
+      // If on a DoorDash page, check for absence of login button
+      if (url.includes('doordash.com')) {
+        const signInButton = await page.$('a[href="/consumer/login"]');
+        return signInButton === null;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
   /** Check if we have a valid session by looking for logged-in indicators */
   async isLoggedIn(): Promise<boolean> {
     const page = await this.ensurePage();

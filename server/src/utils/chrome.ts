@@ -66,7 +66,7 @@ export function getChromeArgs(opts: {
   }
 
   if (process.platform === 'linux') {
-    args.push('--no-sandbox', '--disable-gpu');
+    args.push('--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage');
   }
 
   return args;

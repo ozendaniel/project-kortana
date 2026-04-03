@@ -4,32 +4,67 @@ import { cleanItemName } from '../utils/nameCleaner.js';
 
 /**
  * Match menu items across platforms for a given restaurant.
- * Links items that represent the same dish on different platforms.
  *
- * Two-pass algorithm:
+ * Three-tier matching with name as primary signal:
  *
- *   Pass 1 — Name + Price matching:
- *     Score = nameScore × priceAgreement × categoryBoost
- *     Greedy 1-to-1 assignment sorted by combined score.
+ *   Tier 1 — High-confidence name (JW ≥ 0.95):
+ *     Accept regardless of price. Price only breaks ties between multiple candidates.
+ *     Handles: "Shanghai Juicy Pork Bun" DD $12.95 vs SL $8.95 (different qty, same item).
  *
- *   Pass 2 — Description-enriched matching (remaining unmatched only):
- *     Platforms split item info differently: DoorDash puts variant details in the name
- *     ("Chicken with Bacon & Ranch"), Seamless puts them in the description
- *     ("Chicken Pizza" + desc "With bacon & ranch."). Pass 2 enriches SL names with
- *     their description text, and DD names with their description text, then re-scores.
+ *   Tier 2 — Good name (JW ≥ 0.85) + same normalized category:
+ *     Accept with soft price boost (0.85–1.0 range, NOT 0.3–1.0).
+ *     Handles: "Chicken Feet W.peanut" ≈ "Chicken Feet" in same category.
  *
- * Both passes use price agreement as a guardrail and 1-to-1 greedy assignment.
- * DD items are de-duplicated by platform_item_id; matches propagate to all copies.
+ *   Tier 3 — Description-enriched (JW ≥ 0.83 after name+description concatenation):
+ *     Handles: DD "Chicken with Bacon & Ranch" vs SL "Chicken Pizza" (desc "With bacon & ranch").
+ *
+ * All tiers use 1-to-1 greedy matching. DD items de-duped by platform_item_id.
+ *
+ * Key insight: price should NEVER reject a strong name match. Platforms sell different
+ * quantities/sizes at different prices — that's a real price difference to show users,
+ * not a matching error.
  */
 
-const MIN_NAME_SCORE = 0.85;         // Minimum JW to even consider a pair
-const MIN_COMBINED_SCORE = 0.78;     // Minimum combined score to accept a match
+// --- Thresholds ---
+const TIER1_NAME_MIN = 0.95;         // High confidence — match regardless of price
+const TIER2_NAME_MIN = 0.85;         // Good name — needs same category
+const TIER3_NAME_MIN = 0.83;         // Description-enriched
 const CROSS_CATEGORY_NAME_MIN = 0.93; // Higher bar for matching across categories
+const TIER2_MIN_COMBINED = 0.82;     // Minimum combined score for Tier 2
 
-// Pass 2 thresholds (description-enriched) — slightly more lenient on name
-// since enriched strings are longer and JW scores compress for longer strings
-const PASS2_MIN_NAME_SCORE = 0.83;
-const PASS2_MIN_COMBINED_SCORE = 0.78;
+// --- Category normalization ---
+// Platforms use different category names for the same thing.
+// Map each known variant to a canonical form.
+const CATEGORY_CANONICAL: Record<string, string> = {
+  'dimsum': 'dim sum',
+  'dim sum': 'dim sum',
+  'beef and lamb': 'beef and lamb',
+  'beef & lamb': 'beef and lamb',
+  'vegetarian': 'vegetable',
+  'vegetable': 'vegetable',
+  'fried rice': 'rice',
+  'rice': 'rice',
+  'noodles': 'noodle',
+  'noodle': 'noodle',
+  'noodles soup': 'noodle soup',
+  'noodle soup': 'noodle soup',
+  'chefs signature dishes': 'chef specials',
+  'chef specials': 'chef specials',
+  'beverages': 'drinks',
+  'soft drink': 'drinks',
+  'juice': 'drinks',
+  'congee': 'congee',
+  'special': 'special',
+  'lunch special': 'lunch special',
+  'catering': 'catering',
+};
+
+function normalizeCategory(cat: string): string {
+  const lower = cat.toLowerCase().trim();
+  return CATEGORY_CANONICAL[lower] || lower;
+}
+
+const META_CATEGORIES = new Set(['most ordered', 'popular items', 'picked for you']);
 
 interface ItemRow {
   id: string;
@@ -46,45 +81,20 @@ interface CandidatePair {
   ddPlatformItemId: string;
   slId: string;
   score: number;
-  nameScore: number;
-  priceAgreement: number;
+  tier: number;
 }
 
-const META_CATEGORIES = new Set(['most ordered', 'popular items', 'picked for you']);
-
-/** Score a (DD, SL) pair. Returns null if below thresholds. */
-function scorePair(
-  cleanDD: string,
-  cleanSL: string,
-  ddCategory: string,
-  slCategory: string,
-  ddPrice: number,
-  slPrice: number,
-  minNameScore: number,
-  minCombined: number,
-): { nameScore: number; priceAgreement: number; score: number } | null {
-  const nameScore = jaroWinkler(cleanDD, cleanSL);
-  if (nameScore < minNameScore) return null;
-
-  const sameCategory = ddCategory === slCategory;
-  if (!sameCategory && nameScore < CROSS_CATEGORY_NAME_MIN) return null;
-
-  const maxPrice = Math.max(ddPrice, slPrice, 1);
-  const priceDiffRatio = Math.abs(ddPrice - slPrice) / maxPrice;
-  const priceAgreement = Math.max(0.3, 1.0 - priceDiffRatio * 1.5);
-
-  const categoryBoost = sameCategory ? 1.02 : 1.0;
-  const score = nameScore * priceAgreement * categoryBoost;
-
-  if (score < minCombined) return null;
-  return { nameScore, priceAgreement, score };
+/** Compute price closeness: 1.0 when identical, decreasing toward 0.0 */
+function priceCloseness(a: number, b: number): number {
+  const max = Math.max(a, b, 1);
+  return 1.0 - Math.abs(a - b) / max;
 }
 
 export async function matchMenuItems(restaurantId: string): Promise<{
   matched: number;
   unmatched: number;
 }> {
-  // Get items from each platform (include description for Pass 2)
+  // Get items from each platform (include description for Tier 3)
   const ddResult = await db.query(
     `SELECT id, canonical_name, original_name, category, price_cents, platform_item_id, description
      FROM menu_items
@@ -103,13 +113,13 @@ export async function matchMenuItems(restaurantId: string): Promise<{
     return { matched: 0, unmatched: ddResult.rows.length };
   }
 
-  // Clear ALL existing matches for this restaurant (both directions)
+  // Clear ALL existing matches for this restaurant
   await db.query(
     'UPDATE menu_items SET matched_item_id = NULL WHERE restaurant_id = $1',
     [restaurantId]
   );
 
-  // De-duplicate DD items by platform_item_id — track all copies for propagation
+  // De-duplicate DD items by platform_item_id
   const ddByPlatformId = new Map<string, ItemRow[]>();
   for (const dd of ddResult.rows as ItemRow[]) {
     const key = dd.platform_item_id || dd.id;
@@ -123,112 +133,149 @@ export async function matchMenuItems(restaurantId: string): Promise<{
     return real || group[0];
   });
 
-  // ==================== Pass 1: Name + Price ====================
+  const slItems = slResult.rows as ItemRow[];
+
+  // Pre-compute cleaned names and normalized categories
+  const ddClean = ddUnique.map(d => ({
+    ...d,
+    cleaned: cleanItemName(d.canonical_name),
+    normCat: normalizeCategory(d.category),
+  }));
+  const slClean = slItems.map(s => ({
+    ...s,
+    cleaned: cleanItemName(s.canonical_name),
+    normCat: normalizeCategory(s.category),
+  }));
+
+  // ==================== Build all candidate pairs ====================
   const candidates: CandidatePair[] = [];
 
-  for (const dd of ddUnique) {
-    const cleanDD = cleanItemName(dd.canonical_name);
-    for (const sl of slResult.rows as ItemRow[]) {
-      const cleanSL = cleanItemName(sl.canonical_name);
-      const result = scorePair(
-        cleanDD, cleanSL,
-        dd.category, sl.category,
-        dd.price_cents, sl.price_cents,
-        MIN_NAME_SCORE, MIN_COMBINED_SCORE,
-      );
-      if (result) {
+  for (const dd of ddClean) {
+    for (const sl of slClean) {
+      const nameScore = jaroWinkler(dd.cleaned, sl.cleaned);
+      const sameCategory = dd.normCat === sl.normCat;
+
+      // Tier 1: High-confidence name — match regardless of price
+      if (nameScore >= TIER1_NAME_MIN) {
+        // Price is just a cosmetic tiebreaker (0.001 scale so it doesn't override name)
+        const score = nameScore + priceCloseness(dd.price_cents, sl.price_cents) * 0.01;
         candidates.push({
           ddId: dd.id,
           ddPlatformItemId: dd.platform_item_id || dd.id,
           slId: sl.id,
-          ...result,
+          score,
+          tier: 1,
         });
+        continue;
+      }
+
+      // Tier 2: Good name + same category, soft price boost
+      if (nameScore >= TIER2_NAME_MIN) {
+        if (!sameCategory && nameScore < CROSS_CATEGORY_NAME_MIN) continue;
+
+        // Block lunch↔dinner cross-matching: if one name contains "lunch" and the
+        // other doesn't, they're different menu sections even if names are similar
+        const ddHasLunch = dd.cleaned.includes('lunch') || dd.normCat === 'lunch special';
+        const slHasLunch = sl.cleaned.includes('lunch') || sl.normCat === 'lunch special';
+        if (ddHasLunch !== slHasLunch) continue;
+
+        // Soft price boost: 0.85 to 1.0 (never kills a good name match)
+        const softPrice = 0.85 + priceCloseness(dd.price_cents, sl.price_cents) * 0.15;
+        const categoryBoost = sameCategory ? 1.02 : 1.0;
+        const combined = nameScore * softPrice * categoryBoost;
+
+        if (combined >= TIER2_MIN_COMBINED) {
+          candidates.push({
+            ddId: dd.id,
+            ddPlatformItemId: dd.platform_item_id || dd.id,
+            slId: sl.id,
+            score: combined,
+            tier: 2,
+          });
+        }
       }
     }
   }
 
+  // Sort by score descending — Tier 1 naturally floats to top
   candidates.sort((a, b) => b.score - a.score);
 
   // Greedy 1-to-1 matching
   const matchedDDIds = new Set<string>();
   const matchedSLIds = new Set<string>();
-  const matches: Array<{ ddPlatformItemId: string; slId: string }> = [];
+  const matches: Array<{ ddPlatformItemId: string; slId: string; tier: number }> = [];
 
   for (const c of candidates) {
     if (matchedDDIds.has(c.ddId) || matchedSLIds.has(c.slId)) continue;
-    matches.push({ ddPlatformItemId: c.ddPlatformItemId, slId: c.slId });
+    matches.push({ ddPlatformItemId: c.ddPlatformItemId, slId: c.slId, tier: c.tier });
     matchedDDIds.add(c.ddId);
     matchedSLIds.add(c.slId);
   }
 
-  const pass1Count = matches.length;
+  const tier1Count = matches.filter(m => m.tier === 1).length;
+  const tier2Count = matches.filter(m => m.tier === 2).length;
 
-  // ==================== Pass 2: Description-Enriched ====================
-  // For remaining unmatched items, try matching with description text appended.
-  // Handles: DD "Chicken with Bacon & Ranch" vs SL "Chicken Pizza" (desc: "With bacon & ranch.")
-  const unmatchedDD = ddUnique.filter(d => !matchedDDIds.has(d.id));
-  const unmatchedSL = (slResult.rows as ItemRow[]).filter(s => !matchedSLIds.has(s.id));
+  // ==================== Tier 3: Description-enriched ====================
+  const unmatchedDD = ddClean.filter(d => !matchedDDIds.has(d.id));
+  const unmatchedSL = slClean.filter(s => !matchedSLIds.has(s.id));
 
+  let tier3Count = 0;
   if (unmatchedDD.length > 0 && unmatchedSL.length > 0) {
-    const pass2Candidates: CandidatePair[] = [];
+    const tier3Candidates: CandidatePair[] = [];
 
     for (const dd of unmatchedDD) {
-      const cleanDD = cleanItemName(dd.canonical_name);
-      // DD name enriched with its own description
       const ddDesc = dd.description || '';
-      const cleanDDEnriched = ddDesc ? cleanItemName(dd.canonical_name + ' ' + ddDesc) : '';
+      const ddEnriched = ddDesc ? cleanItemName(dd.canonical_name + ' ' + ddDesc) : '';
 
       for (const sl of unmatchedSL) {
-        const cleanSL = cleanItemName(sl.canonical_name);
-        // SL name enriched with its own description
         const slDesc = sl.description || '';
-        const cleanSLEnriched = slDesc ? cleanItemName(sl.canonical_name + ' ' + slDesc) : '';
+        const slEnriched = slDesc ? cleanItemName(sl.canonical_name + ' ' + slDesc) : '';
 
-        // Try all enrichment combinations — take the best score:
-        // 1. DD name vs SL name+desc (SL puts variant in description)
-        // 2. DD name+desc vs SL name (DD puts variant in description)
-        // 3. DD name+desc vs SL name+desc (both have useful descriptions)
-        let bestResult: { nameScore: number; priceAgreement: number; score: number } | null = null;
-
+        // Try all enrichment combinations — take the best
+        let bestScore = 0;
         const tryPairs: [string, string][] = [];
-        if (cleanSLEnriched) tryPairs.push([cleanDD, cleanSLEnriched]);
-        if (cleanDDEnriched) tryPairs.push([cleanDDEnriched, cleanSL]);
-        if (cleanDDEnriched && cleanSLEnriched) tryPairs.push([cleanDDEnriched, cleanSLEnriched]);
+        if (slEnriched) tryPairs.push([dd.cleaned, slEnriched]);
+        if (ddEnriched) tryPairs.push([ddEnriched, sl.cleaned]);
+        if (ddEnriched && slEnriched) tryPairs.push([ddEnriched, slEnriched]);
 
         for (const [a, b] of tryPairs) {
-          const result = scorePair(
-            a, b,
-            dd.category, sl.category,
-            dd.price_cents, sl.price_cents,
-            PASS2_MIN_NAME_SCORE, PASS2_MIN_COMBINED_SCORE,
-          );
-          if (result && (!bestResult || result.score > bestResult.score)) {
-            bestResult = result;
+          const nameScore = jaroWinkler(a, b);
+          if (nameScore < TIER3_NAME_MIN) continue;
+
+          const sameCategory = dd.normCat === sl.normCat;
+          if (!sameCategory && nameScore < CROSS_CATEGORY_NAME_MIN) continue;
+
+          const softPrice = 0.85 + priceCloseness(dd.price_cents, sl.price_cents) * 0.15;
+          const categoryBoost = sameCategory ? 1.02 : 1.0;
+          const score = nameScore * softPrice * categoryBoost;
+
+          if (score > bestScore && score >= TIER2_MIN_COMBINED) {
+            bestScore = score;
           }
         }
 
-        if (bestResult) {
-          pass2Candidates.push({
+        if (bestScore > 0) {
+          tier3Candidates.push({
             ddId: dd.id,
             ddPlatformItemId: dd.platform_item_id || dd.id,
             slId: sl.id,
-            ...bestResult,
+            score: bestScore,
+            tier: 3,
           });
         }
       }
     }
 
-    pass2Candidates.sort((a, b) => b.score - a.score);
+    tier3Candidates.sort((a, b) => b.score - a.score);
 
-    for (const c of pass2Candidates) {
+    for (const c of tier3Candidates) {
       if (matchedDDIds.has(c.ddId) || matchedSLIds.has(c.slId)) continue;
-      matches.push({ ddPlatformItemId: c.ddPlatformItemId, slId: c.slId });
+      matches.push({ ddPlatformItemId: c.ddPlatformItemId, slId: c.slId, tier: 3 });
       matchedDDIds.add(c.ddId);
       matchedSLIds.add(c.slId);
+      tier3Count++;
     }
   }
-
-  const pass2Count = matches.length - pass1Count;
 
   // Write matches to DB — propagate to ALL DD copies with same platform_item_id
   let totalDDMatched = 0;
@@ -246,10 +293,10 @@ export async function matchMenuItems(restaurantId: string): Promise<{
   }
 
   const unmatched = ddUnique.length - matches.length;
+  const tierBreakdown = `${tier1Count} T1 + ${tier2Count} T2 + ${tier3Count} T3`;
 
   console.log(
-    `[Matching] Restaurant ${restaurantId}: ${matches.length} unique matched (${totalDDMatched} DD items linked), ${unmatched} unmatched` +
-    (pass2Count > 0 ? ` (${pass1Count} pass1 + ${pass2Count} pass2-enriched)` : '')
+    `[Matching] Restaurant ${restaurantId}: ${matches.length} unique matched (${totalDDMatched} DD items linked), ${unmatched} unmatched (${tierBreakdown})`
   );
   return { matched: matches.length, unmatched };
 }
@@ -257,7 +304,6 @@ export async function matchMenuItems(restaurantId: string): Promise<{
 /**
  * Validate match quality for a restaurant. Returns suspicious matches
  * where prices differ — these likely indicate matching errors.
- * Use after bulk operations to catch problems before they scale.
  */
 export async function validateMatches(restaurantId: string): Promise<{
   total: number;

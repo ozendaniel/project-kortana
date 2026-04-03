@@ -100,19 +100,40 @@ export function cleanRestaurantName(name: string): string {
 
 /**
  * Clean menu item names for cross-platform matching.
- * Less aggressive than restaurant name cleaning.
+ *
+ * Handles platform naming differences:
+ * - DoorDash: "Shrimp Dumpling W.mayo(3)", "Chicken Feet W.peanut"
+ * - Seamless: "Shrimp Dumpling w. Mayo 沙汁鲜虾饺", "Chicken Feet 凤爪"
+ *
+ * After cleaning both become: "shrimp dumpling with mayo", "chicken feet with peanut" / "chicken feet"
  */
 export function cleanItemName(name: string): string {
   let cleaned = name.toLowerCase();
 
-  // Remove size descriptors in parens like "(Large)", "(16 oz)"
-  cleaned = cleaned.replace(/\(.*?\)/g, '');
+  // Strip CJK characters (Chinese/Japanese/Korean) — Seamless includes Chinese in names, DD doesn't
+  cleaned = cleaned.replace(/[\u2E80-\u9FFF\uF900-\uFAFF\uFE30-\uFE4F]/g, '');
+
+  // Remove NUMERIC parentheticals only: "(3)", "(6)", "(8)", "(4 pcs)", "(16 oz)", "(for 2)"
+  // Keep descriptive parens like "(Lunch)", "(Half)", "(Whole)" — they differentiate items
+  cleaned = cleaned.replace(/\(\s*\d+\s*(pcs|pc|pieces?|oz)?\s*\)/gi, '');
+  cleaned = cleaned.replace(/\(\s*for\s+\d+\s*\)/gi, '');
+
+  // Expand abbreviations BEFORE stripping punctuation:
+  // "w." / "W." → "with" (must be word-boundary aware to not match mid-word)
+  cleaned = cleaned.replace(/\bw\.\s*/g, 'with ');
+  cleaned = cleaned.replace(/\bw\/\s*/g, 'with ');
+
+  // "&" → "and"
+  cleaned = cleaned.replace(/&/g, ' and ');
 
   // Remove possessive 's
   cleaned = cleaned.replace(/'s\b/g, '');
 
-  // Remove punctuation
+  // Remove remaining punctuation (periods, commas, etc.)
   cleaned = cleaned.replace(/[^\w\s]/g, '');
+
+  // Normalize standalone "w " that might remain (from "w " without period)
+  cleaned = cleaned.replace(/\bw\b/g, 'with');
 
   // Collapse whitespace
   cleaned = cleaned.replace(/\s+/g, ' ').trim();

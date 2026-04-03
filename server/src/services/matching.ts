@@ -32,6 +32,7 @@ const TIER2_NAME_MIN = 0.85;         // Good name — needs same category
 const TIER3_NAME_MIN = 0.83;         // Description-enriched
 const CROSS_CATEGORY_NAME_MIN = 0.93; // Higher bar for matching across categories
 const TIER2_MIN_COMBINED = 0.82;     // Minimum combined score for Tier 2
+const EXACT_PRICE_NAME_MIN = 0.75;   // Lower name bar when price matches exactly
 
 // --- Category normalization ---
 // Platforms use different category names for the same thing.
@@ -174,13 +175,6 @@ export async function matchMenuItems(restaurantId: string): Promise<{
       if (nameScore >= TIER2_NAME_MIN) {
         if (!sameCategory && nameScore < CROSS_CATEGORY_NAME_MIN) continue;
 
-        // Block lunch↔dinner cross-matching: if one name contains "lunch" and the
-        // other doesn't, they're different menu sections even if names are similar
-        const ddHasLunch = dd.cleaned.includes('lunch') || dd.normCat === 'lunch special';
-        const slHasLunch = sl.cleaned.includes('lunch') || sl.normCat === 'lunch special';
-        if (ddHasLunch !== slHasLunch) continue;
-
-        // Soft price boost: 0.85 to 1.0 (never kills a good name match)
         const softPrice = 0.85 + priceCloseness(dd.price_cents, sl.price_cents) * 0.15;
         const categoryBoost = sameCategory ? 1.02 : 1.0;
         const combined = nameScore * softPrice * categoryBoost;
@@ -194,6 +188,24 @@ export async function matchMenuItems(restaurantId: string): Promise<{
             tier: 2,
           });
         }
+        continue;
+      }
+
+      // Tier 2.5: Similar name + EXACT price match
+      // Identical prices at the same restaurant is an extremely strong signal.
+      // Items like "Szechuan Spicy Beef Brisket" ($26.95) and "Sechuan Style Spicy
+      // Beef Stew Casserole" ($26.95) are clearly the same dish — the exact price
+      // confirms what the name similarity alone can't.
+      if (nameScore >= EXACT_PRICE_NAME_MIN && dd.price_cents === sl.price_cents && dd.price_cents > 0) {
+        // Score includes a bonus for exact price match to rank above borderline T2
+        const score = nameScore + 0.05; // boost to sort above similar-scored T2 pairs
+        candidates.push({
+          ddId: dd.id,
+          ddPlatformItemId: dd.platform_item_id || dd.id,
+          slId: sl.id,
+          score,
+          tier: 2,  // Group with T2 in reporting for simplicity
+        });
       }
     }
   }

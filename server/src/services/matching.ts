@@ -92,9 +92,13 @@ function priceCloseness(a: number, b: number): number {
   return 1.0 - Math.abs(a - b) / max;
 }
 
+const REFETCH_THRESHOLD = 0.85; // Recommend re-fetching menus below this match rate
+
 export async function matchMenuItems(restaurantId: string): Promise<{
   matched: number;
   unmatched: number;
+  matchRate: number;
+  shouldRefetch: boolean;
 }> {
   // Get items from each platform (include description for Tier 3)
   const ddResult = await db.query(
@@ -348,7 +352,14 @@ export async function matchMenuItems(restaurantId: string): Promise<{
   console.log(
     `[Matching] Restaurant ${restaurantId}: ${matches.length} unique matched (${totalDDMatched} DD items linked), ${unmatched} unmatched (${tierBreakdown})`
   );
-  return { matched: matches.length, unmatched };
+  const matchRate = ddUnique.length > 0 ? matches.length / ddUnique.length : 1;
+  const shouldRefetch = matchRate < REFETCH_THRESHOLD;
+
+  if (shouldRefetch) {
+    console.log(`[Matching] ⚠ Match rate ${(matchRate * 100).toFixed(0)}% < ${(REFETCH_THRESHOLD * 100).toFixed(0)}% — recommend re-fetching menus from both platforms`);
+  }
+
+  return { matched: matches.length, unmatched, matchRate, shouldRefetch };
 }
 
 /**

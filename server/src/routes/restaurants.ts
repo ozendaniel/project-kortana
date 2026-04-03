@@ -55,43 +55,71 @@ router.get('/search', async (req: Request, res: Response) => {
 
     const result = await db.query(query, params);
 
-    // Group restaurants by canonical_name so multi-location chains appear as one entry
-    const grouped = new Map<string, {
+    // Step 1: Group all rows by canonical_name
+    const byName = new Map<string, typeof result.rows>();
+    for (const r of result.rows) {
+      if (!byName.has(r.canonical_name)) byName.set(r.canonical_name, []);
+      byName.get(r.canonical_name)!.push(r);
+    }
+
+    // Step 2: For each name group, decide whether to keep as one entry or split.
+    // Multi-location chains (any row has a real address) → group into one card
+    // with expandable locations. All addressless → split into individual entries
+    // (they're likely different restaurants that weren't deduped).
+    type Group = {
       ids: string[];
       name: string;
       locations: Array<{ id: string; address: string }>;
       cuisines: string[];
       hasDoorDash: boolean;
       hasSeamless: boolean;
-    }>();
+    };
+    const finalGroups: Group[] = [];
 
-    for (const r of result.rows) {
-      const key = r.canonical_name;
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          ids: [],
-          name: r.canonical_name,
-          locations: [],
-          cuisines: r.cuisine_tags || [],
-          hasDoorDash: false,
-          hasSeamless: false,
+    for (const [name, rows] of byName) {
+      const anyHasAddress = rows.some(r => r.address && r.address.trim() !== '');
+
+      if (anyHasAddress || rows.length === 1) {
+        // Keep as one group — real chain with addresses, or single entry
+        const group: Group = {
+          ids: [], name, locations: [], cuisines: [],
+          hasDoorDash: false, hasSeamless: false,
+        };
+        for (const r of rows) {
+          group.ids.push(r.id);
+          if (r.address && r.address.trim() !== '') {
+            group.locations.push({ id: r.id, address: r.address });
+          }
+          if (r.doordash_id) group.hasDoorDash = true;
+          if (r.seamless_id) group.hasSeamless = true;
+          for (const c of (r.cuisine_tags || [])) {
+            if (!group.cuisines.includes(c)) group.cuisines.push(c);
+          }
+        }
+        finalGroups.push(group);
+      } else {
+        // No addresses — split each row into its own entry.
+        // Sort: cross-matched (both platforms) first so the richest entry appears on top.
+        const sorted = [...rows].sort((a, b) => {
+          const aScore = (a.doordash_id && a.seamless_id ? 2 : 1);
+          const bScore = (b.doordash_id && b.seamless_id ? 2 : 1);
+          return bScore - aScore;
         });
-      }
-      const group = grouped.get(key)!;
-      group.ids.push(r.id);
-      if (r.address) {
-        group.locations.push({ id: r.id, address: r.address });
-      }
-      if (r.doordash_id) group.hasDoorDash = true;
-      if (r.seamless_id) group.hasSeamless = true;
-      // Merge cuisines from all locations
-      for (const c of (r.cuisine_tags || [])) {
-        if (!group.cuisines.includes(c)) group.cuisines.push(c);
+        for (const r of sorted) {
+          finalGroups.push({
+            ids: [r.id],
+            name: r.canonical_name,
+            locations: [],
+            cuisines: r.cuisine_tags || [],
+            hasDoorDash: !!r.doordash_id,
+            hasSeamless: !!r.seamless_id,
+          });
+        }
       }
     }
 
-    const restaurants = Array.from(grouped.values()).map((g) => ({
-      id: g.ids[0], // Primary ID (first location)
+    const restaurants = finalGroups.map((g) => ({
+      id: g.ids[0],
       name: g.name,
       address: g.locations[0]?.address || '',
       locations: g.locations,

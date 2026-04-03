@@ -428,10 +428,14 @@ Rules:
 ### Menu Item Matching
 After restaurants are matched, match individual menu items across platforms.
 
-**Key insight:** Platforms often collapse variant names (e.g. Seamless shows "Beef Patties" at $2.99/$3.99/$4.99 for plain/cheese/cheese+pepperoni variants). Name alone cannot disambiguate — **price is the strongest matching signal** when names are identical or near-identical.
+**Key insights:**
+- Platforms often collapse variant names (e.g. Seamless shows "Beef Patties" at $2.99/$3.99/$4.99 for plain/cheese/cheese+pepperoni variants). Name alone cannot disambiguate — **price is the strongest matching signal** when names are identical or near-identical.
+- Platforms split item information differently between name and description. DoorDash puts variant details in the name ("Chicken with Bacon & Ranch"), Seamless puts them in the description ("Chicken Pizza" + desc "With bacon & ranch."). Description-enriched matching handles this.
 
 ```
-Algorithm (price-aware, 1-to-1 greedy):
+Two-pass algorithm (price-aware, 1-to-1 greedy):
+
+Pass 1 — Name + Price:
   1. De-duplicate DoorDash items by platform_item_id
      (DD repeats items in "Most Ordered" — prefer real category copy as representative)
   2. Build candidate pairs: all (DD, SL) combinations where JW name score ≥ 0.85
@@ -443,8 +447,18 @@ Algorithm (price-aware, 1-to-1 greedy):
   4. Sort all candidates by combinedScore descending
   5. Greedy 1-to-1 assignment: take highest pair, mark both consumed, repeat
      (each SL item matched at most once — prevents wrong-variant matching)
-  6. Propagate: all DD copies with same platform_item_id get the same match
-  7. Validate: report price mismatches per restaurant for quality monitoring
+
+Pass 2 — Description-Enriched (remaining unmatched only):
+  6. For unmatched items, enrich names with description text:
+     - Try DD name vs SL (name + description)
+     - Try DD (name + description) vs SL name
+     - Try DD (name + description) vs SL (name + description)
+     - Take best score from all combinations
+  7. Same scoring + greedy 1-to-1 as Pass 1 (slightly relaxed: min name 0.83)
+
+Finalize:
+  8. Propagate: all DD copies with same platform_item_id get the same match
+  9. Validate: report price mismatches per restaurant for quality monitoring
 ```
 
 ### LLM-Assisted Matching (Optional Enhancement)

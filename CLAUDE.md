@@ -73,6 +73,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 5. Review 408 flagged dedup matches and tighten matching thresholds
 6. Expand coverage to Brooklyn/Queens via additional saved DoorDash addresses
 7. Run Seamless menu population for remaining ~5,568 Seamless-only restaurants (and Seamless discovery for broader coverage)
+8. **Monitor Railway Postgres storage** — currently 146 MB / 500 MB, projected ~376 MB after full Seamless population. If nearing 450 MB, drop `menus.raw_data` JSONB (saves ~50 MB+ instantly). Check: `SELECT pg_size_pretty(pg_database_size(current_database()))`
 
 ## Architecture Decisions
 
@@ -84,6 +85,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 | Auth model | Portal-based login via CDP screencast — users complete Google OAuth in the Kortana web UI | Chrome runs headful on Xvfb (virtual display), login page streamed to frontend canvas via WebSocket. Popup handling switches screencast to OAuth popups and back. |
 | Deduplication | Multi-key blocking (exact name, geohash, prefix, phone) + Jaro-Winkler scoring | O(n) blocking replaces O(n²) brute force. 512x fewer comparisons, <1s scoring. Same confidence thresholds (0.80 auto-merge, 0.60 review). |
 | Menu refresh | Daily batch sync at 3 AM ET | Balances data freshness vs bot detection risk. Fees are fetched real-time at comparison time |
+| Storage budget | Railway Postgres volume capped at 500 MB (Hobby plan). Projected ~75% after full Seamless menu population. If approaching 450 MB, drop `menus.raw_data` (redundant with parsed menu_items). Monitor with `pg_database_size()` during bulk operations. |
 | Price comparison scope | Item price + delivery fee + service fee | Does not include tip estimate or subscription benefits (DashPass etc.) in MVP |
 | Comparison UX | Build order once, see total per platform | Not side-by-side menu browsing — unified menu with per-platform prices per item |
 | Order placement (Phase 1) | Manual — redirect to platform URL | Auto-ordering comes in Phase 2 |

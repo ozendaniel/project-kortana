@@ -9,9 +9,13 @@
  *   npx tsx src/scripts/populate-seamless-menus.ts --restaurant-id X  # Single restaurant
  *   npx tsx src/scripts/populate-seamless-menus.ts --dry-run          # Fetch but don't write to DB
  *   npx tsx src/scripts/populate-seamless-menus.ts --skip-match       # Don't run item matching after
+ *   npx tsx src/scripts/populate-seamless-menus.ts --sustained        # Longer delays for multi-hour runs
  *
  * Requires an authenticated Seamless session (login via Settings page first).
  * Uses CDP port 9223 — can run alongside the server if server doesn't use Seamless browser.
+ *
+ * For long unattended runs, use the wrapper script:
+ *   bash server/scripts/run-seamless-populate.sh
  */
 import dotenv from 'dotenv';
 import path from 'path';
@@ -23,24 +27,26 @@ import { SeamlessAdapter } from '../adapters/seamless/adapter.js';
 import { upsertMenu } from '../services/menu-upsert.js';
 import { matchMenuItems } from '../services/matching.js';
 
-// --- Config ---
-const INTER_RESTAURANT_DELAY_MS = 5000;
-const INTER_RESTAURANT_JITTER_MS = 3000;
-const SESSION_CHECK_INTERVAL = 50; // Check auth every N restaurants
-const MAX_CONSECUTIVE_FAILURES = 3;
-const BACKOFF_DELAYS = [30_000, 60_000, 120_000]; // Escalating backoff on errors
-const PROGRESS_FILE = path.resolve(process.cwd(), 'data', 'seamless-menu-progress.json');
-
 // --- CLI args ---
 const args = process.argv.slice(2);
 const matchedOnly = args.includes('--matched-only');
 const dryRun = args.includes('--dry-run');
 const resume = args.includes('--resume');
 const skipMatch = args.includes('--skip-match');
+const sustained = args.includes('--sustained');
 const limitIdx = args.indexOf('--limit');
 const limit = limitIdx !== -1 ? parseInt(args[limitIdx + 1], 10) : 0;
 const ridIdx = args.indexOf('--restaurant-id');
 const singleRestaurantId = ridIdx !== -1 ? args[ridIdx + 1] : null;
+
+// --- Config (adjusted for sustained mode) ---
+const INTER_RESTAURANT_DELAY_MS = sustained ? 8000 : 5000;
+const INTER_RESTAURANT_JITTER_MS = sustained ? 4000 : 3000;
+const SESSION_CHECK_INTERVAL = 50; // Check auth every N restaurants
+const SESSION_KEEPALIVE_INTERVAL = sustained ? 100 : 200; // Navigate to seamless.com to refresh token
+const MAX_CONSECUTIVE_FAILURES = 3;
+const BACKOFF_DELAYS = [30_000, 60_000, 120_000]; // Escalating backoff on errors
+const PROGRESS_FILE = path.resolve(process.cwd(), 'data', 'seamless-menu-progress.json');
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -118,6 +124,7 @@ async function main() {
   console.log(`  (Total Seamless: ${totalSeamless.rows[0].count}, Matched: ${totalMatched.rows[0].count})`);
   if (matchedOnly) console.log('  Mode: matched-only');
   if (resume) console.log('  Mode: resume (skipping recently synced)');
+  if (sustained) console.log('  Mode: sustained (longer delays, frequent keep-alive)');
   console.log();
 
   // Initialize adapter
@@ -152,22 +159,49 @@ async function main() {
     const rest = restaurants[i];
     const restStart = Date.now();
 
+    // Session keep-alive: navigate to seamless.com to trigger token refresh in localStorage
+    if (i > 0 && i % SESSION_KEEPALIVE_INTERVAL === 0) {
+      console.log(`\n[Keep-alive] Navigating to seamless.com to refresh session... (${i}/${restaurants.length})`);
+      try {
+        const browser = adapter.getBrowser();
+        await browser.navigateHome();
+        await sleep(3000); // Let Seamless JS refresh the token
+        await adapter.refreshTokens();
+        const token = await browser.getAuthToken();
+        if (token) {
+          console.log('[Keep-alive] Session token refreshed.');
+        } else {
+          console.log('[Keep-alive] WARNING: No token after refresh. Will retry on next check.');
+        }
+      } catch (err) {
+        console.log(`[Keep-alive] Navigation failed: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
+      }
+    }
+
     // Session health check every N restaurants
-    if (i > 0 && i % SESSION_CHECK_INTERVAL === 0) {
+    if (i > 0 && i % SESSION_CHECK_INTERVAL === 0 && i % SESSION_KEEPALIVE_INTERVAL !== 0) {
       console.log(`\n[Health check] Verifying session... (${i}/${restaurants.length})`);
       const valid = await adapter.isSessionValid();
       if (!valid) {
-        console.log('[Health check] Session expired. Attempting token refresh...');
-        await adapter.refreshTokens();
-        const browser = adapter.getBrowser();
-        const token = await browser.getAuthToken();
-        if (!token) {
-          console.error('\n*** Auth expired. Re-authenticate via Settings page and re-run with --resume ***');
-          console.log(`Progress: ${progress.completed} completed, ${progress.failed} failed, ${progress.skipped} skipped`);
+        console.log('[Health check] Session expired. Attempting keep-alive...');
+        try {
+          const browser = adapter.getBrowser();
+          await browser.navigateHome();
+          await sleep(3000);
+          await adapter.refreshTokens();
+          const token = await browser.getAuthToken();
+          if (!token) {
+            console.error('\n*** Auth expired and could not be refreshed. Exiting for restart. ***');
+            console.log(`Progress: ${progress.completed} completed, ${progress.failed} failed, ${progress.skipped} skipped`);
+            saveProgress(progress);
+            process.exit(1);
+          }
+          console.log('[Health check] Session recovered via keep-alive.');
+        } catch {
+          console.error('\n*** Auth check failed. Exiting for restart. ***');
           saveProgress(progress);
           process.exit(1);
         }
-        console.log('[Health check] Token refreshed successfully.');
       } else {
         console.log('[Health check] Session OK.');
       }
@@ -220,17 +254,25 @@ async function main() {
 
       // Check if this is an auth error
       if (msg.includes('401') || msg.includes('403') || msg.includes('expired')) {
-        console.log('  Possible auth issue — attempting token refresh...');
-        await adapter.refreshTokens();
-        const browser = adapter.getBrowser();
-        const token = await browser.getAuthToken();
-        if (!token) {
-          console.error('\n*** Auth expired. Re-authenticate via Settings page and re-run with --resume ***');
+        console.log('  Possible auth issue — attempting session keep-alive...');
+        try {
+          const browser = adapter.getBrowser();
+          await browser.navigateHome();
+          await sleep(3000);
+          await adapter.refreshTokens();
+          const token = await browser.getAuthToken();
+          if (!token) {
+            console.error('\n*** Auth expired and could not be refreshed. Exiting for restart. ***');
+            saveProgress(progress);
+            process.exit(1);
+          }
+          console.log('  Session recovered via keep-alive. Continuing...');
+          consecutiveFailures = 0;
+        } catch {
+          console.error('\n*** Auth recovery failed. Exiting for restart. ***');
           saveProgress(progress);
           process.exit(1);
         }
-        console.log('  Token refreshed. Continuing...');
-        consecutiveFailures = 0;
       } else if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
         // Escalating backoff
         const backoff = BACKOFF_DELAYS[Math.min(consecutiveFailures - MAX_CONSECUTIVE_FAILURES, BACKOFF_DELAYS.length - 1)];

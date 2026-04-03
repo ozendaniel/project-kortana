@@ -29,4 +29,5 @@ ENV DISPLAY=:99
 EXPOSE 3001
 
 # Start Xvfb virtual display so Chrome runs headful (Google blocks headless OAuth)
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1280x720x24 -ac -nolisten tcp & sleep 1 && node server/dist/index.js"]
+# Clean Chrome caches on startup to prevent /data volume from filling up (500MB cap)
+CMD ["sh", "-c", "for p in /data/.kortana/seamless-profile /data/.kortana/doordash-profile; do rm -rf \"$p/Default/Cache\" \"$p/Default/Code Cache\" \"$p/ShaderCache\" \"$p/GrShaderCache\" \"$p/GraphiteDawnCache\" \"$p/optimization_guide_model_store\" \"$p/component_crx_cache\" \"$p/Safe Browsing\" \"$p/WasmTtsEngine\" \"$p/OnDeviceHeadSuggestModel\" \"$p/hyphen-data\" \"$p/ZxcvbnData\" 2>/dev/null; done && Xvfb :99 -screen 0 1280x720x24 -ac -nolisten tcp & sleep 1 && node server/dist/index.js"]

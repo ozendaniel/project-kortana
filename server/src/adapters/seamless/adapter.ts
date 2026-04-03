@@ -284,7 +284,17 @@ export class SeamlessAdapter implements PlatformAdapter {
       const feed = restInfo.object?.data?.enhanced_feed || [];
       // Filter out non-menu categories
       const skipCategories = ['Category Navigation', 'Search', 'Offers', 'Best Sellers', 'Order Again', 'Similar options nearby'];
-      const menuCategories = feed.filter(f => f.id && f.name && !skipCategories.includes(f.name));
+      const allMenuCategories = feed.filter(f => f.id && f.name && !skipCategories.includes(f.name));
+
+      // Deduplicate by category name — keep the LAST occurrence.
+      // Seamless returns multiple menu sets (e.g. pickup vs delivery, or old vs current).
+      // The later set in the feed is the active delivery menu with current prices.
+      // Without dedup, we store items from inactive menus that aren't visible to users.
+      const categoryByName = new Map<string, typeof allMenuCategories[0]>();
+      for (const cat of allMenuCategories) {
+        categoryByName.set(cat.name, cat); // later entries overwrite earlier ones
+      }
+      const menuCategories = Array.from(categoryByName.values());
 
       const categories: PlatformMenu['categories'] = [];
 

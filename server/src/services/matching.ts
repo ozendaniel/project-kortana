@@ -1,6 +1,7 @@
 import { db } from '../db/client.js';
 import { jaroWinkler } from '../utils/fuzzyMatch.js';
 import { cleanItemName } from '../utils/nameCleaner.js';
+import { llmMatchItems } from './llm-matching.js';
 
 /**
  * Match menu items across platforms for a given restaurant.
@@ -277,6 +278,43 @@ export async function matchMenuItems(restaurantId: string): Promise<{
     }
   }
 
+  // ==================== Tier 4: LLM matching (Gemini Flash) ====================
+  // Only trigger when deterministic matching < 90% and enough unmatched items exist
+  const LLM_MATCH_RATE_THRESHOLD = 0.90;
+  const LLM_MIN_UNMATCHED = 5;
+
+  let tier4Count = 0;
+  const currentMatchRate = matches.length / ddUnique.length;
+
+  if (currentMatchRate < LLM_MATCH_RATE_THRESHOLD && process.env.GEMINI_API_KEY) {
+    const tier4UnmatchedDD = ddClean.filter(d => !matchedDDIds.has(d.id));
+    const tier4UnmatchedSL = slClean.filter(s => !matchedSLIds.has(s.id));
+
+    if (tier4UnmatchedDD.length >= LLM_MIN_UNMATCHED && tier4UnmatchedSL.length >= LLM_MIN_UNMATCHED) {
+      console.log(`[Matching] Match rate ${(currentMatchRate * 100).toFixed(0)}% < 90% — invoking Gemini Flash for ${tier4UnmatchedDD.length} DD + ${tier4UnmatchedSL.length} SL items`);
+
+      const llmPairs = await llmMatchItems(
+        tier4UnmatchedDD.map(d => ({ id: d.id, originalName: d.original_name, priceCents: d.price_cents, category: d.category })),
+        tier4UnmatchedSL.map(s => ({ id: s.id, originalName: s.original_name, priceCents: s.price_cents, category: s.category })),
+      );
+
+      for (const pair of llmPairs) {
+        if (matchedDDIds.has(pair.ddId) || matchedSLIds.has(pair.slId)) continue;
+        // Find the platform_item_id for this DD item
+        const ddItem = ddClean.find(d => d.id === pair.ddId);
+        if (!ddItem) continue;
+        matches.push({
+          ddPlatformItemId: ddItem.platform_item_id || ddItem.id,
+          slId: pair.slId,
+          tier: 4,
+        });
+        matchedDDIds.add(pair.ddId);
+        matchedSLIds.add(pair.slId);
+        tier4Count++;
+      }
+    }
+  }
+
   // Write matches to DB — propagate to ALL DD copies with same platform_item_id
   let totalDDMatched = 0;
   for (const m of matches) {
@@ -293,7 +331,7 @@ export async function matchMenuItems(restaurantId: string): Promise<{
   }
 
   const unmatched = ddUnique.length - matches.length;
-  const tierBreakdown = `${tier1Count} T1 + ${tier2Count} T2 + ${tier3Count} T3`;
+  const tierBreakdown = `${tier1Count} T1 + ${tier2Count} T2 + ${tier3Count} T3` + (tier4Count > 0 ? ` + ${tier4Count} T4-LLM` : '');
 
   console.log(
     `[Matching] Restaurant ${restaurantId}: ${matches.length} unique matched (${totalDDMatched} DD items linked), ${unmatched} unmatched (${tierBreakdown})`

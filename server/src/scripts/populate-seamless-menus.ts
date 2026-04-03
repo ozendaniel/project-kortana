@@ -25,7 +25,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') });
 import { db } from '../db/client.js';
 import { SeamlessAdapter } from '../adapters/seamless/adapter.js';
 import { upsertMenu } from '../services/menu-upsert.js';
-import { matchMenuItems } from '../services/matching.js';
+import { matchMenuItems, validateMatches } from '../services/matching.js';
 
 // --- CLI args ---
 const args = process.argv.slice(2);

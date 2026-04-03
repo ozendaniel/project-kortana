@@ -426,17 +426,25 @@ Rules:
 - Collapse whitespace
 
 ### Menu Item Matching
-After restaurants are matched, match individual menu items across platforms:
+After restaurants are matched, match individual menu items across platforms.
+
+**Key insight:** Platforms often collapse variant names (e.g. Seamless shows "Beef Patties" at $2.99/$3.99/$4.99 for plain/cheese/cheese+pepperoni variants). Name alone cannot disambiguate — **price is the strongest matching signal** when names are identical or near-identical.
 
 ```
-For each item on Platform A for a matched restaurant:
-  1. Clean item name (lowercase, remove sizes/descriptors)
-  2. Find items on Platform B in same restaurant with:
-     a. Exact cleaned name match → auto-match
-     b. Jaro-Winkler ≥ 0.90 → auto-match
-     c. Jaro-Winkler ≥ 0.80 AND same category → auto-match
-     d. Below 0.80 → no match (item may be platform-exclusive)
-  3. Set matched_item_id on both records
+Algorithm (price-aware, 1-to-1 greedy):
+  1. De-duplicate DoorDash items by platform_item_id
+     (DD repeats items in "Most Ordered" — prefer real category copy as representative)
+  2. Build candidate pairs: all (DD, SL) combinations where JW name score ≥ 0.85
+     - Cross-category pairs require JW ≥ 0.93
+  3. Score each pair: combinedScore = nameScore × priceAgreement × categoryBoost
+     - priceAgreement: 1.0 when prices match, decreasing with divergence
+     - categoryBoost: 1.02 for same-category pairs
+     - Minimum combined score: 0.78
+  4. Sort all candidates by combinedScore descending
+  5. Greedy 1-to-1 assignment: take highest pair, mark both consumed, repeat
+     (each SL item matched at most once — prevents wrong-variant matching)
+  6. Propagate: all DD copies with same platform_item_id get the same match
+  7. Validate: report price mismatches per restaurant for quality monitoring
 ```
 
 ### LLM-Assisted Matching (Optional Enhancement)

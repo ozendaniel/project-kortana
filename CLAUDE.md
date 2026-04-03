@@ -56,6 +56,8 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Dedup rewrite (2026-04-02): Replaced O(n²) brute-force with multi-key blocking (exact cleaned name, geohash-6 + neighbors, name prefix 3-char, phone number). 21,464 comparisons vs 10.9M brute force (512x reduction). Completes in <1s scoring + ~2min DB merges. Merged 358 restaurants, flagged 408 for review. DB now has 533 cross-platform matched restaurants, 7,597 total rows.
 - Seamless menu bulk population (2026-04-02): populate-seamless-menus.ts fetched menus for all 533 matched restaurants. 251 restaurants populated with 50,879 menu items. 268 ghost restaurants marked as `platform_status.seamless = "delisted"` (appear in Seamless search but return 404/empty menus — confirmed manually). Shared upsertMenu() utility extracted to services/menu-upsert.ts with batched INSERTs. Fixed bug: refresh-menus.ts was using cleanRestaurantName() for item canonical names instead of cleanItemName().
 - Migration 006 adds `platform_status JSONB` column to restaurants table for tracking per-platform listing status (e.g. `{"seamless": "delisted"}`). Ghost restaurants auto-excluded from future populate runs.
+- DoorDash menu bulk population script (2026-04-03): populate-doordash-menus.ts with same CLI flags as Seamless version (--matched-only, --limit, --resume, --sustained, --dry-run, --skip-match, --restaurant-id). Uses mainTabGraphqlQuery (not API tab) because Cloudflare blocks API tab's route-blocked page from completing CF challenge. Pre-spawns Chrome headful on CDP port 9224 with stale-process cleanup. Tested: "2nd av pizza" (48 items, 43 matched with Seamless, 100% price match), "ane bar restaurant" (63 items, DD-only). Bash wrapper: run-doordash-populate.sh with auto-restart, 90s cooldown between restarts.
+- Cross-platform item matching rewrite (2026-04-03): Replaced name-only Jaro-Winkler matching with price-aware + 1-to-1 algorithm. Combined score = nameScore × priceAgreement × categoryBoost. Greedy assignment sorted by combined score (highest first). DD items de-duplicated by platform_item_id (prefers real category over "Most Ordered" meta-category). Matches propagated to all DD copies. Added validateMatches() for post-matching quality reporting. Before: "Beef Patties" ($2.99 DD) matched wrong "Beef Patties" ($3.99 SL), "Chicken" matched "Chicken Roll" across categories. After: 100% perfect price matches on test restaurant (43/43). Key insight: platforms collapse variant names (Seamless shows 3 "Beef Patties" at $2.99/$3.99/$4.99) — price is the only disambiguation signal.
 
 - Deployed to Railway (2026-04-01): kortana-web-production.up.railway.app. Dockerfile with Google Chrome Stable, persistent volume at /data for Chrome profiles, railway.toml with healthcheck. Express serves built client in production (static + SPA fallback).
 - Railway Chrome fixes: --disable-dev-shm-usage (64MB /dev/shm in Docker), profile lock file cleanup on launch (SingletonLock persists across redeploys), CDP reconnect timeout with fallback to full relaunch, memory-saving Chrome flags for Linux.
@@ -66,7 +68,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Both DoorDash and Seamless sessions authenticated on Railway via persistent volume.
 
 **What's next:**
-1. DoorDash menu bulk population for the 251 matched restaurants that now have Seamless menus — enables cross-platform item matching and price comparison
+1. **Run DoorDash menu bulk population** — script ready (populate-doordash-menus.ts), tested on 2 restaurants. Run `--matched-only` first (251 restaurants, ~50 min), then full run (~2,028 restaurants, ~10 hours)
 2. Run cross-platform item matching after DoorDash menus are populated (matchMenuItems on all matched restaurants)
 3. Implement savings tracking (log comparisons/orders to DB)
 4. Enrich DoorDash restaurants with real addresses via `--enrich` flag (enables geohash blocking in dedup for higher-confidence matches)
@@ -164,6 +166,8 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 | `server/src/scripts/refresh-menus.ts` | Fetch live menus from adapters, upsert to DB, run item matching |
 | `server/src/scripts/populate-seamless-menus.ts` | Seamless menu bulk population with --matched-only, --limit, --resume, --dry-run. Marks ghost restaurants as delisted |
 | `server/src/services/menu-upsert.ts` | Shared upsertMenu() with batched INSERTs (used by refresh-menus.ts and populate script) |
+| `server/src/scripts/populate-doordash-menus.ts` | DoorDash menu bulk population with --matched-only, --limit, --resume, --sustained, --dry-run, --skip-match. Pre-spawns headful Chrome, uses mainTabGraphqlQuery, marks ghost restaurants as delisted |
+| `server/scripts/run-doordash-populate.sh` | Auto-restart wrapper for DoorDash menu population (90s cooldown, 50 max restarts) |
 | `server/src/services/deduplication.ts` | Blocking-based O(n) restaurant dedup: 4 blocking strategies (exact name, geohash, prefix, phone) + Jaro-Winkler scoring |
 
 ## Competitive Landscape
@@ -211,5 +215,6 @@ Account linking, credential vault (AES-256), user accounts, Stripe subscription 
 - DoorDash adapter is the priority — most documented, existing MCP server code to reference
 - Test Seamless with direct HTTP before defaulting to Playwright — may not need browser automation
 - All menu prices are in cents. All fee calculations in cents. Convert to dollars only in the frontend display layer.
-- Fuzzy matching threshold: 0.80+ confidence for auto-merge, flag 0.60-0.80 for review
+- Restaurant dedup: fuzzy matching threshold 0.80+ for auto-merge, 0.60-0.80 for review
+- Menu item matching: combined score = nameScore (JW) × priceAgreement × categoryBoost. Min name score 0.85, min combined 0.78, cross-category requires name ≥ 0.93. 1-to-1 greedy matching, DD items de-duped by platform_item_id. Price is the key disambiguation signal — platforms collapse variant names.
 - Rate limit platform API calls: 2-3 second spacing, randomized intervals

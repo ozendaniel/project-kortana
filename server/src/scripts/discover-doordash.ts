@@ -11,7 +11,8 @@
  *   npx tsx src/scripts/discover-doordash.ts --pass 2     # Just cuisine verticals
  *   npx tsx src/scripts/discover-doordash.ts --pass 3     # Just text search
  *   npx tsx src/scripts/discover-doordash.ts --resume     # Resume from checkpoint
- *   npx tsx src/scripts/discover-doordash.ts --enrich     # Fetch real addresses (existing)
+ *   npx tsx src/scripts/discover-doordash.ts --enrich     # Fetch real addresses for all
+ *   npx tsx src/scripts/discover-doordash.ts --enrich --limit 10  # Enrich first 10
  *
  * Must run with server stopped (uses CDP port 9224).
  * Requires headful Chrome (Cloudflare blocks headless with 403).
@@ -502,14 +503,14 @@ async function runPass3(
   return true;
 }
 
-// --- Enrichment (unchanged) ---
-async function runEnrichment(adapter: DoorDashAdapter) {
-  const BATCH_SIZE = 50;
+// --- Enrichment ---
+async function runEnrichment(adapter: DoorDashAdapter, enrichLimit?: number) {
   const toEnrich = await db.query(
     `SELECT id, doordash_id, canonical_name FROM restaurants
-     WHERE doordash_id IS NOT NULL AND (address IS NULL OR address = '')
-     LIMIT $1`,
-    [BATCH_SIZE]
+     WHERE doordash_id IS NOT NULL
+       AND (address IS NULL OR address = '' OR (lat = 40.748 AND lng = -73.997))
+     ${enrichLimit ? 'LIMIT $1' : ''}`,
+    enrichLimit ? [enrichLimit] : []
   );
 
   if (toEnrich.rows.length === 0) {
@@ -529,18 +530,21 @@ async function runEnrichment(adapter: DoorDashAdapter) {
     const progress = `[${i + 1}/${toEnrich.rows.length}]`;
 
     try {
-      const result = await browser.graphqlQuery<{
+      const result = await browser.mainTabGraphqlQuery<{
         data: {
           storepageFeed: {
             storeHeader: {
               address: {
-                lat: number;
-                lng: number;
+                lat: string;
+                lng: string;
                 street: string;
                 displayAddress: string;
                 city: string;
                 state: string;
               };
+            };
+            mxInfo?: {
+              phoneno?: string;
             };
           };
         };
@@ -555,13 +559,14 @@ async function runEnrichment(adapter: DoorDashAdapter) {
       });
 
       const addr = result.data?.storepageFeed?.storeHeader?.address;
+      const phone = result.data?.storepageFeed?.mxInfo?.phoneno || null;
       if (addr?.displayAddress) {
         await db.query(
-          `UPDATE restaurants SET address = $1, lat = $2, lng = $3 WHERE id = $4`,
-          [addr.displayAddress, addr.lat, addr.lng, rest.id]
+          `UPDATE restaurants SET address = $1, lat = $2, lng = $3, phone = COALESCE($4, phone) WHERE id = $5`,
+          [addr.displayAddress, parseFloat(addr.lat as any), parseFloat(addr.lng as any), phone, rest.id]
         );
         enriched++;
-        console.log(`${progress} ${rest.canonical_name}: ${addr.displayAddress}`);
+        console.log(`${progress} ${rest.canonical_name}: ${addr.displayAddress}${phone ? ` (${phone})` : ''}`);
       } else {
         console.log(`${progress} ${rest.canonical_name}: no address in response`);
         failed++;
@@ -583,7 +588,10 @@ async function runEnrichment(adapter: DoorDashAdapter) {
 
   console.log('\n=== Enrichment Complete ===');
   console.log(`Enriched: ${enriched}, Failed: ${failed}`);
-  console.log(`Remaining without address: run again for next batch`);
+  const remaining = toEnrich.rows.length - enriched;
+  if (remaining > 0) {
+    console.log(`Remaining without address: ${remaining} (run again to retry)`);
+  }
 }
 
 // --- Main ---
@@ -632,7 +640,17 @@ async function main() {
   }
 
   if (isEnrich) {
-    await runEnrichment(adapter);
+    // mainTabGraphqlQuery needs DoorDash SPA context — load homepage first
+    const mainPage = adapter.getBrowser().getPage();
+    if (mainPage) {
+      console.log('[Discover-DD] Loading DoorDash homepage for SPA context...');
+      await mainPage.goto('https://www.doordash.com/', { waitUntil: 'networkidle', timeout: 30000 }).catch(() => {});
+      await delay(5000);
+    }
+
+    const limitIdx = args.indexOf('--limit');
+    const enrichLimit = limitIdx !== -1 ? parseInt(args[limitIdx + 1], 10) : undefined;
+    await runEnrichment(adapter, enrichLimit);
     process.exit(0);
   }
 

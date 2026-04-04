@@ -90,7 +90,23 @@ interface ProgressState {
   failed: number;
   skipped: number;
   totalItems: number;
+  enrichedAddresses: number;
   lastRestaurantId: string | null;
+}
+
+interface StoreAddress {
+  displayAddress: string;
+  street: string;
+  lat: number;
+  lng: number;
+  city: string;
+  state: string;
+}
+
+interface FetchMenuResult {
+  menu: PlatformMenu;
+  address?: StoreAddress;
+  phone?: string;
 }
 
 function saveProgress(state: ProgressState): void {
@@ -110,14 +126,36 @@ function saveProgress(state: ProgressState): void {
  *
  * Unlike adapter.getMenu(), this throws on errors so the script can handle 429s properly.
  */
-async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<PlatformMenu> {
+async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<FetchMenuResult> {
   const browser = adapter.getBrowser();
   const query = loadQuery('storepageFeed.graphql');
 
   const result = await browser.mainTabGraphqlQuery<{
     data: {
       storepageFeed: {
-        storeHeader: { id: string; name: string };
+        storeHeader: {
+          id: string;
+          name: string;
+          address?: {
+            lat: string;
+            lng: string;
+            street: string;
+            displayAddress: string;
+            city: string;
+            state: string;
+          };
+        };
+        mxInfo?: {
+          phoneno?: string;
+          address?: {
+            lat: string;
+            lng: string;
+            street: string;
+            displayAddress: string;
+            city: string;
+            state: string;
+          };
+        };
         itemLists: Array<{
           name: string;
           items: Array<{
@@ -141,8 +179,26 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Pla
   }, 2); // maxRetries=2 (3 total attempts) — let script handle broader backoff
 
   const store = result.data?.storepageFeed;
+
+  // Extract address from storeHeader (fall back to mxInfo)
+  const rawAddr = store?.storeHeader?.address || store?.mxInfo?.address;
+  let address: StoreAddress | undefined;
+  if (rawAddr?.displayAddress) {
+    address = {
+      displayAddress: rawAddr.displayAddress,
+      street: rawAddr.street,
+      lat: parseFloat(rawAddr.lat),
+      lng: parseFloat(rawAddr.lng),
+      city: rawAddr.city,
+      state: rawAddr.state,
+    };
+  }
+
+  // Extract phone from mxInfo
+  const phone = store?.mxInfo?.phoneno || undefined;
+
   if (!store?.itemLists) {
-    return { categories: [] };
+    return { menu: { categories: [] }, address, phone };
   }
 
   const categories = store.itemLists.map(cat => ({
@@ -156,7 +212,7 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Pla
     })),
   }));
 
-  return { categories };
+  return { menu: { categories }, address, phone };
 }
 
 /**
@@ -312,6 +368,7 @@ async function main() {
     failed: 0,
     skipped: 0,
     totalItems: 0,
+    enrichedAddresses: 0,
     lastRestaurantId: null,
   };
 
@@ -375,8 +432,23 @@ async function main() {
     try {
       console.log(`[${i + 1}/${restaurants.length}] ${rest.canonical_name} (DD:${rest.doordash_id})...`);
 
-      const menu = await fetchMenu(adapter, rest.doordash_id);
+      const { menu, address, phone } = await fetchMenu(adapter, rest.doordash_id);
       const itemCount = menu.categories.reduce((a, c) => a + c.items.length, 0);
+
+      // Enrich address if we got one and the restaurant has placeholder/missing data
+      if (address && !dryRun) {
+        const enrichResult = await db.query(
+          `UPDATE restaurants SET address = $1, lat = $2, lng = $3, phone = COALESCE($4, phone)
+           WHERE id = $5 AND (address IS NULL OR address = '' OR (lat = 40.748 AND lng = -73.997))`,
+          [address.displayAddress, address.lat, address.lng, phone || null, rest.id]
+        );
+        if (enrichResult.rowCount && enrichResult.rowCount > 0) {
+          console.log(`  📍 ${address.displayAddress}`);
+          progress.enrichedAddresses++;
+        }
+      } else if (address && dryRun) {
+        console.log(`  📍 [DRY RUN] ${address.displayAddress}`);
+      }
 
       if (itemCount === 0) {
         // Mark as delisted — restaurant exists in search but has no active menu
@@ -481,6 +553,7 @@ async function main() {
   console.log(`  Failed:    ${progress.failed}`);
   console.log(`  Skipped:   ${progress.skipped}`);
   console.log(`  Items:     ${progress.totalItems}`);
+  console.log(`  Addresses: ${progress.enrichedAddresses} enriched`);
   console.log(`  Elapsed:   ${totalElapsed} min`);
 
   // Post-population: cross-platform matching

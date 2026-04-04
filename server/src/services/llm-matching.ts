@@ -11,12 +11,14 @@ interface UnmatchedItem {
  * Use Gemini Flash to match menu items that deterministic matching couldn't resolve.
  * Called as Tier 4 when match rate < 90% after Tiers 1-3.
  *
- * Sends one API call per restaurant with all unmatched items from both platforms.
- * Returns confident matches only — LLM is instructed to omit uncertain pairs.
+ * Splits DD items into batches of ~30 to avoid response truncation.
+ * Each batch is matched against ALL SL items, with consumed SL items removed between batches.
  *
  * Free tier: 1,500 requests/day on Gemini Flash. Only complex menus trigger this
  * (~10-20% of restaurants), so capacity is never an issue.
  */
+const BATCH_SIZE = 30;
+
 export async function llmMatchItems(
   ddItems: UnmatchedItem[],
   slItems: UnmatchedItem[],
@@ -29,6 +31,42 @@ export async function llmMatchItems(
 
   if (ddItems.length === 0 || slItems.length === 0) return [];
 
+  // Process DD items in batches, removing matched SL items between batches
+  const allMatches: Array<{ ddId: string; slId: string }> = [];
+  const consumedSLIds = new Set<string>();
+
+  for (let batchStart = 0; batchStart < ddItems.length; batchStart += BATCH_SIZE) {
+    const ddBatch = ddItems.slice(batchStart, batchStart + BATCH_SIZE);
+    const availableSL = slItems.filter(s => !consumedSLIds.has(s.id));
+
+    if (availableSL.length === 0) break;
+
+    const batchNum = Math.floor(batchStart / BATCH_SIZE) + 1;
+    const totalBatches = Math.ceil(ddItems.length / BATCH_SIZE);
+    console.log(`[LLM] Batch ${batchNum}/${totalBatches}: ${ddBatch.length} DD items vs ${availableSL.length} SL items`);
+
+    const batchMatches = await llmMatchBatch(ddBatch, availableSL, apiKey);
+    for (const m of batchMatches) {
+      allMatches.push(m);
+      consumedSLIds.add(m.slId);
+    }
+
+    // Rate limit between batches
+    if (batchStart + BATCH_SIZE < ddItems.length) {
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+
+  console.log(`[LLM] Total: ${allMatches.length} matches across ${Math.ceil(ddItems.length / BATCH_SIZE)} batches`);
+  return allMatches;
+}
+
+async function llmMatchBatch(
+  ddItems: UnmatchedItem[],
+  slItems: UnmatchedItem[],
+  apiKey: string,
+): Promise<Array<{ ddId: string; slId: string }>> {
+
   // Build indexed lists for the prompt
   const ddLines = ddItems.map((item, i) =>
     `${i + 1}. "${item.originalName}" ($${(item.priceCents / 100).toFixed(2)}, ${item.category})`
@@ -40,17 +78,22 @@ export async function llmMatchItems(
     return `${letter}. "${item.originalName}" ($${(item.priceCents / 100).toFixed(2)}, ${item.category})`;
   }).join('\n');
 
-  const prompt = `You are matching food menu items across two delivery platforms (DoorDash and Seamless) for the same restaurant. Items may have different names, typos, abbreviations, missing words, or different languages but represent the same dish.
+  const prompt = `You are matching food menu items across two delivery platforms (DoorDash and Seamless) for the SAME restaurant. These are the same dishes sold on different platforms.
 
-DOORDASH unmatched items:
+IMPORTANT RULES:
+- Items WILL have different names: word reordering ("Roast Duck Half" vs "Half Roast Duck"), abbreviations ("W." = "with"), missing words, different languages (Seamless includes Chinese characters)
+- Prices WILL differ between platforms (typically 5-15% difference) — do NOT use price to reject a match
+- Match every DoorDash item that has a plausible Seamless equivalent
+- Each item can only match once (1-to-1)
+- If a DoorDash item truly has no Seamless equivalent, skip it
+
+DOORDASH items to match:
 ${ddLines}
 
-SEAMLESS unmatched items:
+SEAMLESS candidates:
 ${slLines}
 
-Return ONLY a JSON array of matches. Each match has the DoorDash number (dd) and Seamless label (sl). Only include matches you are confident are the same dish. Do not guess — if unsure, omit the pair.
-
-Response format: [{"dd": 1, "sl": "A"}, {"dd": 2, "sl": "B"}]`;
+Return a JSON array of ALL matches you can identify. Format: [{"dd": 1, "sl": "A"}]`;
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);

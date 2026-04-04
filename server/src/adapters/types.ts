@@ -24,8 +24,8 @@ export interface PlatformAdapter {
     cuisine?: string;
   }): Promise<PlatformRestaurant[]>;
 
-  /** Get full menu for a restaurant */
-  getMenu(platformRestaurantId: string): Promise<PlatformMenu>;
+  /** Get full menu for a restaurant. Optional location enables address-dependent features (e.g. Seamless delivery range). */
+  getMenu(platformRestaurantId: string, location?: { lat: number; lng: number; address?: string }): Promise<PlatformMenu>;
 
   /** Get real-time fee estimate for an order */
   getFees(params: {

@@ -306,11 +306,15 @@ export async function matchMenuItems(restaurantId: string): Promise<{
     const tier4UnmatchedDD = ddClean.filter(d => !matchedDDIds.has(d.id));
     const tier4UnmatchedSL = slClean.filter(s => !matchedSLIds.has(s.id));
 
-    if (tier4UnmatchedDD.length >= LLM_MIN_UNMATCHED && tier4UnmatchedSL.length >= LLM_MIN_UNMATCHED) {
-      console.log(`[Matching] Match rate ${(currentMatchRate * 100).toFixed(0)}% < 90% — invoking Gemini Flash for ${tier4UnmatchedDD.length} DD + ${tier4UnmatchedSL.length} SL items`);
+    // Filter out DD-only categories that don't exist on Seamless (lunch specials, catering)
+    const DD_ONLY_CATEGORIES = new Set(['lunch special', 'catering']);
+    const filteredDD = tier4UnmatchedDD.filter(d => !DD_ONLY_CATEGORIES.has(d.normCat));
+
+    if (filteredDD.length >= LLM_MIN_UNMATCHED && tier4UnmatchedSL.length >= LLM_MIN_UNMATCHED) {
+      console.log(`[Matching] Match rate ${(currentMatchRate * 100).toFixed(0)}% < 90% — invoking Gemini Flash for ${filteredDD.length} DD + ${tier4UnmatchedSL.length} SL items (excluded ${tier4UnmatchedDD.length - filteredDD.length} lunch/catering)`);
 
       const llmPairs = await llmMatchItems(
-        tier4UnmatchedDD.map(d => ({ id: d.id, originalName: d.original_name, priceCents: d.price_cents, category: d.category })),
+        filteredDD.map(d => ({ id: d.id, originalName: d.original_name, priceCents: d.price_cents, category: d.category })),
         tier4UnmatchedSL.map(s => ({ id: s.id, originalName: s.original_name, priceCents: s.price_cents, category: s.category })),
       );
 

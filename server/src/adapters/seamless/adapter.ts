@@ -261,44 +261,263 @@ export class SeamlessAdapter implements PlatformAdapter {
     };
   }
 
-  async getMenu(platformRestaurantId: string): Promise<PlatformMenu> {
+  async getMenu(
+    platformRestaurantId: string,
+    location?: { lat: number; lng: number; address?: string },
+  ): Promise<PlatformMenu> {
+    // Primary: DOM scraping (gets exactly what the user sees — no ghost items)
     try {
-      // Get restaurant info (includes menu category IDs)
+      const domResult = await this.getMenuFromDOM(platformRestaurantId, location);
+      if (domResult.categories.length > 0) {
+        const itemCount = domResult.categories.reduce((a, c) => a + c.items.length, 0);
+        console.log(`[Seamless] getMenu (DOM): ${domResult.categories.length} categories, ${itemCount} items`);
+        return domResult;
+      }
+      console.warn('[Seamless] DOM scraping returned empty menu — falling back to API');
+    } catch (err) {
+      console.warn(`[Seamless] DOM scraping failed — falling back to API: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
+    }
+
+    // Fallback: API-based fetch (may include inactive menu items)
+    return this.getMenuFromAPI(platformRestaurantId);
+  }
+
+  /**
+   * Scrape menu directly from the Seamless website DOM.
+   * Opens a NEW tab (separate from the API page), navigates to the restaurant page,
+   * scrolls to load all categories, extracts items, and closes the tab.
+   * This gets exactly what the user sees — no ghost items from inactive menu sets.
+   */
+  private async getMenuFromDOM(
+    platformRestaurantId: string,
+    location?: { lat: number; lng: number; address?: string },
+  ): Promise<PlatformMenu> {
+    await this.browser.ensureConnected();
+
+    // Use the MAIN page for scraping — Seamless's PerimeterX blocks new tabs.
+    // The main page has the established session context that allows the SPA to load.
+    // We navigate to the restaurant page, scrape, then navigate back to seamless.com.
+    const scrapePage = await this.browser.ensurePage();
+
+    try {
+      // If location provided, set delivery address near the restaurant first
+      if (location?.address) {
+        await this.setDeliveryAddressViaUI(scrapePage, location.address);
+      }
+
+      // Navigate to restaurant menu page
+      await scrapePage.goto(`https://www.seamless.com/menu/${platformRestaurantId}`, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000,
+      });
+
+      // Wait for menu items to render (SPA — content loads asynchronously)
+      try {
+        await scrapePage.waitForSelector('.menuItemNew-name, .menuItem-name, .restaurant-menu-item', {
+          timeout: 20000,
+        });
+      } catch {
+        // Debug: check what IS on the page
+        const debug = await scrapePage.evaluate(() => ({
+          url: window.location.href,
+          textLen: document.body.innerText.length,
+          menuItems: document.querySelectorAll('.menuItem').length,
+          menuItemNames: document.querySelectorAll('.menuItemNew-name').length,
+          restMenuItem: document.querySelectorAll('.restaurant-menu-item').length,
+          outOfRange: document.body.innerText.includes("doesn't deliver") || document.body.innerText.includes('Out of range'),
+          allClassesWithMenu: [...new Set(
+            Array.from(document.querySelectorAll('*'))
+              .flatMap(el => typeof el.className === 'string' ? el.className.split(/\s+/).filter(c => /menu/i.test(c)) : [])
+          )].slice(0, 15),
+        }));
+        console.log(`[Seamless] DOM debug: ${JSON.stringify(debug)}`);
+
+        if (debug.outOfRange) {
+          console.warn(`[Seamless] Restaurant ${platformRestaurantId} out of delivery range`);
+        }
+      }
+
+      // Wait for initial render to settle
+      await new Promise(r => setTimeout(r, 3000));
+
+      // Scroll incrementally to load all lazy-rendered categories
+      let lastHeight = 0;
+      for (let i = 0; i < 60; i++) {
+        const currentHeight = await scrapePage.evaluate(() => document.body.scrollHeight);
+        if (currentHeight === lastHeight && i > 5) break;
+        lastHeight = currentHeight;
+        await scrapePage.evaluate((y) => window.scrollTo(0, y), (i + 1) * 600);
+        await new Promise(r => setTimeout(r, 300));
+      }
+      await new Promise(r => setTimeout(r, 2000));
+
+    // Debug: check what's on the page before extraction
+    const preDebug = await scrapePage.evaluate(() => ({
+      menuSections: document.querySelectorAll('.menuSection, .menuVirtualizedSection').length,
+      menuItems: document.querySelectorAll('.menuItem').length,
+      menuItemNames: document.querySelectorAll('.menuItemNew-name').length,
+      url: window.location.href,
+      title: document.title,
+      bodyTextSample: document.body.innerText.substring(0, 300),
+    }));
+    console.log(`[Seamless] DOM pre-extract: sections=${preDebug.menuSections} items=${preDebug.menuItems} names=${preDebug.menuItemNames}`);
+    console.log(`[Seamless] DOM title: ${preDebug.title}`);
+    if (preDebug.menuItems === 0) {
+      console.log(`[Seamless] DOM body sample: ${preDebug.bodyTextSample.substring(0, 200)}`);
+    }
+
+    // Extract menu items from the DOM
+    const menuData = await scrapePage.evaluate(() => {
+      const categories: Array<{
+        name: string;
+        items: Array<{ platformItemId: string; name: string; priceCents: number; description: string }>;
+      }> = [];
+
+      // Find menu sections (each contains a category header + items)
+      const sections = document.querySelectorAll(
+        '.menuSection, .menuVirtualizedSection, [class*="restaurant-menu-section"]'
+      );
+
+      for (const section of sections) {
+        // Get category name from section header
+        const headerEl = section.querySelector(
+          '.menuSection-title, .menuSection-headerTitle, .menuVirtualizedSection-header, h2, h3'
+        );
+        const catName = headerEl?.textContent?.trim() || '';
+        if (!catName || catName.length > 80) continue;
+        // Skip non-menu sections
+        if (['Best Sellers', 'Order Again', 'Similar options nearby'].includes(catName)) continue;
+
+        const items: Array<{ platformItemId: string; name: string; priceCents: number; description: string }> = [];
+
+        const itemEls = section.querySelectorAll(
+          '.menuItem, .restaurant-menu-item, .restaurant-flatten-menu-item, [class*="menuItem-container"]'
+        );
+
+        for (const itemEl of itemEls) {
+          // Extract item name
+          const nameEl = itemEl.querySelector(
+            '.menuItemNew-name, [class*="menuItemNew-name"], [class*="menuItem-name"]'
+          );
+          const name = nameEl?.textContent?.trim() || '';
+          if (!name || name.length < 2) continue;
+
+          // Extract price
+          const priceEl = itemEl.querySelector(
+            '.menuItem-priceAmount, .menuItem-priceAmountUnbolded, [class*="menuItem-price"]'
+          );
+          const priceText = priceEl?.textContent?.trim() || '';
+          const priceMatch = priceText.match(/\$?(\d+\.\d{2})/);
+          const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1]) * 100) : 0;
+
+          // Extract description (optional)
+          const descEl = itemEl.querySelector(
+            '.menuItem-description, [class*="menuItem-desc"]'
+          );
+          const description = descEl?.textContent?.trim() || '';
+
+          // Extract platform item ID from data attributes or click handler
+          let platformItemId = '';
+          // Try data attributes
+          platformItemId = itemEl.getAttribute('data-item-id')
+            || itemEl.getAttribute('data-testid')
+            || '';
+          // Try extracting from link href (e.g. /menu/restaurant/item/12345)
+          if (!platformItemId) {
+            const link = itemEl.querySelector('a[href*="item/"], button[data-item-id]');
+            const href = link?.getAttribute('href') || '';
+            const idMatch = href.match(/item\/(\d+)/);
+            if (idMatch) platformItemId = idMatch[1];
+          }
+          // Fallback: generate deterministic ID from name + category
+          if (!platformItemId) {
+            platformItemId = `sl-${catName}-${name}`.replace(/[^a-zA-Z0-9-]/g, '_').substring(0, 80);
+          }
+
+          items.push({ platformItemId, name, priceCents, description });
+        }
+
+        if (items.length > 0) {
+          categories.push({ name: catName, items });
+        }
+      }
+
+      return categories;
+    });
+
+    return { categories: menuData };
+    } finally {
+      // Navigate back to seamless.com so the main page is ready for API calls
+      await scrapePage.goto('https://www.seamless.com', { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+
+  /**
+   * Set the Seamless delivery address by interacting with the address bar UI.
+   * Used to ensure the restaurant is in delivery range so the full menu renders.
+   */
+  private async setDeliveryAddressViaUI(page: import('playwright').Page, address: string): Promise<void> {
+    try {
+      // Navigate to Seamless home to access the address bar
+      await page.goto('https://www.seamless.com', { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await new Promise(r => setTimeout(r, 3000));
+
+      // Look for the address input — Seamless has it in the top nav
+      const addressInput = await page.$('input[aria-label*="address" i], input[placeholder*="address" i], input[name*="address" i], #addressAutocomplete');
+      if (!addressInput) {
+        console.log('[Seamless] Address input not found — using current saved address');
+        return;
+      }
+
+      // Clear and type the new address
+      await addressInput.click({ clickCount: 3 }); // select all
+      await addressInput.fill(address);
+      await new Promise(r => setTimeout(r, 2000)); // wait for autocomplete
+
+      // Select the first autocomplete suggestion
+      const suggestion = await page.$('.pac-item, [class*="suggestion"], [class*="autocomplete"] li, [role="option"]');
+      if (suggestion) {
+        await suggestion.click();
+        await new Promise(r => setTimeout(r, 2000));
+        console.log(`[Seamless] Address set to: ${address}`);
+      } else {
+        // Try pressing Enter if no suggestion dropdown
+        await addressInput.press('Enter');
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    } catch (err) {
+      console.warn(`[Seamless] Failed to set address: ${err instanceof Error ? err.message.substring(0, 60) : err}`);
+    }
+  }
+
+  /**
+   * Fallback: API-based menu fetch. May include inactive/ghost items
+   * since the API doesn't distinguish active vs inactive menu sets.
+   */
+  private async getMenuFromAPI(platformRestaurantId: string): Promise<PlatformMenu> {
+    try {
       const restInfo = await this.apiCall<{
         object: {
           data: {
-            content: Array<{
-              entity: {
-                id: string;
-                name: string;
-              };
-            }>;
-            enhanced_feed: Array<{
-              id: string;
-              name: string;
-            }>;
+            enhanced_feed: Array<{ id: string; name: string }>;
           };
         };
       }>(`/restaurant_gateway/info/volatile/${platformRestaurantId}?orderType=STANDARD&platform=WEB&enhancedFeed=true&weightedItemDataIncluded=true`);
 
       const feed = restInfo.object?.data?.enhanced_feed || [];
-      // Filter out non-menu categories
       const skipCategories = ['Category Navigation', 'Search', 'Offers', 'Best Sellers', 'Order Again', 'Similar options nearby'];
       const allMenuCategories = feed.filter(f => f.id && f.name && !skipCategories.includes(f.name));
 
-      // Deduplicate by category name — keep the LAST occurrence.
-      // Seamless returns multiple menu sets (e.g. pickup vs delivery, or old vs current).
-      // The later set in the feed is the active delivery menu with current prices.
-      // Without dedup, we store items from inactive menus that aren't visible to users.
+      // Deduplicate by category name — keep the LAST occurrence
       const categoryByName = new Map<string, typeof allMenuCategories[0]>();
       for (const cat of allMenuCategories) {
-        categoryByName.set(cat.name, cat); // later entries overwrite earlier ones
+        categoryByName.set(cat.name, cat);
       }
       const menuCategories = Array.from(categoryByName.values());
 
       const categories: PlatformMenu['categories'] = [];
 
-      // Fetch items for each category
       for (const cat of menuCategories) {
         try {
           const feedResult = await this.apiCall<{
@@ -328,7 +547,6 @@ export class SeamlessAdapter implements PlatformAdapter {
               const imageUrl = e.media_image
                 ? `${e.media_image.base_url}${e.media_image.public_id}.${e.media_image.format}`
                 : undefined;
-
               return {
                 platformItemId: e.item_id,
                 name: e.item_name,
@@ -342,17 +560,16 @@ export class SeamlessAdapter implements PlatformAdapter {
             categories.push({ name: cat.name, items });
           }
 
-          // Rate limit: 2-3 second spacing
           await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
         } catch (err) {
-          console.error(`[Seamless] getMenu: error fetching category ${cat.name}:`, err);
+          console.error(`[Seamless] getMenuFromAPI: error fetching category ${cat.name}:`, err);
         }
       }
 
-      console.log(`[Seamless] getMenu: ${categories.length} categories, ${categories.reduce((a, c) => a + c.items.length, 0)} items`);
+      console.log(`[Seamless] getMenu (API fallback): ${categories.length} categories, ${categories.reduce((a, c) => a + c.items.length, 0)} items ⚠ may include ghost items`);
       return { categories };
     } catch (err) {
-      console.error('[Seamless] getMenu error:', err);
+      console.error('[Seamless] getMenuFromAPI error:', err);
       return { categories: [] };
     }
   }

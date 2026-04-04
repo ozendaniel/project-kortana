@@ -86,6 +86,10 @@ function buildUnifiedMenu(rows: Array<Record<string, unknown>>): MenuCategory[] 
     groups.get(root)!.push(row);
   }
 
+  // Determine which platforms are present — used for source-of-truth filtering
+  const platformsPresent = new Set(rows.map(r => r.platform as string));
+  const hasBothPlatforms = platformsPresent.has('doordash') && platformsPresent.has('seamless');
+
   // Build unified items from groups, skipping duplicate categories like "Most Ordered"
   const itemMap = new Map<string, UnifiedMenuItem>();
   const SKIP_CATEGORIES = new Set(['Most Ordered', 'Popular Items', 'Featured']);
@@ -113,6 +117,13 @@ function buildUnifiedMenu(rows: Array<Record<string, unknown>>): MenuCategory[] 
           available: row.available as boolean,
         };
       }
+    }
+
+    // DoorDash-as-source-of-truth: when both platforms are present, hide Seamless-only
+    // items (no DD match). The Seamless REST API returns ghost items from inactive menus,
+    // so unmatched SL items are unreliable and may not actually exist on the website.
+    if (hasBothPlatforms && !unified.platforms.doordash && unified.platforms.seamless) {
+      continue; // Skip SL-only items — likely ghosts
     }
 
     itemMap.set(root, unified);

@@ -284,184 +284,213 @@ export class SeamlessAdapter implements PlatformAdapter {
 
   /**
    * Scrape menu directly from the Seamless website DOM.
-   * Opens a NEW tab (separate from the API page), navigates to the restaurant page,
-   * scrolls to load all categories, extracts items, and closes the tab.
-   * This gets exactly what the user sees — no ghost items from inactive menu sets.
+   * Opens a FRESH TAB (stale SPA state on the main page breaks rendering),
+   * navigates to the restaurant, scrolls incrementally to capture items from
+   * the virtualized DOM, then closes the tab.
+   *
+   * Key insights (proven on Dim Sum Palace — 236 items, 17 categories):
+   * 1. Seamless VIRTUALIZES the menu — items enter/leave DOM as you scroll.
+   * 2. Category headers (menuVirtualizedSection) and items (menuItem) are in
+   *    SEPARATE DOM branches — can't use parent-child containment.
+   * 3. Track the "current category" by viewport position of h3 headers.
+   * 4. Item IDs are in data-testid="Item{id}-{category}" attributes.
+   * 5. Must use a fresh tab — reusing the main page causes stale SPA state.
    */
   private async getMenuFromDOM(
     platformRestaurantId: string,
     location?: { lat: number; lng: number; address?: string },
   ): Promise<PlatformMenu> {
     await this.browser.ensureConnected();
+    const context = this.browser.getContext();
+    if (!context) throw new Error('No browser context');
 
-    // Use the MAIN page for scraping — Seamless's PerimeterX blocks new tabs.
-    // The main page has the established session context that allows the SPA to load.
-    // We navigate to the restaurant page, scrape, then navigate back to seamless.com.
-    const scrapePage = await this.browser.ensurePage();
+    // Use a FRESH tab — stale SPA state on the main page breaks rendering
+    const scrapePage = await context.newPage();
 
     try {
-      // If location provided, set delivery address near the restaurant first
+      // Step 1: Boot SPA on seamless.com first (establishes auth context)
+      await scrapePage.goto('https://www.seamless.com', {
+        waitUntil: 'networkidle',
+        timeout: 30000,
+      }).catch(() => {});
+      await new Promise(r => setTimeout(r, 2000));
+
+      // Step 2: Set delivery address if provided (must be in range for full menu)
       if (location?.address) {
         await this.setDeliveryAddressViaUI(scrapePage, location.address);
       }
 
-      // Navigate to restaurant menu page
+      // Step 3: Navigate to restaurant menu page
       await scrapePage.goto(`https://www.seamless.com/menu/${platformRestaurantId}`, {
-        waitUntil: 'domcontentloaded',
-        timeout: 30000,
-      });
+        waitUntil: 'networkidle',
+        timeout: 45000,
+      }).catch(() => {});
+      await new Promise(r => setTimeout(r, 5000));
 
-      // Wait for menu items to render (SPA — content loads asynchronously)
-      try {
-        await scrapePage.waitForSelector('.menuItemNew-name, .menuItem-name, .restaurant-menu-item', {
-          timeout: 20000,
-        });
-      } catch {
-        // Debug: check what IS on the page
-        const debug = await scrapePage.evaluate(() => ({
-          url: window.location.href,
-          textLen: document.body.innerText.length,
-          menuItems: document.querySelectorAll('.menuItem').length,
-          menuItemNames: document.querySelectorAll('.menuItemNew-name').length,
-          restMenuItem: document.querySelectorAll('.restaurant-menu-item').length,
-          outOfRange: document.body.innerText.includes("doesn't deliver") || document.body.innerText.includes('Out of range'),
-          allClassesWithMenu: [...new Set(
-            Array.from(document.querySelectorAll('*'))
-              .flatMap(el => typeof el.className === 'string' ? el.className.split(/\s+/).filter(c => /menu/i.test(c)) : [])
-          )].slice(0, 15),
-        }));
-        console.log(`[Seamless] DOM debug: ${JSON.stringify(debug)}`);
+      // Step 4: Verify menu rendered (check for menuItem elements)
+      const menuCheck = await scrapePage.evaluate(() => ({
+        url: window.location.href,
+        menuItems: document.querySelectorAll('.menuItem').length,
+        outOfRange: document.body.innerText.includes("doesn't deliver") || document.body.innerText.includes('Too far'),
+      }));
 
-        if (debug.outOfRange) {
+      if (menuCheck.menuItems === 0) {
+        if (menuCheck.outOfRange) {
           console.warn(`[Seamless] Restaurant ${platformRestaurantId} out of delivery range`);
+        } else {
+          console.log(`[Seamless] DOM: no menu items rendered. URL: ${menuCheck.url}`);
         }
+        return { categories: [] };
       }
 
-      // Wait for initial render to settle
-      await new Promise(r => setTimeout(r, 3000));
+      // Step 5: Scroll and collect items incrementally
+      // Seamless virtualizes the menu: category headers (menuVirtualizedSection)
+      // and items (menuItem in [data-testid="regular-sections"]) are in SEPARATE
+      // DOM branches. We track the current category by viewport position of h3 headers.
+      await scrapePage.evaluate(() => window.scrollTo(0, 0));
+      await new Promise(r => setTimeout(r, 1000));
 
-      // Scroll incrementally to load all lazy-rendered categories
-      let lastHeight = 0;
-      for (let i = 0; i < 60; i++) {
-        const currentHeight = await scrapePage.evaluate(() => document.body.scrollHeight);
-        if (currentHeight === lastHeight && i > 5) break;
-        lastHeight = currentHeight;
-        await scrapePage.evaluate((y) => window.scrollTo(0, y), (i + 1) * 600);
-        await new Promise(r => setTimeout(r, 300));
-      }
-      await new Promise(r => setTimeout(r, 2000));
+      const collectedItems = new Map<string, {
+        name: string; priceCents: number; description: string;
+        category: string; platformItemId: string;
+      }>();
 
-    // Debug: check what's on the page before extraction
-    const preDebug = await scrapePage.evaluate(() => ({
-      menuSections: document.querySelectorAll('.menuSection, .menuVirtualizedSection').length,
-      menuItems: document.querySelectorAll('.menuItem').length,
-      menuItemNames: document.querySelectorAll('.menuItemNew-name').length,
-      url: window.location.href,
-      title: document.title,
-      bodyTextSample: document.body.innerText.substring(0, 300),
-    }));
-    console.log(`[Seamless] DOM pre-extract: sections=${preDebug.menuSections} items=${preDebug.menuItems} names=${preDebug.menuItemNames}`);
-    console.log(`[Seamless] DOM title: ${preDebug.title}`);
-    if (preDebug.menuItems === 0) {
-      console.log(`[Seamless] DOM body sample: ${preDebug.bodyTextSample.substring(0, 200)}`);
-    }
+      const SKIP_CATS = ['Best Sellers', 'Most Ordered', 'Order Again', 'Similar options nearby'];
 
-    // Extract menu items from the DOM
-    const menuData = await scrapePage.evaluate(() => {
-      const categories: Array<{
-        name: string;
-        items: Array<{ platformItemId: string; name: string; priceCents: number; description: string }>;
-      }> = [];
+      /** Extract visible items with viewport-based category tracking */
+      const extractVisible = () => scrapePage.evaluate((skipCats: string[]) => {
+        const skip = new Set(skipCats);
+        const items: Array<{
+          key: string; name: string; priceCents: number;
+          description: string; category: string; platformItemId: string;
+        }> = [];
+        const priceRe = /(\d+\.\d{2})/;
+        const viewportH = window.innerHeight;
 
-      // Find menu sections (each contains a category header + items)
-      const sections = document.querySelectorAll(
-        '.menuSection, .menuVirtualizedSection, [class*="restaurant-menu-section"]'
-      );
-
-      for (const section of sections) {
-        // Get category name from section header
-        const headerEl = section.querySelector(
-          '.menuSection-title, .menuSection-headerTitle, .menuVirtualizedSection-header, h2, h3'
+        // Determine current category: find the h3 most recently scrolled past
+        let currentCat = 'Menu';
+        const allHeaders = document.querySelectorAll(
+          '[data-testid="regular-sections"] h3, .menuVirtualizedSection .menuSection-title'
         );
-        const catName = headerEl?.textContent?.trim() || '';
-        if (!catName || catName.length > 80) continue;
-        // Skip non-menu sections
-        if (['Best Sellers', 'Order Again', 'Similar options nearby'].includes(catName)) continue;
+        for (const h of allHeaders) {
+          const rect = h.getBoundingClientRect();
+          if (rect.top < viewportH * 0.6) {
+            const text = h.textContent?.trim() || '';
+            if (text && text.length < 80 && !skip.has(text)) {
+              currentCat = text;
+            }
+          }
+        }
 
-        const items: Array<{ platformItemId: string; name: string; priceCents: number; description: string }> = [];
+        // Collect items from the regular-sections container
+        const container = document.querySelector('[data-testid="regular-sections"]');
+        if (!container) return items;
 
-        const itemEls = section.querySelectorAll(
-          '.menuItem, .restaurant-menu-item, .restaurant-flatten-menu-item, [class*="menuItem-container"]'
-        );
+        for (const el of container.querySelectorAll('.menuItem')) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top > viewportH + 200 || rect.bottom < -200) continue;
 
-        for (const itemEl of itemEls) {
-          // Extract item name
-          const nameEl = itemEl.querySelector(
-            '.menuItemNew-name, [class*="menuItemNew-name"], [class*="menuItem-name"]'
-          );
+          const nameEl = el.querySelector('.menuItemNew-name');
           const name = nameEl?.textContent?.trim() || '';
           if (!name || name.length < 2) continue;
 
-          // Extract price
-          const priceEl = itemEl.querySelector(
-            '.menuItem-priceAmount, .menuItem-priceAmountUnbolded, [class*="menuItem-price"]'
-          );
+          const priceEl = el.querySelector('.menuItem-priceAmount, .menuItem-priceAmountUnbolded');
           const priceText = priceEl?.textContent?.trim() || '';
-          const priceMatch = priceText.match(/\$?(\d+\.\d{2})/);
+          const priceMatch = priceText.match(priceRe);
           const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1]) * 100) : 0;
 
-          // Extract description (optional)
-          const descEl = itemEl.querySelector(
-            '.menuItem-description, [class*="menuItem-desc"]'
-          );
+          const descEl = el.querySelector('.menuItem-description');
           const description = descEl?.textContent?.trim() || '';
 
-          // Extract platform item ID from data attributes or click handler
+          // Extract item ID from data-testid="Item{id}-{category}"
           let platformItemId = '';
-          // Try data attributes
-          platformItemId = itemEl.getAttribute('data-item-id')
-            || itemEl.getAttribute('data-testid')
-            || '';
-          // Try extracting from link href (e.g. /menu/restaurant/item/12345)
+          const testId = el.getAttribute('data-testid') || '';
+          const idMatch = testId.match(/Item(\d+)/);
+          if (idMatch) platformItemId = idMatch[1];
           if (!platformItemId) {
-            const link = itemEl.querySelector('a[href*="item/"], button[data-item-id]');
-            const href = link?.getAttribute('href') || '';
-            const idMatch = href.match(/item\/(\d+)/);
-            if (idMatch) platformItemId = idMatch[1];
-          }
-          // Fallback: generate deterministic ID from name + category
-          if (!platformItemId) {
-            platformItemId = `sl-${catName}-${name}`.replace(/[^a-zA-Z0-9-]/g, '_').substring(0, 80);
+            platformItemId = `sl-${currentCat}-${name}`.replace(/[^a-zA-Z0-9-]/g, '_').substring(0, 80);
           }
 
-          items.push({ platformItemId, name, priceCents, description });
+          items.push({
+            key: `${name}|${priceCents}`,
+            name, priceCents, description,
+            category: currentCat,
+            platformItemId,
+          });
         }
+        return items;
+      }, SKIP_CATS);
 
-        if (items.length > 0) {
-          categories.push({ name: catName, items });
+      // Collect before scroll
+      for (const item of await extractVisible()) {
+        if (!collectedItems.has(item.key)) {
+          const { key: _, ...rest } = item;
+          collectedItems.set(item.key, rest);
         }
       }
 
-      return categories;
-    });
+      // Scroll and collect incrementally
+      let lastHeight = 0;
+      let stableCount = 0;
+      for (let i = 0; i < 200; i++) {
+        await scrapePage.evaluate((y) => window.scrollTo(0, y), (i + 1) * 400);
+        await new Promise(r => setTimeout(r, 350));
 
-    return { categories: menuData };
+        for (const item of await extractVisible()) {
+          if (!collectedItems.has(item.key)) {
+            const { key: _, ...rest } = item;
+            collectedItems.set(item.key, rest);
+          }
+        }
+
+        const currentHeight = await scrapePage.evaluate(() => document.body.scrollHeight);
+        if (currentHeight === lastHeight) {
+          stableCount++;
+          if (stableCount >= 6) break;
+        } else {
+          stableCount = 0;
+          lastHeight = currentHeight;
+        }
+      }
+
+      // Step 6: Build PlatformMenu from collected items
+      const categoryMap = new Map<string, Array<{
+        platformItemId: string; name: string; priceCents: number; description: string;
+      }>>();
+      for (const item of collectedItems.values()) {
+        const cat = item.category || 'Menu';
+        if (!categoryMap.has(cat)) categoryMap.set(cat, []);
+        categoryMap.get(cat)!.push({
+          platformItemId: item.platformItemId,
+          name: item.name,
+          priceCents: item.priceCents,
+          description: item.description,
+        });
+      }
+
+      const categories = Array.from(categoryMap.entries()).map(([name, items]) => ({ name, items }));
+      console.log(`[Seamless] DOM scrape: ${collectedItems.size} items, ${categories.length} categories`);
+
+      return { categories };
     } finally {
-      // Navigate back to seamless.com so the main page is ready for API calls
-      await scrapePage.goto('https://www.seamless.com', { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
-      await new Promise(r => setTimeout(r, 2000));
+      // Close the scrape tab (don't pollute the main page state)
+      await scrapePage.close().catch(() => {});
     }
   }
 
   /**
    * Set the Seamless delivery address by interacting with the address bar UI.
    * Used to ensure the restaurant is in delivery range so the full menu renders.
+   * Uses ArrowDown+Enter on autocomplete (confirmed working in investigation).
    */
   private async setDeliveryAddressViaUI(page: import('playwright').Page, address: string): Promise<void> {
     try {
       // Navigate to Seamless home to access the address bar
-      await page.goto('https://www.seamless.com', { waitUntil: 'domcontentloaded', timeout: 20000 });
-      await new Promise(r => setTimeout(r, 3000));
+      const currentUrl = page.url();
+      if (!currentUrl.includes('seamless.com') || currentUrl.includes('/menu/') || currentUrl.includes('/login')) {
+        await page.goto('https://www.seamless.com', { waitUntil: 'domcontentloaded', timeout: 20000 });
+        await new Promise(r => setTimeout(r, 3000));
+      }
 
       // Look for the address input — Seamless has it in the top nav
       const addressInput = await page.$('input[aria-label*="address" i], input[placeholder*="address" i], input[name*="address" i], #addressAutocomplete');
@@ -470,22 +499,21 @@ export class SeamlessAdapter implements PlatformAdapter {
         return;
       }
 
-      // Clear and type the new address
+      // Click to focus, then type via page.keyboard (survives React re-renders)
       await addressInput.click({ clickCount: 3 }); // select all
-      await addressInput.fill(address);
-      await new Promise(r => setTimeout(r, 2000)); // wait for autocomplete
+      await new Promise(r => setTimeout(r, 300));
+      await page.keyboard.type(address, { delay: 30 });
+      await new Promise(r => setTimeout(r, 2500)); // wait for autocomplete dropdown
 
-      // Select the first autocomplete suggestion
-      const suggestion = await page.$('.pac-item, [class*="suggestion"], [class*="autocomplete"] li, [role="option"]');
-      if (suggestion) {
-        await suggestion.click();
-        await new Promise(r => setTimeout(r, 2000));
-        console.log(`[Seamless] Address set to: ${address}`);
-      } else {
-        // Try pressing Enter if no suggestion dropdown
-        await addressInput.press('Enter');
-        await new Promise(r => setTimeout(r, 2000));
-      }
+      // Select the first autocomplete suggestion via ArrowDown+Enter (keyboard-level)
+      await page.keyboard.press('ArrowDown');
+      await new Promise(r => setTimeout(r, 500));
+      await page.keyboard.press('Enter');
+
+      // Wait for navigation from address selection
+      await page.waitForLoadState('domcontentloaded').catch(() => {});
+      await new Promise(r => setTimeout(r, 3000));
+      console.log(`[Seamless] Address set to: ${address}`);
     } catch (err) {
       console.warn(`[Seamless] Failed to set address: ${err instanceof Error ? err.message.substring(0, 60) : err}`);
     }

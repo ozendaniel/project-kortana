@@ -17,9 +17,11 @@ export class SeamlessAdapter implements PlatformAdapter {
   private sessionCookie = '';
   private perimeterXToken = '';
   private authToken = '';
+  private activeScrapePages = new Set<import('playwright').Page>();
 
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
+
     const loggedIn = await this.browser.isLoggedIn();
 
     if (loggedIn) {
@@ -306,6 +308,7 @@ export class SeamlessAdapter implements PlatformAdapter {
 
     // Use a FRESH tab — stale SPA state on the main page breaks rendering
     const scrapePage = await context.newPage();
+    this.activeScrapePages.add(scrapePage);
 
     try {
       // Step 1: Boot SPA on seamless.com first (establishes auth context)
@@ -473,8 +476,20 @@ export class SeamlessAdapter implements PlatformAdapter {
 
       return { categories };
     } finally {
+      this.activeScrapePages.delete(scrapePage);
       // Close the scrape tab (don't pollute the main page state)
       await scrapePage.close().catch(() => {});
+
+      // Clean up orphaned tabs: Seamless pages open popups (Stripe, Rokt, etc.)
+      // Keep only the main page and active scrape pages from other workers.
+      try {
+        const mainPage = this.browser.getPage();
+        const allPages = context.pages();
+        const closable = allPages.filter(
+          p => p !== mainPage && !this.activeScrapePages.has(p) && !p.isClosed()
+        );
+        await Promise.all(closable.map(p => p.close().catch(() => {})));
+      } catch { /* context may be dead */ }
     }
   }
 

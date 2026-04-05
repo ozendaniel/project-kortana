@@ -10,6 +10,7 @@
  *   npx tsx src/scripts/populate-seamless-menus.ts --dry-run          # Fetch but don't write to DB
  *   npx tsx src/scripts/populate-seamless-menus.ts --skip-match       # Don't run item matching after
  *   npx tsx src/scripts/populate-seamless-menus.ts --sustained        # Longer delays for multi-hour runs
+ *   npx tsx src/scripts/populate-seamless-menus.ts --concurrency 2   # Scrape 2 restaurants at once
  *
  * Requires an authenticated Seamless session (login via Settings page first).
  * Uses CDP port 9223 — can run alongside the server if server doesn't use Seamless browser.
@@ -38,6 +39,8 @@ const limitIdx = args.indexOf('--limit');
 const limit = limitIdx !== -1 ? parseInt(args[limitIdx + 1], 10) : 0;
 const ridIdx = args.indexOf('--restaurant-id');
 const singleRestaurantId = ridIdx !== -1 ? args[ridIdx + 1] : null;
+const concurrencyIdx = args.indexOf('--concurrency');
+const concurrency = concurrencyIdx !== -1 ? parseInt(args[concurrencyIdx + 1], 10) : 1;
 
 // --- Config (adjusted for sustained mode) ---
 const INTER_RESTAURANT_DELAY_MS = sustained ? 8000 : 5000;
@@ -125,6 +128,7 @@ async function main() {
   if (matchedOnly) console.log('  Mode: matched-only');
   if (resume) console.log('  Mode: resume (skipping recently synced)');
   if (sustained) console.log('  Mode: sustained (longer delays, frequent keep-alive)');
+  if (concurrency > 1) console.log(`  Mode: concurrent (${concurrency} workers)`);
   console.log();
 
   // Initialize adapter
@@ -154,140 +158,146 @@ async function main() {
   let consecutiveFailures = 0;
   const matchedRestaurantIds: string[] = []; // For post-population matching
   const startTime = Date.now();
+  let processedCount = 0; // Total restaurants attempted (for health check scheduling)
 
-  for (let i = 0; i < restaurants.length; i++) {
-    const rest = restaurants[i];
+  /** Process a single restaurant. Returns true on success/skip, false on failure. */
+  async function processRestaurant(rest: typeof restaurants[0], label: string): Promise<boolean> {
     const restStart = Date.now();
-
-    // Session keep-alive: navigate to seamless.com to trigger token refresh in localStorage
-    if (i > 0 && i % SESSION_KEEPALIVE_INTERVAL === 0) {
-      console.log(`\n[Keep-alive] Navigating to seamless.com to refresh session... (${i}/${restaurants.length})`);
-      try {
-        const browser = adapter.getBrowser();
-        await browser.navigateHome();
-        await sleep(3000); // Let Seamless JS refresh the token
-        await adapter.refreshTokens();
-        const token = await browser.getAuthToken();
-        if (token) {
-          console.log('[Keep-alive] Session token refreshed.');
-        } else {
-          console.log('[Keep-alive] WARNING: No token after refresh. Will retry on next check.');
-        }
-      } catch (err) {
-        console.log(`[Keep-alive] Navigation failed: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
-      }
-    }
-
-    // Session health check every N restaurants
-    if (i > 0 && i % SESSION_CHECK_INTERVAL === 0 && i % SESSION_KEEPALIVE_INTERVAL !== 0) {
-      console.log(`\n[Health check] Verifying session... (${i}/${restaurants.length})`);
-      const valid = await adapter.isSessionValid();
-      if (!valid) {
-        console.log('[Health check] Session expired. Attempting keep-alive...');
-        try {
-          const browser = adapter.getBrowser();
-          await browser.navigateHome();
-          await sleep(3000);
-          await adapter.refreshTokens();
-          const token = await browser.getAuthToken();
-          if (!token) {
-            console.error('\n*** Auth expired and could not be refreshed. Exiting for restart. ***');
-            console.log(`Progress: ${progress.completed} completed, ${progress.failed} failed, ${progress.skipped} skipped`);
-            saveProgress(progress);
-            process.exit(1);
-          }
-          console.log('[Health check] Session recovered via keep-alive.');
-        } catch {
-          console.error('\n*** Auth check failed. Exiting for restart. ***');
-          saveProgress(progress);
-          process.exit(1);
-        }
-      } else {
-        console.log('[Health check] Session OK.');
-      }
-    }
-
     try {
-      console.log(`[${i + 1}/${restaurants.length}] ${rest.canonical_name} (${rest.seamless_id})...`);
+      console.log(`${label} ${rest.canonical_name} (${rest.seamless_id})...`);
 
       const menu = await adapter.getMenu(rest.seamless_id);
       const itemCount = menu.categories.reduce((a, c) => a + c.items.length, 0);
 
       if (itemCount === 0) {
-        // Mark as delisted — restaurant exists in search but has no active menu
         if (!dryRun) {
           await db.query(
             `UPDATE restaurants SET platform_status = jsonb_set(COALESCE(platform_status, '{}'), '{seamless}', '"delisted"') WHERE id = $1`,
             [rest.id]
           );
         }
-        console.log(`  → Skipped (empty menu — marked seamless=delisted)`);
+        console.log(`  ${label} → Skipped (empty menu — marked seamless=delisted)`);
         progress.skipped++;
-        consecutiveFailures = 0;
+        return true;
       } else if (dryRun) {
-        console.log(`  → [DRY RUN] ${menu.categories.length} categories, ${itemCount} items`);
+        console.log(`  ${label} → [DRY RUN] ${menu.categories.length} categories, ${itemCount} items`);
         progress.completed++;
         progress.totalItems += itemCount;
-        consecutiveFailures = 0;
+        return true;
       } else {
         const count = await upsertMenu(rest.id, 'seamless', menu);
         await db.query('UPDATE restaurants SET last_synced_at = NOW() WHERE id = $1', [rest.id]);
 
         const elapsed = ((Date.now() - restStart) / 1000).toFixed(1);
-        console.log(`  → ${count} items (${menu.categories.length} categories) — ${elapsed}s`);
+        console.log(`  ${label} → ${count} items (${menu.categories.length} categories) — ${elapsed}s`);
 
         progress.completed++;
         progress.totalItems += count;
         progress.lastRestaurantId = rest.id;
-        consecutiveFailures = 0;
 
-        // Track for matching if this restaurant also has DoorDash data
         if (rest.doordash_id) {
           matchedRestaurantIds.push(rest.id);
         }
+        return true;
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`  → FAILED: ${msg.substring(0, 120)}`);
+      console.error(`  ${label} → FAILED: ${msg.substring(0, 120)}`);
       progress.failed++;
-      consecutiveFailures++;
+      return false;
+    }
+  }
 
-      // Check if this is an auth error
-      if (msg.includes('401') || msg.includes('403') || msg.includes('expired')) {
-        console.log('  Possible auth issue — attempting session keep-alive...');
-        try {
-          const browser = adapter.getBrowser();
-          await browser.navigateHome();
-          await sleep(3000);
-          await adapter.refreshTokens();
-          const token = await browser.getAuthToken();
-          if (!token) {
-            console.error('\n*** Auth expired and could not be refreshed. Exiting for restart. ***');
-            saveProgress(progress);
-            process.exit(1);
-          }
-          console.log('  Session recovered via keep-alive. Continuing...');
-          consecutiveFailures = 0;
-        } catch {
-          console.error('\n*** Auth recovery failed. Exiting for restart. ***');
-          saveProgress(progress);
-          process.exit(1);
-        }
-      } else if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-        // Escalating backoff
+  /** Run session keep-alive (must not run concurrently with scraping). */
+  async function sessionKeepAlive(): Promise<boolean> {
+    console.log(`\n[Keep-alive] Refreshing session... (${processedCount}/${restaurants.length})`);
+    try {
+      const browser = adapter.getBrowser();
+      await browser.navigateHome();
+      await sleep(3000);
+      await adapter.refreshTokens();
+      const token = await browser.getAuthToken();
+      if (token) {
+        console.log('[Keep-alive] Session token refreshed.');
+        return true;
+      }
+      console.log('[Keep-alive] WARNING: No token after refresh.');
+      return false;
+    } catch (err) {
+      console.log(`[Keep-alive] Failed: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
+      return false;
+    }
+  }
+
+  /** Run session health check (must not run concurrently with scraping). */
+  async function sessionHealthCheck(): Promise<boolean> {
+    console.log(`\n[Health check] Verifying session... (${processedCount}/${restaurants.length})`);
+    const valid = await adapter.isSessionValid();
+    if (!valid) {
+      console.log('[Health check] Session expired. Attempting keep-alive...');
+      const recovered = await sessionKeepAlive();
+      if (!recovered) {
+        console.error('\n*** Auth expired and could not be refreshed. Exiting for restart. ***');
+        saveProgress(progress);
+        process.exit(1);
+      }
+      console.log('[Health check] Session recovered.');
+    } else {
+      console.log('[Health check] Session OK.');
+    }
+    return true;
+  }
+
+  // --- Main processing loop ---
+  let queueIndex = 0;
+
+  while (queueIndex < restaurants.length) {
+    // Session keep-alive / health check (runs between batches, not during)
+    if (processedCount > 0 && processedCount % SESSION_KEEPALIVE_INTERVAL === 0) {
+      await sessionKeepAlive();
+    } else if (processedCount > 0 && processedCount % SESSION_CHECK_INTERVAL === 0) {
+      await sessionHealthCheck();
+    }
+
+    // Build a batch of up to `concurrency` restaurants
+    const batch: typeof restaurants = [];
+    while (batch.length < concurrency && queueIndex < restaurants.length) {
+      batch.push(restaurants[queueIndex++]);
+    }
+
+    // Process batch concurrently
+    const results = await Promise.all(
+      batch.map((rest, idx) => {
+        const globalIdx = queueIndex - batch.length + idx + 1;
+        const label = `[${globalIdx}/${restaurants.length}]`;
+        return processRestaurant(rest, label);
+      })
+    );
+
+    // Track failures for backoff
+    const batchFailures = results.filter(r => !r).length;
+    if (batchFailures === 0) {
+      consecutiveFailures = 0;
+    } else {
+      consecutiveFailures += batchFailures;
+
+      // Check for auth errors — attempt recovery
+      if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
         const backoff = BACKOFF_DELAYS[Math.min(consecutiveFailures - MAX_CONSECUTIVE_FAILURES, BACKOFF_DELAYS.length - 1)];
         console.log(`  ${consecutiveFailures} consecutive failures — backing off ${backoff / 1000}s...`);
         await sleep(backoff);
       }
     }
 
+    processedCount += batch.length;
+
     // Save progress periodically
-    if ((i + 1) % 10 === 0) {
+    if (processedCount % 10 < concurrency) {
       saveProgress(progress);
     }
 
-    // Inter-restaurant delay (skip after last restaurant)
-    if (i < restaurants.length - 1) {
+    // Inter-batch delay (skip after last batch)
+    if (queueIndex < restaurants.length) {
       await sleep(randomDelay());
     }
   }

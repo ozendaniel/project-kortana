@@ -62,9 +62,11 @@ export function getChromeArgs(opts: {
   ];
 
   if (headless) {
-    // On Linux with a virtual display (Xvfb), run headful instead —
-    // Google blocks headless Chrome OAuth with "browser not secure" error
-    if (!(process.platform === 'linux' && process.env.DISPLAY)) {
+    // Google blocks headless Chrome OAuth with "browser not secure" error.
+    // On Linux with Xvfb (DISPLAY set), run headful on the virtual display.
+    // On Windows/macOS, run headful — Chrome window is visible but user interacts via portal.
+    // Only add --headless=new on Linux without a display (non-interactive CI/scripts).
+    if (process.platform === 'linux' && !process.env.DISPLAY) {
       args.push('--headless=new');
     }
   }

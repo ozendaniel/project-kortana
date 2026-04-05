@@ -49,7 +49,7 @@ export function setupWebSocket(server: Server, authManager: AuthManager): void {
 
         case 'stop_login':
           if (msg.platform) {
-            await authManager.stopLogin(msg.platform);
+            await authManager.stopLogin(msg.platform, ws);
           }
           break;
 

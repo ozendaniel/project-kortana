@@ -101,7 +101,10 @@ export class AuthManager {
     }
 
     if (state.status === 'logging_in') {
-      ws.send(JSON.stringify({ type: 'login_failed', platform, reason: 'Login already in progress' }));
+      // React Strict Mode double-mount: second mount's WS replaces the first.
+      // Don't reject — just adopt the new WS so the screencast goes to the right client.
+      console.log(`[AuthManager] ${platform}: login already in progress, adopting new WS client`);
+      state.activeWs = ws;
       return;
     }
 
@@ -289,7 +292,13 @@ export class AuthManager {
     console.log(`[AuthManager] ${platform} login ${success ? 'succeeded' : 'failed'}`);
   }
 
-  async stopLogin(platform: string): Promise<void> {
+  async stopLogin(platform: string, requestingWs?: WebSocket): Promise<void> {
+    // If a newer WS has taken over (React Strict Mode re-mount), ignore the stale stop_login
+    const state = this.platforms.get(platform);
+    if (requestingWs && state?.activeWs && state.activeWs !== requestingWs) {
+      console.log(`[AuthManager] ${platform}: ignoring stop_login from stale WS (newer client active)`);
+      return;
+    }
     await this.finishLogin(platform, false, 'Login cancelled by user');
   }
 

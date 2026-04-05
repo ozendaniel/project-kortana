@@ -20,6 +20,8 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
   }, [platform]);
 
   useEffect(() => {
+    // Local flag scoped to this effect invocation — not shared across Strict Mode remounts
+    let active = true;
     mountedRef.current = true;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
@@ -27,14 +29,14 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     let gotFrame = false;
 
     ws.onopen = () => {
-      if (!mountedRef.current) return;
+      if (!active) return;
       ws.send(JSON.stringify({ type: 'start_login', platform }));
       setStatus('streaming');
     };
 
     // If no frame arrives within 45 seconds, show error (browser may be relaunching)
     const frameTimeout = setTimeout(() => {
-      if (!gotFrame && ws.readyState === WebSocket.OPEN && mountedRef.current) {
+      if (!gotFrame && ws.readyState === WebSocket.OPEN && active) {
         setStatus('error');
         setErrorMsg('Browser is starting up. Close and try again in a moment.');
         onError('Browser startup timeout');
@@ -42,7 +44,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     }, 45000);
 
     ws.onmessage = (event) => {
-      if (!mountedRef.current) return;
+      if (!active) return;
       const msg = JSON.parse(event.data);
 
       if (msg.type === 'frame' && msg.platform === platform) {
@@ -75,7 +77,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
 
     ws.onerror = (e) => {
       // Ignore errors from strict-mode cleanup (unmount closes WS before handshake)
-      if (!mountedRef.current) return;
+      if (!active) return;
       console.error('[BrowserView] WebSocket error:', e);
       setStatus('error');
       onError('WebSocket connection failed');
@@ -86,6 +88,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     };
 
     return () => {
+      active = false;
       mountedRef.current = false;
       clearTimeout(frameTimeout);
       if (ws.readyState === WebSocket.OPEN) {

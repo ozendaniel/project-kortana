@@ -306,9 +306,28 @@ export class SeamlessAdapter implements PlatformAdapter {
     const context = this.browser.getContext();
     if (!context) throw new Error('No browser context');
 
+    // Pre-scrape cleanup: close any orphaned tabs from previous runs
+    // (Seamless JS spawns Rokt/Stripe popups that outlive our cleanup)
+    try {
+      const mainPage = this.browser.getPage();
+      for (const p of context.pages()) {
+        if (p !== mainPage && !this.activeScrapePages.has(p) && !p.isClosed()) {
+          await p.close().catch(() => {});
+        }
+      }
+    } catch { /* best effort */ }
+
     // Use a FRESH tab — stale SPA state on the main page breaks rendering
     const scrapePage = await context.newPage();
     this.activeScrapePages.add(scrapePage);
+
+    // Auto-close popups spawned by Seamless JS (Rokt ads, Stripe, etc.)
+    // In headful mode these show as extra browser windows.
+    // Use page-level 'popup' event (not context 'page') to only catch popups
+    // from THIS scrape tab — avoids closing other workers' tabs.
+    scrapePage.on('popup', (popup) => {
+      popup.close().catch(() => {});
+    });
 
     try {
       // Step 1: Boot SPA on seamless.com first (establishes auth context)
@@ -482,6 +501,8 @@ export class SeamlessAdapter implements PlatformAdapter {
 
       // Clean up orphaned tabs: Seamless pages open popups (Stripe, Rokt, etc.)
       // Keep only the main page and active scrape pages from other workers.
+      // Wait briefly for any popup closes to propagate before cleanup.
+      await new Promise(r => setTimeout(r, 500));
       try {
         const mainPage = this.browser.getPage();
         const allPages = context.pages();

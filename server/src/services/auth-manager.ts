@@ -364,7 +364,9 @@ export class AuthManager {
       for (const [name, state] of this.platforms) {
         if (state.status === 'logging_in') continue; // Don't check during login
         try {
-          const loggedIn = await state.browser.isLoggedIn();
+          // Use checkSession() — does NOT navigate the page.
+          // isLoggedIn() navigates to the homepage which spawns popups in headful mode.
+          const loggedIn = await state.browser.checkSession();
           const newStatus: AuthStatus = loggedIn ? 'authenticated' : 'expired';
           if (state.status === 'authenticated' && newStatus === 'expired') {
             console.log(`[AuthManager] ${name} session expired`);

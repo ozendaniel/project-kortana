@@ -9,6 +9,7 @@ interface BrowserViewProps {
 export default function BrowserView({ platform, onComplete, onError }: BrowserViewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const mountedRef = useRef(true);
   const [status, setStatus] = useState<'connecting' | 'streaming' | 'complete' | 'error'>('connecting');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -19,19 +20,21 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
   }, [platform]);
 
   useEffect(() => {
+    mountedRef.current = true;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
     wsRef.current = ws;
     let gotFrame = false;
 
     ws.onopen = () => {
+      if (!mountedRef.current) return;
       ws.send(JSON.stringify({ type: 'start_login', platform }));
       setStatus('streaming');
     };
 
     // If no frame arrives within 45 seconds, show error (browser may be relaunching)
     const frameTimeout = setTimeout(() => {
-      if (!gotFrame && ws.readyState === WebSocket.OPEN) {
+      if (!gotFrame && ws.readyState === WebSocket.OPEN && mountedRef.current) {
         setStatus('error');
         setErrorMsg('Browser is starting up. Close and try again in a moment.');
         onError('Browser startup timeout');
@@ -39,6 +42,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     }, 45000);
 
     ws.onmessage = (event) => {
+      if (!mountedRef.current) return;
       const msg = JSON.parse(event.data);
 
       if (msg.type === 'frame' && msg.platform === platform) {
@@ -70,6 +74,8 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     };
 
     ws.onerror = (e) => {
+      // Ignore errors from strict-mode cleanup (unmount closes WS before handshake)
+      if (!mountedRef.current) return;
       console.error('[BrowserView] WebSocket error:', e);
       setStatus('error');
       onError('WebSocket connection failed');
@@ -80,6 +86,7 @@ export default function BrowserView({ platform, onComplete, onError }: BrowserVi
     };
 
     return () => {
+      mountedRef.current = false;
       clearTimeout(frameTimeout);
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'stop_login', platform }));

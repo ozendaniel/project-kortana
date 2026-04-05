@@ -321,10 +321,21 @@ export class SeamlessAdapter implements PlatformAdapter {
     const scrapePage = await context.newPage();
     this.activeScrapePages.add(scrapePage);
 
-    // Auto-close popups spawned by Seamless JS (Rokt ads, Stripe, etc.)
+    // Auto-close popups/windows spawned by Seamless JS (Rokt ads, Stripe, etc.)
     // In headful mode these show as extra browser windows.
-    // Use page-level 'popup' event (not context 'page') to only catch popups
-    // from THIS scrape tab — avoids closing other workers' tabs.
+    // Must use BOTH page-level popup handler (direct window.open from scrape page)
+    // AND context-level page handler (window.open from iframes like Rokt/Stripe).
+    // Context handler defers close check by a tick so activeScrapePages.add() from
+    // other workers runs first — prevents cross-worker tab killing.
+    const mainPage = this.browser.getPage();
+    const contextPopupHandler = (newPage: import('playwright').Page) => {
+      setTimeout(() => {
+        if (!this.activeScrapePages.has(newPage) && newPage !== mainPage && !newPage.isClosed()) {
+          newPage.close().catch(() => {});
+        }
+      }, 100);
+    };
+    context.on('page', contextPopupHandler);
     scrapePage.on('popup', (popup) => {
       popup.close().catch(() => {});
     });
@@ -495,6 +506,7 @@ export class SeamlessAdapter implements PlatformAdapter {
 
       return { categories };
     } finally {
+      context.off('page', contextPopupHandler);
       this.activeScrapePages.delete(scrapePage);
       // Close the scrape tab (don't pollute the main page state)
       await scrapePage.close().catch(() => {});

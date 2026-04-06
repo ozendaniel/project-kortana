@@ -11,6 +11,20 @@ export class SeamlessBrowser {
   private context: BrowserContext | null = null;
   private page: Page | null = null;
   private chromeProcess: ChildProcess | null = null;
+  /** Pages that external code (e.g. adapter scraping) has claimed — don't auto-close. */
+  readonly knownPages = new Set<Page>();
+
+  /** Auto-close popup windows spawned by ad/tracker iframes (Rokt, Stripe, DoubleClick). */
+  private installPopupHandler(context: BrowserContext): void {
+    context.on('page', (newPage) => {
+      // Defer so adapter's activeScrapePages.add() runs first
+      setTimeout(() => {
+        if (newPage !== this.page && !this.knownPages.has(newPage) && !newPage.isClosed()) {
+          newPage.close().catch(() => {});
+        }
+      }, 500);
+    });
+  }
 
   async launch(): Promise<void> {
     cleanProfileLocks(PROFILE_DIR);
@@ -31,6 +45,7 @@ export class SeamlessBrowser {
     this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
     this.context = this.browser.contexts()[0] || await this.browser.newContext();
     this.page = this.context.pages()[0] || await this.context.newPage();
+    this.installPopupHandler(this.context);
   }
 
   /** Poll until Chrome CDP port is accepting connections */
@@ -84,6 +99,7 @@ export class SeamlessBrowser {
         this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`, { timeout: 10000 });
         this.context = this.browser.contexts()[0] || await this.browser.newContext();
         this.page = this.context.pages()[0] || await this.context.newPage();
+        this.installPopupHandler(this.context);
         return;
       } catch (err) {
         console.log(`[Seamless] CDP reconnect failed (${err instanceof Error ? err.message.substring(0, 60) : err}), full relaunch...`);

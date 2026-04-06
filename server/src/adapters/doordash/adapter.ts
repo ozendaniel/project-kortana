@@ -40,7 +40,9 @@ export class DoorDashAdapter implements PlatformAdapter {
 
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
-    const loggedIn = await this.browser.isLoggedIn();
+    // Use checkSession (cookie-based) instead of isLoggedIn (navigates to homepage).
+    // isLoggedIn creates new pages + loads ad iframes that spawn popup windows.
+    const loggedIn = await this.browser.checkSession();
 
     if (loggedIn) {
       console.log('[DoorDash] Existing session found and valid.');
@@ -64,7 +66,7 @@ export class DoorDashAdapter implements PlatformAdapter {
   }
 
   async isSessionValid(): Promise<boolean> {
-    return this.browser.isLoggedIn();
+    return this.browser.checkSession();
   }
 
   /** Fetch saved addresses and set the closest one as default */

@@ -14,6 +14,18 @@ export class DoorDashBrowser {
   private apiPage: Page | null = null;    // Dedicated API page (stable context for fetch calls)
   private chromeProcess: ChildProcess | null = null;
 
+  /** Auto-close popup windows spawned by ad/tracker iframes (Stripe, DoubleClick, reCAPTCHA). */
+  private installPopupHandler(context: BrowserContext): void {
+    context.on('page', (newPage) => {
+      // Give a tick for legitimate page creation (ensurePage, ensureApiPage) to assign references
+      setTimeout(() => {
+        if (newPage !== this.page && newPage !== this.apiPage && !newPage.isClosed()) {
+          newPage.close().catch(() => {});
+        }
+      }, 500);
+    });
+  }
+
   async launch(): Promise<void> {
     cleanProfileLocks(PROFILE_DIR);
     const chromePath = findChromePath();
@@ -33,6 +45,7 @@ export class DoorDashBrowser {
     this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
     this.context = this.browser.contexts()[0] || await this.browser.newContext();
     this.page = this.context.pages()[0] || await this.context.newPage();
+    this.installPopupHandler(this.context);
   }
 
   /** Poll until Chrome CDP port is accepting connections */
@@ -94,6 +107,7 @@ export class DoorDashBrowser {
         this.context = this.browser.contexts()[0] || await this.browser.newContext();
         this.page = this.context.pages()[0] || await this.context.newPage();
         this.apiPage = null;
+        this.installPopupHandler(this.context);
         return;
       } catch (err) {
         console.log(`[DoorDash] CDP reconnect failed (${err instanceof Error ? err.message.substring(0, 60) : err}), full relaunch...`);

@@ -22,7 +22,9 @@ export class SeamlessAdapter implements PlatformAdapter {
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
 
-    const loggedIn = await this.browser.isLoggedIn();
+    // Use checkSession (cookie/localStorage-based) instead of isLoggedIn (navigates to homepage).
+    // isLoggedIn creates new pages + loads ad iframes that spawn popup windows.
+    const loggedIn = await this.browser.checkSession();
 
     if (loggedIn) {
       console.log('[Seamless] Existing session found and valid.');
@@ -59,7 +61,7 @@ export class SeamlessAdapter implements PlatformAdapter {
   }
 
   async isSessionValid(): Promise<boolean> {
-    return this.browser.isLoggedIn();
+    return this.browser.checkSession();
   }
 
   private ensureAuthenticated(): void {
@@ -320,6 +322,7 @@ export class SeamlessAdapter implements PlatformAdapter {
     // Use a FRESH tab — stale SPA state on the main page breaks rendering
     const scrapePage = await context.newPage();
     this.activeScrapePages.add(scrapePage);
+    this.browser.knownPages.add(scrapePage);
 
     // Auto-close popups/windows spawned by Seamless JS (Rokt ads, Stripe, etc.)
     // In headful mode these show as extra browser windows.
@@ -360,19 +363,26 @@ export class SeamlessAdapter implements PlatformAdapter {
       }).catch(() => {});
       await new Promise(r => setTimeout(r, 5000));
 
-      // Step 4: Verify menu rendered (check for menuItem elements)
-      const menuCheck = await scrapePage.evaluate(() => ({
-        url: window.location.href,
-        menuItems: document.querySelectorAll('.menuItem').length,
-        outOfRange: document.body.innerText.includes("doesn't deliver") || document.body.innerText.includes('Too far'),
-      }));
+      // Step 4: Wait for menu items to appear (virtualized — may need time or scroll)
+      // Seamless shows menus even for out-of-range restaurants, just with a banner.
+      // Don't bail early — try scrolling to trigger the virtualized renderer.
+      let menuItemCount = 0;
+      for (let attempt = 0; attempt < 4; attempt++) {
+        menuItemCount = await scrapePage.evaluate(() =>
+          document.querySelectorAll('.menuItem').length
+        );
+        if (menuItemCount > 0) break;
+        // Try scrolling down to trigger lazy rendering, then back up
+        await scrapePage.evaluate(() => window.scrollTo(0, 600));
+        await new Promise(r => setTimeout(r, 1500));
+        await scrapePage.evaluate(() => window.scrollTo(0, 0));
+        await new Promise(r => setTimeout(r, 1000));
+      }
 
-      if (menuCheck.menuItems === 0) {
-        if (menuCheck.outOfRange) {
-          console.warn(`[Seamless] Restaurant ${platformRestaurantId} out of delivery range`);
-        } else {
-          console.log(`[Seamless] DOM: no menu items rendered. URL: ${menuCheck.url}`);
-        }
+      if (menuItemCount === 0) {
+        // Genuinely empty — check if page even loaded correctly
+        const pageUrl = await scrapePage.evaluate(() => window.location.href);
+        console.log(`[Seamless] DOM: no menu items after retries. URL: ${pageUrl}`);
         return { categories: [] };
       }
 
@@ -508,6 +518,7 @@ export class SeamlessAdapter implements PlatformAdapter {
     } finally {
       context.off('page', contextPopupHandler);
       this.activeScrapePages.delete(scrapePage);
+      this.browser.knownPages.delete(scrapePage);
       // Close the scrape tab (don't pollute the main page state)
       await scrapePage.close().catch(() => {});
 

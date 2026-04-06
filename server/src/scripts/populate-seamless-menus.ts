@@ -203,6 +203,13 @@ async function main() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`  ${label} → FAILED: ${msg.substring(0, 120)}`);
+      // Mark for re-run so we can easily find and retry failed restaurants
+      if (!dryRun) {
+        await db.query(
+          `UPDATE restaurants SET platform_status = jsonb_set(COALESCE(platform_status, '{}'), '{seamless}', '"scrape_failed"') WHERE id = $1`,
+          [rest.id]
+        ).catch(() => {});
+      }
       progress.failed++;
       return false;
     }

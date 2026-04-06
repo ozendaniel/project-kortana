@@ -273,21 +273,32 @@ export class SeamlessAdapter implements PlatformAdapter {
     platformRestaurantId: string,
     location?: { lat: number; lng: number; address?: string },
   ): Promise<PlatformMenu> {
-    // Primary: DOM scraping (gets exactly what the user sees — no ghost items)
-    try {
-      const domResult = await this.getMenuFromDOM(platformRestaurantId, location);
-      if (domResult.categories.length > 0) {
+    // DOM scraping only — no API fallback (API returns ghost items)
+    // Retry once with a fresh tab if first attempt returns empty
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const domResult = await this.getMenuFromDOM(platformRestaurantId, location);
         const itemCount = domResult.categories.reduce((a, c) => a + c.items.length, 0);
-        console.log(`[Seamless] getMenu (DOM): ${domResult.categories.length} categories, ${itemCount} items`);
-        return domResult;
+        if (itemCount > 0) {
+          console.log(`[Seamless] getMenu (DOM): ${domResult.categories.length} categories, ${itemCount} items`);
+          return domResult;
+        }
+        if (attempt === 0) {
+          console.warn(`[Seamless] DOM scrape returned empty — retrying with fresh tab...`);
+          await new Promise(r => setTimeout(r, 3000));
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message.substring(0, 80) : String(err);
+        if (attempt === 0) {
+          console.warn(`[Seamless] DOM scrape failed (attempt 1) — retrying: ${msg}`);
+          await new Promise(r => setTimeout(r, 3000));
+        } else {
+          throw new Error(`DOM scrape failed after 2 attempts: ${msg}`);
+        }
       }
-      console.warn('[Seamless] DOM scraping returned empty menu — falling back to API');
-    } catch (err) {
-      console.warn(`[Seamless] DOM scraping failed — falling back to API: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
     }
-
-    // Fallback: API-based fetch (may include inactive menu items)
-    return this.getMenuFromAPI(platformRestaurantId);
+    // Both attempts returned empty — return empty so caller can mark as delisted/retry
+    return { categories: [] };
   }
 
   /**
@@ -312,37 +323,15 @@ export class SeamlessAdapter implements PlatformAdapter {
     const context = this.browser.getContext();
     if (!context) throw new Error('No browser context');
 
-    // Pre-scrape cleanup: close any orphaned tabs from previous runs
-    // (Seamless JS spawns Rokt/Stripe popups that outlive our cleanup)
-    try {
-      const mainPage = this.browser.getPage();
-      for (const p of context.pages()) {
-        if (p !== mainPage && !this.activeScrapePages.has(p) && !p.isClosed()) {
-          await p.close().catch(() => {});
-        }
-      }
-    } catch { /* best effort */ }
-
     // Use a FRESH tab — stale SPA state on the main page breaks rendering
     const scrapePage = await context.newPage();
     this.activeScrapePages.add(scrapePage);
     this.browser.knownPages.add(scrapePage);
 
-    // Auto-close popups/windows spawned by Seamless JS (Rokt ads, Stripe, etc.)
-    // In headful mode these show as extra browser windows.
-    // Must use BOTH page-level popup handler (direct window.open from scrape page)
-    // AND context-level page handler (window.open from iframes like Rokt/Stripe).
-    // Context handler defers close check by a tick so activeScrapePages.add() from
-    // other workers runs first — prevents cross-worker tab killing.
-    const mainPage = this.browser.getPage();
-    const contextPopupHandler = (newPage: import('playwright').Page) => {
-      setTimeout(() => {
-        if (!this.activeScrapePages.has(newPage) && newPage !== mainPage && !newPage.isClosed()) {
-          newPage.close().catch(() => {});
-        }
-      }, 100);
-    };
-    context.on('page', contextPopupHandler);
+    // Auto-close only DIRECT popups from the scrape page (window.open).
+    // No context-level handler — it races with concurrent workers creating
+    // legitimate scrape tabs and can close them before activeScrapePages.add() runs.
+    // Orphaned ad popups (Rokt/Stripe/DoubleClick) are cleaned up in the finally block.
     scrapePage.on('popup', (popup) => {
       popup.close().catch(() => {});
     });
@@ -365,17 +354,27 @@ export class SeamlessAdapter implements PlatformAdapter {
         waitUntil: 'networkidle',
         timeout: 45000,
       }).catch(() => {});
-      await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r => setTimeout(r, 2000));
 
       // Step 4: Wait for menu items to appear (virtualized — may need time or scroll)
-      // Seamless shows menus even for out-of-range restaurants, just with a banner.
-      // Don't bail early — try scrolling to trigger the virtualized renderer.
+      // Seamless has TWO layouts:
+      //   - Restaurants: .menuItem elements in a list
+      //   - Grocery/convenience: button.mediumItemCardV2 with data-testid="Item-{id}" in card carousels
+      // Detect which layout is present.
       let menuItemCount = 0;
+      let isGroceryLayout = false;
       for (let attempt = 0; attempt < 4; attempt++) {
-        menuItemCount = await scrapePage.evaluate(() =>
-          document.querySelectorAll('.menuItem').length
-        );
+        const counts = await scrapePage.evaluate(() => ({
+          menuItems: document.querySelectorAll('.menuItem').length,
+          groceryItems: document.querySelectorAll('[data-testid^="Item-"]:not([data-testid*="quickAdd"])').length,
+        }));
+        menuItemCount = counts.menuItems;
         if (menuItemCount > 0) break;
+        if (counts.groceryItems > 0) {
+          isGroceryLayout = true;
+          menuItemCount = counts.groceryItems;
+          break;
+        }
         // Try scrolling down to trigger lazy rendering, then back up
         await scrapePage.evaluate(() => window.scrollTo(0, 600));
         await new Promise(r => setTimeout(r, 1500));
@@ -388,6 +387,11 @@ export class SeamlessAdapter implements PlatformAdapter {
         const pageUrl = await scrapePage.evaluate(() => window.location.href);
         console.log(`[Seamless] DOM: no menu items after retries. URL: ${pageUrl}`);
         return { categories: [] };
+      }
+
+      // Grocery/convenience stores use a card-based carousel layout (mediumItemCardV2)
+      if (isGroceryLayout) {
+        return await this.extractGroceryMenu(scrapePage);
       }
 
       // Step 5: Scroll and collect items incrementally
@@ -520,25 +524,133 @@ export class SeamlessAdapter implements PlatformAdapter {
 
       return { categories };
     } finally {
-      context.off('page', contextPopupHandler);
       this.activeScrapePages.delete(scrapePage);
       this.browser.knownPages.delete(scrapePage);
       // Close the scrape tab (don't pollute the main page state)
       await scrapePage.close().catch(() => {});
 
-      // Clean up orphaned tabs: Seamless pages open popups (Stripe, Rokt, etc.)
-      // Keep only the main page and active scrape pages from other workers.
-      // Wait briefly for any popup closes to propagate before cleanup.
+      // Clean up orphaned ad popups (Stripe, Rokt, DoubleClick).
+      // Keep mainPage and active scrape pages from other concurrent workers.
+      // Brief delay lets pending popup closes propagate.
       await new Promise(r => setTimeout(r, 500));
       try {
-        const mainPage = this.browser.getPage();
-        const allPages = context.pages();
-        const closable = allPages.filter(
-          p => p !== mainPage && !this.activeScrapePages.has(p) && !p.isClosed()
+        const mp = this.browser.getPage();
+        const closable = context.pages().filter(
+          p => p !== mp && !this.activeScrapePages.has(p) && !this.browser.knownPages.has(p) && !p.isClosed()
         );
         await Promise.all(closable.map(p => p.close().catch(() => {})));
       } catch { /* context may be dead */ }
     }
+  }
+
+  /**
+   * Extract menu from grocery/convenience store layout (card-based carousels).
+   * These stores use mediumItemCardV2 buttons instead of .menuItem list elements.
+   * Scrolls through the page collecting items from each category section.
+   */
+  private async extractGroceryMenu(page: import('playwright').Page): Promise<PlatformMenu> {
+    console.log('[Seamless] Detected grocery/convenience layout — using card extractor');
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await new Promise(r => setTimeout(r, 1000));
+
+    const collectedItems = new Map<string, {
+      name: string; priceCents: number; description: string;
+      category: string; platformItemId: string;
+    }>();
+
+    const SKIP_CATS = ['Best Sellers', 'Most Ordered', 'Order Again', 'Catering'];
+
+    // Scroll and collect grocery items incrementally
+    let lastHeight = 0;
+    let stableCount = 0;
+    for (let i = 0; i < 200; i++) {
+      const items = await page.evaluate((skipCats: string[]) => {
+        const skip = new Set(skipCats);
+        const results: Array<{
+          key: string; name: string; priceCents: number;
+          description: string; category: string; platformItemId: string;
+        }> = [];
+        const priceRe = /\$(\d+\.?\d*)/;
+        const viewportH = window.innerHeight;
+
+        // Track category from h3 headers
+        let currentCat = 'Menu';
+        for (const h of document.querySelectorAll('h3')) {
+          const rect = h.getBoundingClientRect();
+          if (rect.top < viewportH * 0.6) {
+            const text = h.textContent?.trim() || '';
+            if (text && text.length < 80 && !skip.has(text)) {
+              currentCat = text.replace(/@+$/, '').trim(); // Remove trailing @ from grocery categories
+            }
+          }
+        }
+
+        // Collect items from mediumItemCardV2 buttons
+        const buttons = document.querySelectorAll('[data-testid^="Item-"]');
+        for (const el of buttons) {
+          if (el.tagName !== 'BUTTON') continue;
+          const rect = el.getBoundingClientRect();
+          if (rect.top > viewportH + 200 || rect.bottom < -200) continue;
+
+          const titleEl = el.querySelector('[data-testid="mediumItemCardV2-title"]');
+          const name = titleEl?.textContent?.trim() || '';
+          if (!name || name.length < 2) continue;
+
+          const allText = el.textContent?.trim() || '';
+          const priceMatch = allText.match(priceRe);
+          const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1]) * 100) : 0;
+
+          const testId = el.getAttribute('data-testid') || '';
+          const idMatch = testId.match(/Item-(\d+)/);
+          const platformItemId = idMatch ? idMatch[1] : `sl-${currentCat}-${name}`.replace(/[^a-zA-Z0-9-]/g, '_').substring(0, 80);
+
+          results.push({
+            key: `${name}|${priceCents}`,
+            name, priceCents, description: '',
+            category: currentCat, platformItemId,
+          });
+        }
+        return results;
+      }, SKIP_CATS);
+
+      for (const item of items) {
+        if (!collectedItems.has(item.key)) {
+          const { key: _, ...rest } = item;
+          collectedItems.set(item.key, rest);
+        }
+      }
+
+      await page.evaluate((y) => window.scrollTo(0, y), (i + 1) * 400);
+      await new Promise(r => setTimeout(r, 350));
+
+      const currentHeight = await page.evaluate(() => document.body.scrollHeight);
+      if (currentHeight === lastHeight) {
+        stableCount++;
+        if (stableCount >= 6) break;
+      } else {
+        stableCount = 0;
+        lastHeight = currentHeight;
+      }
+    }
+
+    // Build PlatformMenu
+    const categoryMap = new Map<string, Array<{
+      platformItemId: string; name: string; priceCents: number; description: string;
+    }>>();
+    for (const item of collectedItems.values()) {
+      const cat = item.category || 'Menu';
+      if (!categoryMap.has(cat)) categoryMap.set(cat, []);
+      categoryMap.get(cat)!.push({
+        platformItemId: item.platformItemId,
+        name: item.name,
+        priceCents: item.priceCents,
+        description: item.description,
+      });
+    }
+
+    const categories = Array.from(categoryMap.entries()).map(([name, items]) => ({ name, items }));
+    console.log(`[Seamless] Grocery scrape: ${collectedItems.size} items, ${categories.length} categories`);
+    return { categories };
   }
 
   /**

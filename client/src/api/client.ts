@@ -114,6 +114,45 @@ export async function logoutPlatform(platform: string): Promise<void> {
   await api.post(`/auth/logout/${platform}`);
 }
 
+// Menu item search types
+export interface ItemSearchMatchingItem {
+  id: string;
+  name: string;
+  description?: string;
+  category: string;
+  platforms: Record<string, { priceCents: number }>;
+}
+
+export interface ItemSearchResultEntry {
+  restaurant: {
+    id: string;
+    name: string;
+    address: string;
+    platforms: Record<string, { available: boolean }>;
+  };
+  matchingItems: ItemSearchMatchingItem[];
+  totalMatches: number;
+}
+
+export interface ItemSearchResponse {
+  results: ItemSearchResultEntry[];
+  location: { lat: number; lng: number; formattedAddress: string };
+  totalItems: number;
+}
+
+export async function searchMenuItems(
+  address: string,
+  query: string,
+  options?: { radius?: number; cuisine?: string; limit?: number }
+): Promise<ItemSearchResponse> {
+  const params = new URLSearchParams({ address, q: query });
+  if (options?.radius) params.set('radius', String(options.radius));
+  if (options?.cuisine) params.set('cuisine', options.cuisine);
+  if (options?.limit) params.set('limit', String(options.limit));
+  const { data } = await api.get(`/menu-items/search?${params}`);
+  return data;
+}
+
 export async function logOrder(order: {
   restaurantId: string;
   platformUsed: string;

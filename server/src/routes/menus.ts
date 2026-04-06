@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { db } from '../db/client.js';
+import { buildUnifiedMenu } from '../services/menu-utils.js';
 
 const router = Router();
 
@@ -43,105 +44,5 @@ router.get('/:restaurantId', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-interface UnifiedMenuItem {
-  id: string;
-  name: string;
-  description?: string;
-  category: string;
-  platforms: Record<string, { itemId: string; priceCents: number; available: boolean }>;
-}
-
-interface MenuCategory {
-  category: string;
-  items: UnifiedMenuItem[];
-}
-
-function buildUnifiedMenu(rows: Array<Record<string, unknown>>): MenuCategory[] {
-  // Union-Find to group all transitively matched items
-  const parent = new Map<string, string>();
-  function find(x: string): string {
-    if (!parent.has(x)) parent.set(x, x);
-    if (parent.get(x) !== x) parent.set(x, find(parent.get(x)!));
-    return parent.get(x)!;
-  }
-  function union(a: string, b: string): void {
-    const ra = find(a), rb = find(b);
-    if (ra !== rb) parent.set(rb, ra);
-  }
-
-  // Build connected components from matched_item_id links
-  for (const row of rows) {
-    const id = row.id as string;
-    const matchedId = row.matched_item_id as string | null;
-    find(id); // ensure every item is registered
-    if (matchedId) union(id, matchedId);
-  }
-
-  // Group rows by their canonical (root) ID
-  const groups = new Map<string, Array<Record<string, unknown>>>();
-  for (const row of rows) {
-    const root = find(row.id as string);
-    if (!groups.has(root)) groups.set(root, []);
-    groups.get(root)!.push(row);
-  }
-
-  // Determine which platforms are present — used for source-of-truth filtering
-  const platformsPresent = new Set(rows.map(r => r.platform as string));
-  const hasBothPlatforms = platformsPresent.has('doordash') && platformsPresent.has('seamless');
-
-  // Build unified items from groups, skipping duplicate categories like "Most Ordered"
-  const itemMap = new Map<string, UnifiedMenuItem>();
-  const SKIP_CATEGORIES = new Set(['Most Ordered', 'Popular Items', 'Featured']);
-
-  for (const [root, members] of groups) {
-    // Pick the best representative row (prefer non-duplicate category)
-    const representative = members.find(r => !SKIP_CATEGORIES.has(r.category as string)) || members[0];
-
-    const unified: UnifiedMenuItem = {
-      id: root,
-      name: representative.original_name as string,
-      description: representative.description as string | undefined,
-      category: representative.category as string,
-      platforms: {},
-    };
-
-    // Merge all platform entries from all members of this group
-    for (const row of members) {
-      const platform = row.platform as string;
-      // Prefer the non-duplicate-category version for each platform
-      if (!unified.platforms[platform] || SKIP_CATEGORIES.has(row.category as string) === false) {
-        unified.platforms[platform] = {
-          itemId: row.platform_item_id as string,
-          priceCents: row.price_cents as number,
-          available: row.available as boolean,
-        };
-      }
-    }
-
-    // DoorDash-as-source-of-truth: when both platforms are present, hide Seamless-only
-    // items (no DD match). The Seamless REST API returns ghost items from inactive menus,
-    // so unmatched SL items are unreliable and may not actually exist on the website.
-    if (hasBothPlatforms && !unified.platforms.doordash && unified.platforms.seamless) {
-      continue; // Skip SL-only items — likely ghosts
-    }
-
-    itemMap.set(root, unified);
-  }
-
-  // Group by category
-  const categoryMap = new Map<string, UnifiedMenuItem[]>();
-  for (const item of itemMap.values()) {
-    const cat = item.category || 'Other';
-    if (SKIP_CATEGORIES.has(cat)) continue; // don't show duplicate categories
-    if (!categoryMap.has(cat)) categoryMap.set(cat, []);
-    categoryMap.get(cat)!.push(item);
-  }
-
-  return Array.from(categoryMap.entries()).map(([category, items]) => ({
-    category,
-    items,
-  }));
-}
 
 export default router;

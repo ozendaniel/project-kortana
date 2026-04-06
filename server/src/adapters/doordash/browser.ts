@@ -316,19 +316,28 @@ export class DoorDashBrowser {
     await page.goto(DOORDASH_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
   }
 
-  /** Check auth state WITHOUT navigating — safe to call during login flow */
+  /** Check auth state WITHOUT navigating or creating pages.
+   *  Uses existing page if available, falls back to cookie check.
+   *  Safe to call from session monitor — never opens new tabs. */
   async checkSession(): Promise<boolean> {
     try {
-      const page = await this.ensurePage();
-      const url = page.url();
-      // If on the login or identity page, not logged in yet
-      if (url.includes('/consumer/login') || url.includes('/identity')) return false;
-      // If on a DoorDash page, check for absence of login button
-      if (url.includes('doordash.com')) {
-        const signInButton = await page.$('a[href="/consumer/login"]');
-        return signInButton === null;
+      if (!this.context) return false;
+
+      // Fast path: if we have a live page on doordash.com, use the DOM check
+      if (this.page && !this.page.isClosed()) {
+        const url = this.page.url();
+        if (url.includes('/consumer/login') || url.includes('/identity')) return false;
+        if (url.includes('doordash.com')) {
+          const signInButton = await this.page.$('a[href="/consumer/login"]');
+          return signInButton === null;
+        }
       }
-      return false;
+
+      // No live page on doordash.com — check cookies without page interaction.
+      // Authenticated DoorDash sessions set HttpOnly cookies (session tokens).
+      // Anonymous visitors only get basic Cloudflare/tracking cookies.
+      const cookies = await this.context.cookies(['https://www.doordash.com']);
+      return cookies.some(c => c.httpOnly && c.value.length > 20);
     } catch {
       return false;
     }

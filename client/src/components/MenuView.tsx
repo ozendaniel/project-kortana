@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getMenu } from '../api/client';
 import { useCartStore } from '../stores/cartStore';
@@ -12,6 +12,9 @@ function formatCents(cents: number): string {
 export default function MenuView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const highlightQuery = searchParams.get('q')?.toLowerCase() || '';
+  const firstHighlightSet = useRef(false);
   const addItem = useCartStore((s) => s.addItem);
   const restaurantId = useCartStore((s) => s.restaurantId);
   const setRestaurant = useCartStore((s) => s.setRestaurant);
@@ -27,6 +30,11 @@ export default function MenuView() {
       setRestaurant(data.restaurant.id, data.restaurant.name);
     }
   }, [data?.restaurant?.id]);
+
+  // Reset first-highlight tracker when data changes
+  useEffect(() => {
+    firstHighlightSet.current = false;
+  }, [data?.menu]);
 
   if (isLoading) {
     return (
@@ -82,11 +90,20 @@ export default function MenuView() {
                 const priceDiff = prices.length === 2 && prices[0] && prices[1]
                   ? Math.abs(prices[0][1].priceCents - prices[1][1].priceCents)
                   : 0;
+                const isHighlighted = highlightQuery && item.name.toLowerCase().includes(highlightQuery);
 
                 return (
                   <div
                     key={item.id}
-                    className="group flex items-center gap-3 py-3 px-3 -mx-3 rounded-sm hover:bg-surface transition-colors"
+                    ref={isHighlighted && !firstHighlightSet.current ? (el) => {
+                      if (el) {
+                        firstHighlightSet.current = true;
+                        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                      }
+                    } : undefined}
+                    className={`group flex items-center gap-3 py-3 px-3 -mx-3 rounded-sm hover:bg-surface transition-colors ${
+                      isHighlighted ? 'border border-lime/30 bg-lime/5' : ''
+                    }`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline gap-2">

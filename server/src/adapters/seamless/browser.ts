@@ -170,28 +170,41 @@ export class SeamlessBrowser {
     }
   }
 
-  /** Check auth state WITHOUT navigating — safe to call during login flow */
+  /** Check auth state WITHOUT navigating or creating pages.
+   *  Uses existing page if available, falls back to cookie check.
+   *  Safe to call from session monitor — never opens new tabs. */
   async checkSession(): Promise<boolean> {
     if (await this.hasAuthSession()) return true;
 
     // Fallback: if page navigated away from /login to seamless.com, login succeeded
     // (handles cases where Grubhub changed localStorage key format)
     try {
-      const page = await this.ensurePage();
-      const url = page.url();
-      if (url.includes('seamless.com') && !url.includes('/login')) {
-        return true;
+      if (this.page && !this.page.isClosed()) {
+        const url = this.page.url();
+        if (url.includes('seamless.com') && !url.includes('/login')) {
+          return true;
+        }
+      }
+    } catch {}
+
+    // Last resort: check cookies without page interaction
+    try {
+      if (this.context) {
+        const cookies = await this.context.cookies(['https://www.seamless.com', 'https://api-gtm.grubhub.com']);
+        return cookies.some(c => c.httpOnly && c.value.length > 20);
       }
     } catch {}
 
     return false;
   }
 
-  /** Check if Grubhub authenticated session exists in localStorage */
+  /** Check if Grubhub authenticated session exists in localStorage.
+   *  Uses existing page only — never creates new pages. */
   private async hasAuthSession(): Promise<boolean> {
     try {
-      const page = await this.ensurePage();
-      return page.evaluate(() => {
+      // Only check localStorage if we already have a live page — don't open new tabs
+      if (!this.page || this.page.isClosed()) return false;
+      return this.page.evaluate(() => {
         const session = localStorage.getItem('grub-api:authenticatedSession');
         return session !== null && session.includes('credential');
       });

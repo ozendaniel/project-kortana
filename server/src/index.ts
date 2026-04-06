@@ -17,6 +17,7 @@ import compareRouter, { setAdapters } from './routes/compare.js';
 import ordersRouter from './routes/orders.js';
 import savingsRouter from './routes/savings.js';
 import authRouter, { setAuthManager } from './routes/auth.js';
+import menuItemsRouter from './routes/menu-items.js';
 import { scheduleDailySync } from './services/sync.js';
 import { AuthManager } from './services/auth-manager.js';
 import { setupWebSocket } from './services/ws-server.js';
@@ -57,6 +58,7 @@ app.use('/api/compare', compareRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/savings', savingsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/menu-items', menuItemsRouter);
 
 // In production, serve built client files from the same Express server
 if (isProd) {

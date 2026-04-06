@@ -433,22 +433,37 @@ export class SeamlessAdapter implements PlatformAdapter {
           }
         }
 
-        // Collect items from the regular-sections container
-        const container = document.querySelector('[data-testid="regular-sections"]');
+        // Collect items from the menu container
+        // Restaurants use [data-testid="regular-sections"], but grocery/convenience
+        // stores use [data-testid="menu-sections-container"] instead.
+        // Check for items inside each — regular-sections can exist but be empty.
+        let container = document.querySelector('[data-testid="regular-sections"]');
+        if (!container || container.querySelectorAll('.menuItem').length === 0) {
+          container = document.querySelector('[data-testid="menu-sections-container"]');
+        }
         if (!container) return items;
 
         for (const el of container.querySelectorAll('.menuItem')) {
           const rect = el.getBoundingClientRect();
           if (rect.top > viewportH + 200 || rect.bottom < -200) continue;
 
+          // Name: try .menuItemNew-name first (restaurant layout), then fall back
+          // to .menuItem-info text minus the price (grocery/convenience variant)
           const nameEl = el.querySelector('.menuItemNew-name');
-          const name = nameEl?.textContent?.trim() || '';
-          if (!name || name.length < 2) continue;
+          let name = nameEl?.textContent?.trim() || '';
 
           const priceEl = el.querySelector('.menuItem-priceAmount, .menuItem-priceAmountUnbolded');
           const priceText = priceEl?.textContent?.trim() || '';
           const priceMatch = priceText.match(priceRe);
           const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1]) * 100) : 0;
+
+          // Fallback: extract name from full text by stripping price portion
+          if (!name) {
+            const fullText = el.textContent?.trim() || '';
+            const priceIdx = fullText.indexOf('$');
+            name = priceIdx > 0 ? fullText.substring(0, priceIdx).trim() : fullText.substring(0, 80).trim();
+          }
+          if (!name || name.length < 2) continue;
 
           const descEl = el.querySelector('.menuItem-description');
           const description = descEl?.textContent?.trim() || '';

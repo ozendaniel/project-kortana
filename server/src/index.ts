@@ -107,21 +107,33 @@ async function initAdapters(): Promise<void> {
   }
 
   if (process.env.SEAMLESS_EMAIL) {
+    // Check if another process (populate script) already owns Chrome on the Seamless CDP port.
+    // Two Playwright instances on the same Chrome causes page interference.
+    let seamlessCdpBusy = false;
     try {
-      const seamless = new SeamlessAdapter();
-      await seamless.initialize({
-        email: process.env.SEAMLESS_EMAIL,
-        password: process.env.SEAMLESS_PASSWORD,
-      });
-      adapters.set('seamless', seamless);
-      authManager.registerPlatform('seamless', seamless.getBrowser(), seamless.getStatus(), async () => {
-        seamless.setStatus('authenticated');
-        await seamless.refreshTokens();
-      });
-      console.log(`[Kortana] Seamless adapter registered (${seamless.getStatus()}).`);
-    } catch (err) {
-      console.error('[Kortana] Seamless adapter failed to initialize:', err);
-      console.log('[Kortana] Continuing without Seamless live adapter (will use DB estimates).');
+      const resp = await fetch('http://localhost:9223/json/version');
+      seamlessCdpBusy = resp.ok;
+    } catch {}
+
+    if (seamlessCdpBusy) {
+      console.log('[Kortana] Seamless Chrome already in use (populate script?) — skipping adapter to avoid interference.');
+    } else {
+      try {
+        const seamless = new SeamlessAdapter();
+        await seamless.initialize({
+          email: process.env.SEAMLESS_EMAIL,
+          password: process.env.SEAMLESS_PASSWORD,
+        });
+        adapters.set('seamless', seamless);
+        authManager.registerPlatform('seamless', seamless.getBrowser(), seamless.getStatus(), async () => {
+          seamless.setStatus('authenticated');
+          await seamless.refreshTokens();
+        });
+        console.log(`[Kortana] Seamless adapter registered (${seamless.getStatus()}).`);
+      } catch (err) {
+        console.error('[Kortana] Seamless adapter failed to initialize:', err);
+        console.log('[Kortana] Continuing without Seamless live adapter (will use DB estimates).');
+      }
     }
   } else {
     console.log('[Kortana] SEAMLESS_EMAIL not set — skipping Seamless adapter.');

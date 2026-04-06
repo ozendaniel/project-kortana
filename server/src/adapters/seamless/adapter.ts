@@ -22,9 +22,13 @@ export class SeamlessAdapter implements PlatformAdapter {
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
 
-    // Use checkSession (cookie/localStorage-based) instead of isLoggedIn (navigates to homepage).
-    // isLoggedIn creates new pages + loads ad iframes that spawn popup windows.
-    const loggedIn = await this.browser.checkSession();
+    // If Chrome was already running (e.g. populate script), don't navigate —
+    // isLoggedIn() would disrupt the other process. checkSession() works here
+    // because the existing page is already on seamless.com.
+    // If we spawned Chrome, use isLoggedIn() (needs to navigate for localStorage).
+    const loggedIn = this.browser.isSharedInstance()
+      ? await this.browser.checkSession()
+      : await this.browser.isLoggedIn();
 
     if (loggedIn) {
       console.log('[Seamless] Existing session found and valid.');

@@ -13,39 +13,41 @@ export class DoorDashBrowser {
   private page: Page | null = null;       // Main page (for login/navigation)
   private apiPage: Page | null = null;    // Dedicated API page (stable context for fetch calls)
   private chromeProcess: ChildProcess | null = null;
+  private shared = false;
 
-  /** Auto-close popup windows spawned by ad/tracker iframes (Stripe, DoubleClick, reCAPTCHA). */
-  private installPopupHandler(context: BrowserContext): void {
-    context.on('page', (newPage) => {
-      // Give a tick for legitimate page creation (ensurePage, ensureApiPage) to assign references
-      setTimeout(() => {
-        if (newPage !== this.page && newPage !== this.apiPage && !newPage.isClosed()) {
-          newPage.close().catch(() => {});
-        }
-      }, 500);
-    });
-  }
 
   async launch(): Promise<void> {
-    cleanProfileLocks(PROFILE_DIR);
-    const chromePath = findChromePath();
-    const args = getChromeArgs({ cdpPort: CDP_PORT, profileDir: PROFILE_DIR, headless: true });
-    this.chromeProcess = spawn(chromePath, args, { stdio: 'ignore' });
+    // Check if Chrome is already running on this CDP port.
+    // If so, just connect — don't spawn a competing instance.
+    let cdpAlive = false;
+    try {
+      const resp = await fetch(`http://localhost:${CDP_PORT}/json/version`);
+      cdpAlive = resp.ok;
+    } catch {}
 
-    this.chromeProcess.on('exit', (code) => {
-      // On Windows, Chrome's parent launcher process exits quickly (code 0)
-      // while child processes keep running. Don't null state here — ensureConnected handles it.
-      console.warn(`[DoorDash] Chrome launcher process exited with code ${code}`);
-    });
+    if (!cdpAlive) {
+      cleanProfileLocks(PROFILE_DIR);
+      const chromePath = findChromePath();
+      const args = getChromeArgs({ cdpPort: CDP_PORT, profileDir: PROFILE_DIR, headless: true });
+      this.chromeProcess = spawn(chromePath, args, { stdio: 'ignore' });
 
-    // Wait for Chrome CDP port to be ready (headless takes longer on Windows)
-    await this.waitForCDP();
+      this.chromeProcess.on('exit', (code) => {
+        console.warn(`[DoorDash] Chrome launcher process exited with code ${code}`);
+      });
 
-    // Connect Playwright via CDP — no automation banners, real TLS fingerprint
+      await this.waitForCDP();
+    } else {
+      this.shared = true;
+      console.log('[DoorDash] Chrome already running on CDP port, connecting to existing instance.');
+    }
+
     this.browser = await chromium.connectOverCDP(`http://localhost:${CDP_PORT}`);
     this.context = this.browser.contexts()[0] || await this.browser.newContext();
     this.page = this.context.pages()[0] || await this.context.newPage();
-    this.installPopupHandler(this.context);
+    if (!cdpAlive) {
+      // No permanent popup handler — risks closing legitimate pages.
+      // DoorDash doesn't do DOM scraping, so ad popups are cosmetic only.
+    }
   }
 
   /** Poll until Chrome CDP port is accepting connections */
@@ -107,7 +109,8 @@ export class DoorDashBrowser {
         this.context = this.browser.contexts()[0] || await this.browser.newContext();
         this.page = this.context.pages()[0] || await this.context.newPage();
         this.apiPage = null;
-        this.installPopupHandler(this.context);
+        // No permanent popup handler — risks closing legitimate pages.
+      // DoorDash doesn't do DOM scraping, so ad popups are cosmetic only.
         return;
       } catch (err) {
         console.log(`[DoorDash] CDP reconnect failed (${err instanceof Error ? err.message.substring(0, 60) : err}), full relaunch...`);

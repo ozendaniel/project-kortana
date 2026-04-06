@@ -81,7 +81,7 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Both DoorDash and Seamless sessions authenticated on Railway via persistent volume.
 
 **What's next:**
-1. **Restart Seamless DOM scraping** — use `--concurrency 4 --resume --sustained --skip-match` (safe on 32GB desktop). ~4,070 restaurants remaining. Run in a real terminal, not Claude Code background task. Monitor via DB: `SELECT COUNT(DISTINCT mi.restaurant_id) FROM menu_items mi JOIN restaurants r ON r.id = mi.restaurant_id WHERE mi.platform = 'seamless' AND mi.created_at > NOW() - INTERVAL '24 hours'`.
+1. **Restart Seamless DOM scraping** — use `--concurrency 4 --resume --sustained --skip-match` (safe on 32GB desktop). ~4,050 restaurants remaining. **Must run in a real terminal** (cmd/PowerShell), NOT Claude Code background task (10-min timeout). Command: `cd C:\Users\ozend\dev\project-kortana\server && npx tsx src/scripts/populate-seamless-menus.ts --concurrency 4 --resume --sustained --skip-match`. If Railway DB gives ECONNRESET on startup, wait a few minutes and retry — connection pool recovers. Monitor via DB: `SELECT COUNT(DISTINCT mi.restaurant_id) FROM menu_items mi JOIN restaurants r ON r.id = mi.restaurant_id WHERE mi.platform = 'seamless' AND mi.created_at > NOW() - INTERVAL '24 hours'`.
 2. **Fix Dim Sum Palace DOM scraping** — "View More Items" button not handled, causing incomplete menus on complex restaurants.
 3. **Tune dedup scoring for geo matches** — current 0.80 auto-merge threshold produces ~30-40% false positives with real geo data in dense NYC. Options: raise threshold to 0.88-0.90, require menu item overlap as signal, or add address string similarity. Dry run results in `server/data/dedup-dryrun-2026-04-04.txt`.
 4. **Re-run dedup** after scoring is tuned — 1,496 DD-only restaurants now have real addresses for geo matching against 5,574 SL-only restaurants.
@@ -106,6 +106,8 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 | Price comparison scope | Item price + delivery fee + service fee | Does not include tip estimate or subscription benefits (DashPass etc.) in MVP |
 | Comparison UX | Build order once, see total per platform | Not side-by-side menu browsing — unified menu with per-platform prices per item |
 | Order placement (Phase 1) | Manual — redirect to platform URL | Auto-ordering comes in Phase 2 |
+| Chrome sharing | Server yields CDP port to populate script | Server checks if Chrome is already running on the CDP port before initializing an adapter. If occupied (populate script), skips that adapter entirely. Two Playwright instances on the same Chrome context cause page interference (navigation destroys execution contexts). Per-scrape popup handlers in getMenuFromDOM handle ad popups during active scraping. |
+| Session checking | `checkSession()` for all periodic/passive checks | `checkSession()` uses cookies (DD) or localStorage (SL) — no page creation, no navigation. `isLoggedIn()` only used for fresh Chrome initialization (one-time). Prevents popup storms from ad iframes on platform homepages. |
 
 ## Build Phases
 

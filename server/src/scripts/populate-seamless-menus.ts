@@ -199,6 +199,22 @@ async function main() {
         const count = await upsertMenu(rest.id, 'seamless', menu);
         await db.query('UPDATE restaurants SET last_synced_at = NOW() WHERE id = $1', [rest.id]);
 
+        // Cache per-restaurant fee structure for comparison engine
+        try {
+          const fees = await adapter.getRestaurantFees(rest.seamless_id);
+          if (fees) {
+            await db.query(
+              `UPDATE restaurants
+                 SET platform_fees = jsonb_set(COALESCE(platform_fees, '{}'), '{seamless}', $1::jsonb)
+                 WHERE id = $2`,
+              [JSON.stringify(fees), rest.id]
+            );
+            console.log(`  ${label} 💰 fees: delivery $${(fees.deliveryFeeCents/100).toFixed(2)}, service ${(fees.serviceFeeRate*100).toFixed(0)}%`);
+          }
+        } catch (feeErr) {
+          console.warn(`  ${label} fee fetch failed: ${feeErr instanceof Error ? feeErr.message.substring(0, 80) : feeErr}`);
+        }
+
         const elapsed = ((Date.now() - restStart) / 1000).toFixed(1);
         console.log(`  ${label} → ${count} items (${menu.categories.length} categories) — ${elapsed}s`);
 

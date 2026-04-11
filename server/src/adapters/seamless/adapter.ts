@@ -307,6 +307,32 @@ export class SeamlessAdapter implements PlatformAdapter {
     };
   }
 
+  /**
+   * Fetch cached fee structure for a single restaurant from Grubhub's
+   * /restaurants/{id} endpoint. Returns a CachedFees shape that can compute
+   * delivery/service/tax for any subtotal without needing a cart simulation.
+   * Much cheaper than adding items to cart and hitting /bill, and doesn't
+   * fail on items with required modifier categories.
+   */
+  async getRestaurantFees(platformRestaurantId: string): Promise<import('../../services/fees.js').CachedFees | null> {
+    this.ensureAuthenticated();
+    try {
+      const { extractSeamlessFees } = await import('../../services/fees.js');
+      const resp = await this.apiCall<any>(`/restaurants/${platformRestaurantId}`);
+      const ra = resp?.restaurant_availability
+        || resp?.restaurant?.restaurant_availability
+        || resp?.restaurant_availability_summary?.[0];
+      if (!ra) {
+        console.warn(`[Seamless] getRestaurantFees ${platformRestaurantId}: no restaurant_availability in response`);
+        return null;
+      }
+      return extractSeamlessFees(ra);
+    } catch (err) {
+      console.warn(`[Seamless] getRestaurantFees ${platformRestaurantId}: ${err instanceof Error ? err.message.substring(0, 120) : err}`);
+      return null;
+    }
+  }
+
   async getMenu(
     platformRestaurantId: string,
     location?: { lat: number; lng: number; address?: string },

@@ -108,6 +108,7 @@ interface FetchMenuResult {
   menu: PlatformMenu;
   address?: StoreAddress;
   phone?: string;
+  fees?: import('../services/fees.js').CachedFees;
 }
 
 function saveProgress(state: ProgressState): void {
@@ -145,6 +146,10 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Fet
             city: string;
             state: string;
           };
+          deliveryFeeLayout?: {
+            title?: string | null;
+            displayDeliveryFee?: string | null;
+          } | null;
         };
         mxInfo?: {
           phoneno?: string;
@@ -198,8 +203,16 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Fet
   // Extract phone from mxInfo
   const phone = store?.mxInfo?.phoneno || undefined;
 
+  // Extract fee structure from storepageFeed (delivery fee display string)
+  let fees: import('../services/fees.js').CachedFees | undefined;
+  if (store?.storeHeader) {
+    const { extractDoorDashFees } = await import('../services/fees.js');
+    const extracted = extractDoorDashFees(store.storeHeader);
+    if (extracted) fees = extracted;
+  }
+
   if (!store?.itemLists) {
-    return { menu: { categories: [] }, address, phone };
+    return { menu: { categories: [] }, address, phone, fees };
   }
 
   const categories = store.itemLists.map(cat => ({
@@ -213,7 +226,7 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Fet
     })),
   }));
 
-  return { menu: { categories }, address, phone };
+  return { menu: { categories }, address, phone, fees };
 }
 
 /**
@@ -443,7 +456,7 @@ async function main() {
     try {
       console.log(`[${i + 1}/${restaurants.length}] ${rest.canonical_name} (DD:${rest.doordash_id})...`);
 
-      const { menu, address, phone } = await fetchMenu(adapter, rest.doordash_id);
+      const { menu, address, phone, fees } = await fetchMenu(adapter, rest.doordash_id);
       const itemCount = menu.categories.reduce((a, c) => a + c.items.length, 0);
 
       // Enrich address if we got one and the restaurant has placeholder/missing data
@@ -459,6 +472,17 @@ async function main() {
         }
       } else if (address && dryRun) {
         console.log(`  📍 [DRY RUN] ${address.displayAddress}`);
+      }
+
+      // Cache per-restaurant fee structure for comparison engine
+      if (fees && !dryRun) {
+        await db.query(
+          `UPDATE restaurants
+             SET platform_fees = jsonb_set(COALESCE(platform_fees, '{}'), '{doordash}', $1::jsonb)
+             WHERE id = $2`,
+          [JSON.stringify(fees), rest.id]
+        );
+        console.log(`  💰 fees: delivery $${(fees.deliveryFeeCents/100).toFixed(2)}, service ${(fees.serviceFeeRate*100).toFixed(0)}%`);
       }
 
       if (itemCount === 0) {

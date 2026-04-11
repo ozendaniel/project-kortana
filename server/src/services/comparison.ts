@@ -1,5 +1,6 @@
 import { db } from '../db/client.js';
 import type { PlatformAdapter, PlatformFees } from '../adapters/types.js';
+import { computeFeesFromCache, type CachedFees, type PlatformFeesMap } from './fees.js';
 
 interface CartItem {
   itemId: string;  // canonical menu_item id
@@ -58,9 +59,14 @@ export async function compareOrder(
   if (rest.seamless_id) platforms.push('seamless');
   if (rest.ubereats_id) platforms.push('ubereats');
 
+  // Load cached platform fees once per request — used as a high-quality
+  // fallback when live cart simulation fails (e.g. items with required modifiers).
+  const cachedFeesMap: PlatformFeesMap = (rest.platform_fees as PlatformFeesMap) || {};
+
   // Fetch all platforms in parallel for speed
   const platformPromises = platforms.map(async (platform) => {
     const adapter = adapters?.get(platform);
+    const cachedFees = cachedFeesMap[platform as 'doordash' | 'seamless'];
 
     try {
       let comparison: PlatformComparison;
@@ -69,9 +75,17 @@ export async function compareOrder(
         try {
           comparison = await fetchLiveFees(adapter, rest, items, restaurantId, platform, deliveryAddress);
         } catch (liveErr) {
-          console.error(`[Compare] Live ${platform} failed, falling back to DB:`, liveErr);
-          comparison = await calculateFromDB(rest, items, restaurantId, platform);
+          const errMsg = liveErr instanceof Error ? liveErr.message : String(liveErr);
+          if (cachedFees) {
+            console.log(`[Compare] Live ${platform} failed, using cached fee structure: ${errMsg.substring(0, 120)}`);
+            comparison = await calculateFromCachedFees(rest, items, restaurantId, platform, cachedFees);
+          } else {
+            console.error(`[Compare] Live ${platform} failed, no cache — falling back to DB estimates:`, errMsg.substring(0, 200));
+            comparison = await calculateFromDB(rest, items, restaurantId, platform);
+          }
         }
+      } else if (cachedFees) {
+        comparison = await calculateFromCachedFees(rest, items, restaurantId, platform, cachedFees);
       } else {
         comparison = await calculateFromDB(rest, items, restaurantId, platform);
       }
@@ -153,6 +167,83 @@ async function fetchLiveFees(
     totalCents: fees.totalCents,
     totalWithTipCents: fees.totalCents + tipCents,
     estimatedDeliveryTime: fees.estimatedDeliveryTime,
+    missingItems: missingItems.map((i) => i.name),
+    orderUrl: rest[`${platform}_url`] || '',
+  };
+}
+
+/**
+ * Calculate comparison using cached fee structure from restaurants.platform_fees.
+ * Uses real per-restaurant delivery/service/tax parameters captured during
+ * menu population, so the result matches what the user would see at checkout
+ * for the overwhelming majority of carts. Only differs from "live" when
+ * platform-side promotions / surges are active.
+ *
+ * DashPass is honored via DOORDASH_HAS_DASHPASS env flag — if set, DoorDash
+ * delivery is zeroed and service rate drops to 5% per DoorDash's fee disclosure.
+ */
+async function calculateFromCachedFees(
+  rest: Record<string, any>,
+  items: CartItem[],
+  restaurantId: string,
+  platform: string,
+  cachedFees: CachedFees
+): Promise<PlatformComparison> {
+  const platformItems = await mapItemsToPlatform(items, restaurantId, platform);
+  const missingItems = platformItems.filter((i) => !i.platformItemId);
+  const availableItems = platformItems.filter((i) => i.platformItemId);
+
+  if (availableItems.length === 0) {
+    return {
+      available: false,
+      itemSubtotalCents: 0,
+      deliveryFeeCents: 0,
+      serviceFeeCents: 0,
+      smallOrderFeeCents: 0,
+      taxCents: 0,
+      discountCents: 0,
+      tipCents: 0,
+      totalCents: 0,
+      totalWithTipCents: 0,
+      missingItems: missingItems.map((i) => i.name),
+      orderUrl: rest[`${platform}_url`] || '',
+    };
+  }
+
+  // Calculate subtotal from DB prices
+  let subtotalCents = 0;
+  for (const item of availableItems) {
+    const priceResult = await db.query(
+      `SELECT price_cents FROM menu_items
+       WHERE restaurant_id = $1 AND platform = $2 AND platform_item_id = $3
+       LIMIT 1`,
+      [restaurantId, platform, item.platformItemId]
+    );
+    if (priceResult.rows[0]) {
+      subtotalCents += priceResult.rows[0].price_cents * item.quantity;
+    }
+  }
+
+  // Compute fees using cached structure + DashPass flag
+  const dashpass = process.env.DOORDASH_HAS_DASHPASS === 'true';
+  const computed = computeFeesFromCache(subtotalCents, cachedFees, {
+    platform: platform as 'doordash' | 'seamless',
+    dashpass,
+  });
+
+  const tipCents = Math.round(subtotalCents * 0.05); // optional 5% tip
+
+  return {
+    available: missingItems.length === 0,
+    itemSubtotalCents: computed.subtotalCents,
+    deliveryFeeCents: computed.deliveryFeeCents,
+    serviceFeeCents: computed.serviceFeeCents + computed.serviceTollCents,  // roll toll into service for display
+    smallOrderFeeCents: computed.smallOrderFeeCents,
+    taxCents: computed.taxCents,
+    discountCents: computed.discountCents,
+    tipCents,
+    totalCents: computed.totalCents,
+    totalWithTipCents: computed.totalCents + tipCents,
     missingItems: missingItems.map((i) => i.name),
     orderUrl: rest[`${platform}_url`] || '',
   };

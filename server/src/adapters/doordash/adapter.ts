@@ -392,7 +392,16 @@ export class DoorDashAdapter implements PlatformAdapter {
    */
   async getFees(params: {
     platformRestaurantId: string;
-    items: Array<{ platformItemId: string; quantity: number }>;
+    items: Array<{
+      platformItemId: string;
+      quantity: number;
+      name?: string;
+      description?: string;
+      unitPriceCents?: number;
+      menuPlatformId?: string;
+      modifierGroups?: import('../../services/modifiers.js').ModifierGroup[];
+      modifierSelections?: import('../../services/modifiers.js').ModifierSelection[];
+    }>;
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees> {
     this.ensureAuthenticated();
@@ -408,6 +417,9 @@ export class DoorDashAdapter implements PlatformAdapter {
     }
     this.lastRequestTime = Date.now();
 
+    // Import modifier helpers once
+    const { fillDefaultSelections, buildDoorDashNestedOptions } = await import('../../services/modifiers.js');
+
     // Clear cart, add items, get preview — subtotal comes from the clean cart itself
     let estimatedDeliveryTime: string | undefined;
     try {
@@ -422,19 +434,24 @@ export class DoorDashAdapter implements PlatformAdapter {
 
       // Add requested items to clean cart
       for (const item of params.items) {
+        // Build nestedOptions from user selections (or auto-picked defaults)
+        const groups = item.modifierGroups || [];
+        const selections = fillDefaultSelections(groups, item.modifierSelections || []);
+        const nestedOptions = groups.length > 0 ? buildDoorDashNestedOptions(groups, selections) : '[]';
+
         const result = await this.browser.mainTabGraphqlQuery<any>('addCartItem', addCartQuery, {
           addCartItemInput: {
             storeId: params.platformRestaurantId,
-            menuId: '',
+            menuId: item.menuPlatformId || '',
             itemId: item.platformItemId,
-            itemName: '',
-            itemDescription: '',
+            itemName: item.name || '',
+            itemDescription: item.description || '',
             currency: 'USD',
             quantity: item.quantity,
-            nestedOptions: '[]',
+            nestedOptions,
             specialInstructions: '',
             substitutionPreference: 'substitute',
-            unitPrice: 0,
+            unitPrice: item.unitPriceCents ?? 0,
             cartId,
             isBundle: false,
             bundleType: 'BUNDLE_TYPE_UNSPECIFIED',
@@ -452,7 +469,8 @@ export class DoorDashAdapter implements PlatformAdapter {
 
         const cart = result?.data?.addCartItemV2;
         if (cart?.id) cartId = cart.id;
-        console.log(`[DoorDash] addCartItem: ${item.platformItemId}, cart=${cartId || '(new)'}, subtotal=${cart?.subtotal}`);
+        const modSummary = selections.length > 0 ? ` mods=${selections.map(s => s.optionIds.length).join('+')}` : '';
+        console.log(`[DoorDash] addCartItem: ${item.platformItemId}${modSummary}, cart=${cartId || '(new)'}, subtotal=${cart?.subtotal}`);
         if (params.items.indexOf(item) < params.items.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
         }

@@ -149,6 +149,12 @@ async function fetchLiveFees(
     items: availableItems.map((i) => ({
       platformItemId: i.platformItemId!,
       quantity: i.quantity,
+      name: i.name,
+      description: i.description || undefined,
+      unitPriceCents: i.unitPriceCents,
+      menuPlatformId: i.menuPlatformId || undefined,
+      modifierGroups: i.modifierGroups || undefined,
+      modifierSelections: i.modifierSelections,
     })),
     deliveryAddress,
   });
@@ -332,17 +338,32 @@ async function calculateFromDB(
   };
 }
 
+interface MappedItem {
+  itemId: string;
+  name: string;
+  description: string | null;
+  platformItemId: string | null;
+  unitPriceCents: number;
+  menuPlatformId: string | null;
+  modifierGroups: import('./modifiers.js').ModifierGroup[] | null;
+  quantity: number;
+  modifierSelections?: import('./modifiers.js').ModifierSelection[];
+}
+
 async function mapItemsToPlatform(
   items: CartItem[],
   restaurantId: string,
   platform: string
-): Promise<Array<{ itemId: string; name: string; platformItemId: string | null; quantity: number }>> {
-  const mapped = [];
+): Promise<MappedItem[]> {
+  const mapped: MappedItem[] = [];
 
   for (const item of items) {
-    // Look up the canonical item and find its platform-specific counterpart
+    // Look up the canonical item and find its platform-specific counterpart.
+    // Pull ALL the platform-specific metadata the adapter needs for cart APIs:
+    // real name, description, unit price, platform menu ID, modifier groups.
     const result = await db.query(
-      `SELECT mi.platform_item_id, mi.original_name
+      `SELECT mi.platform_item_id, mi.original_name, mi.description,
+              mi.price_cents, mi.menu_platform_id, mi.modifier_groups
        FROM menu_items mi
        WHERE mi.restaurant_id = $1
          AND mi.platform = $2
@@ -351,11 +372,19 @@ async function mapItemsToPlatform(
       [restaurantId, platform, item.itemId]
     );
 
+    const row = result.rows[0];
     mapped.push({
       itemId: item.itemId,
-      name: result.rows[0]?.original_name || 'Unknown item',
-      platformItemId: result.rows[0]?.platform_item_id || null,
+      name: row?.original_name || 'Unknown item',
+      description: row?.description || null,
+      platformItemId: row?.platform_item_id || null,
+      unitPriceCents: row?.price_cents ?? 0,
+      menuPlatformId: row?.menu_platform_id || null,
+      modifierGroups: row?.modifier_groups || null,
       quantity: item.quantity,
+      // Modifier selections come from the cart (frontend passes them through)
+      // — placeholder for now, Phase 2 wires the frontend selection UI.
+      modifierSelections: (item as any).modifierSelections || [],
     });
   }
 

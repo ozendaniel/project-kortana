@@ -27,10 +27,31 @@ export interface PlatformAdapter {
   /** Get full menu for a restaurant. Optional location enables address-dependent features (e.g. Seamless delivery range). */
   getMenu(platformRestaurantId: string, location?: { lat: number; lng: number; address?: string }): Promise<PlatformMenu>;
 
-  /** Get real-time fee estimate for an order */
+  /**
+   * Get real-time fee estimate for an order.
+   *
+   * Items should be enriched with the platform-specific metadata the cart
+   * APIs require (real menuId/name/unitPrice/modifier selections). The
+   * comparison service loads this from the DB before calling.
+   */
   getFees(params: {
     platformRestaurantId: string;
-    items: Array<{ platformItemId: string; quantity: number }>;
+    items: Array<{
+      platformItemId: string;
+      quantity: number;
+      /** Real item name as stored on the platform (required — empty string is rejected for items with modifiers) */
+      name?: string;
+      /** Real item description */
+      description?: string;
+      /** Unit price in cents (DD rejects unitPrice=0 for customized items) */
+      unitPriceCents?: number;
+      /** Platform-side menu ID (DD: from storepageFeed.menuBook.id) */
+      menuPlatformId?: string;
+      /** Normalized modifier groups from cache (used to build default selections if no user selections) */
+      modifierGroups?: import('../services/modifiers.js').ModifierGroup[];
+      /** User-selected modifier options (falls back to defaults if empty) */
+      modifierSelections?: import('../services/modifiers.js').ModifierSelection[];
+    }>;
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees>;
 

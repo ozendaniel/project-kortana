@@ -287,59 +287,94 @@ export class DoorDashAdapter implements PlatformAdapter {
     this.ensureAuthenticated();
     await this.browser.ensureConnected();
 
-    try {
-      const query = loadQuery('itemPage.graphql');
-      // Build a minimal cursor — we don't have categoryId but DoorDash accepts
-      // nulls for optional fields in the cursor blob.
-      const cursorPayload = {
-        dm_id: 'item_1',
-        dm_type: 'item',
-        dm_version: 2,
-        cursor_version: 'ITEM_PAGE',
-        itemId: Number(itemId),
-        optionId: null,
-        selectedOrderItemId: null,
-        storeLiteData: null,
-        is_homegrown_loyalty: false,
-        page_stack_trace: [],
-        storeId: Number(storeId),
-        menuId: menuId ? Number(menuId) : null,
-        categoryId: null,
-        businessId: null,
-        verticalId: 0,
-        is_meal_manager_entry: false,
-      };
-      const itemCursor = Buffer.from(JSON.stringify(cursorPayload)).toString('base64');
+    // DoorDash 403s itemPage unless the main tab's origin/referer matches a
+    // store page URL. Navigate there first so the page.evaluate fetch sends
+    // the right Referer header.
+    await this.browser.navigateToStore(storeId);
 
-      const result = await this.browser.mainTabGraphqlQuery<any>(
-        'itemPage',
-        query,
-        {
-          itemId,
-          storeId,
-          isMerchantPreview: false,
-          isNested: false,
-          shouldFetchPresetCarousels: false,
-          fulfillmentType: 'Delivery',
-          cursorContext: { itemCursor },
-          shouldFetchStoreLiteData: false,
+    // itemPage also requires consumerId in variables (from ajs_user_id cookie)
+    const consumerId = await this.browser.getConsumerId();
+
+    const query = loadQuery('itemPage.graphql');
+
+    // Try multiple cursor strategies. DoorDash's itemPage endpoint rejects
+    // some requests with a 403-wrapped HTML page depending on what the
+    // cursorContext contains. We iterate through plausible formats.
+    const cursorStrategies: Array<{ label: string; cursorContext: unknown }> = [
+      // 1. Null cursor — simplest
+      { label: 'null', cursorContext: null },
+      // 2. Empty cursor object
+      { label: 'empty', cursorContext: {} },
+      // 3. Minimal itemCursor with just ids
+      {
+        label: 'minimal',
+        cursorContext: {
+          itemCursor: Buffer.from(JSON.stringify({
+            dm_id: 'item_1',
+            dm_type: 'item',
+            dm_version: 2,
+            cursor_version: 'ITEM_PAGE',
+            itemId: Number(itemId),
+            optionId: null,
+            selectedOrderItemId: null,
+            storeLiteData: null,
+            is_homegrown_loyalty: false,
+            page_stack_trace: [],
+            storeId: Number(storeId),
+            menuId: menuId ? Number(menuId) : null,
+            categoryId: null,
+            businessId: null,
+            verticalId: 0,
+            is_meal_manager_entry: false,
+          })).toString('base64'),
         },
-        1, // maxRetries — fail fast, caller handles retries / rate limiting
-      );
+      },
+    ];
 
-      const optionLists = result?.data?.itemPage?.optionLists;
-      if (!optionLists) {
-        console.warn(`[DoorDash] fetchItemModifiers ${itemId}: no optionLists in response`);
-        return [];
+    for (const strat of cursorStrategies) {
+      try {
+        const result = await this.browser.mainTabGraphqlQuery<any>(
+          'itemPage',
+          query,
+          {
+            itemId,
+            consumerId: consumerId || undefined,
+            storeId,
+            isMerchantPreview: false,
+            isNested: false,
+            shouldFetchPresetCarousels: true,
+            fulfillmentType: 'Delivery',
+            cursorContext: strat.cursorContext,
+            shouldFetchStoreLiteData: false,
+          },
+          1,
+        );
+
+        if (result?.errors?.length) {
+          const msg = result.errors[0]?.message || 'unknown';
+          console.warn(`[DoorDash] fetchItemModifiers ${itemId} (cursor=${strat.label}): GraphQL error: ${msg.substring(0, 150)}`);
+          continue;
+        }
+
+        const optionLists = result?.data?.itemPage?.optionLists;
+        if (!optionLists) {
+          console.warn(`[DoorDash] fetchItemModifiers ${itemId} (cursor=${strat.label}): no optionLists`);
+          continue;
+        }
+
+        const { extractDoorDashModifiers } = await import('../../services/modifiers.js');
+        const groups = extractDoorDashModifiers(optionLists);
+        console.log(`[DoorDash] fetchItemModifiers ${itemId}: got ${groups.length} groups (cursor=${strat.label})`);
+        return groups;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(`[DoorDash] fetchItemModifiers ${itemId} (cursor=${strat.label}) failed: ${msg.substring(0, 150)}`);
+        // Fall through to next strategy
       }
-
-      const { extractDoorDashModifiers } = await import('../../services/modifiers.js');
-      return extractDoorDashModifiers(optionLists);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`[DoorDash] fetchItemModifiers ${itemId} failed: ${msg.substring(0, 120)}`);
-      return [];
     }
+
+    console.warn(`[DoorDash] fetchItemModifiers ${itemId}: all cursor strategies exhausted`);
+    return [];
   }
 
   /**
@@ -471,6 +506,18 @@ export class DoorDashAdapter implements PlatformAdapter {
         if (cart?.id) cartId = cart.id;
         const modSummary = selections.length > 0 ? ` mods=${selections.map(s => s.optionIds.length).join('+')}` : '';
         console.log(`[DoorDash] addCartItem: ${item.platformItemId}${modSummary}, cart=${cartId || '(new)'}, subtotal=${cart?.subtotal}`);
+
+        // If no cart came back, GraphQL likely returned errors — surface them
+        if (!cart && result?.errors?.length) {
+          console.error(`[DoorDash] addCartItem errors for ${item.platformItemId}:`);
+          for (const e of result.errors) {
+            console.error(`  ${e.message || JSON.stringify(e).substring(0, 300)}`);
+            if (e.extensions?.exception?.details) {
+              console.error(`    details: ${JSON.stringify(e.extensions.exception.details).substring(0, 300)}`);
+            }
+          }
+          throw new Error(`addCartItem returned no cart; first error: ${result.errors[0]?.message || 'unknown'}`);
+        }
         if (params.items.indexOf(item) < params.items.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
         }

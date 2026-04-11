@@ -4,7 +4,17 @@ import { findChromePath, getProfileDir, getChromeArgs, cleanProfileLocks } from 
 
 const PROFILE_DIR = getProfileDir('doordash');
 const DOORDASH_URL = 'https://www.doordash.com';
-const GRAPHQL_URL = 'https://www.doordash.com/graphql';
+const GRAPHQL_BASE = 'https://www.doordash.com/graphql';
+
+/**
+ * Build the operation-specific GraphQL URL that DoorDash expects.
+ * All captured requests use /graphql/{operationName}?operation={operationName}
+ * — posting to the plain /graphql endpoint returns a 403 HTML page for
+ * "restricted" operations like itemPage and addCartItem.
+ */
+function graphqlUrlFor(operationName: string): string {
+  return `${GRAPHQL_BASE}/${operationName}?operation=${encodeURIComponent(operationName)}`;
+}
 const CDP_PORT = 9224; // Seamless uses 9223
 
 export class DoorDashBrowser {
@@ -160,7 +170,7 @@ export class DoorDashBrowser {
     await this.apiPage.route('**/*', (route) => {
       const url = route.request().url();
       // Allow the initial navigation and our GraphQL calls
-      if (url.includes('/graphql') || route.request().resourceType() === 'document') {
+      if (url.includes('/graphql/') || url.endsWith('/graphql') || route.request().resourceType() === 'document') {
         route.continue();
       } else {
         route.abort();
@@ -204,7 +214,7 @@ export class DoorDashBrowser {
             }
             return response.json();
           },
-          { url: GRAPHQL_URL, operationName, query, variables }
+          { url: graphqlUrlFor(operationName), operationName, query, variables }
         );
       } catch (err: any) {
         // If page context was destroyed or closed, recreate the API page and retry
@@ -269,16 +279,28 @@ export class DoorDashBrowser {
     variables: Record<string, unknown> = {},
     maxRetries = 3
   ): Promise<T> {
+    // Grab CSRF token from cookies — required by some operations (itemPage, etc.)
+    const csrfToken = await this.getCsrfToken();
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       const page = await this.ensurePage();
 
       let result: any;
       try {
         result = await page.evaluate(
-          async ({ url, operationName, query, variables }) => {
+          async ({ url, operationName, query, variables, csrfToken }) => {
+            const headers: Record<string, string> = {
+              'Content-Type': 'application/json',
+              'apollographql-client-name': '@doordash/app-consumer-production-ssr-client',
+              'apollographql-client-version': '3.0',
+              'x-channel-id': 'marketplace',
+              'x-experience-id': 'doordash',
+            };
+            if (csrfToken) headers['x-csrftoken'] = csrfToken;
+
             const response = await fetch(url, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers,
               credentials: 'include',
               body: JSON.stringify({ operationName, query, variables }),
             });
@@ -288,7 +310,7 @@ export class DoorDashBrowser {
             }
             return response.json();
           },
-          { url: GRAPHQL_URL, operationName, query, variables }
+          { url: graphqlUrlFor(operationName), operationName, query, variables, csrfToken }
         );
       } catch (err: any) {
         const isRecoverable = err.message?.includes('Execution context was destroyed')
@@ -331,6 +353,40 @@ export class DoorDashBrowser {
   async navigateHome(): Promise<void> {
     const page = await this.ensurePage();
     await page.goto(DOORDASH_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  }
+
+  /**
+   * Get the DoorDash consumer ID from the ajs_user_id cookie.
+   * Required by itemPage and some other queries for request validation.
+   * Cached after first successful lookup.
+   */
+  private cachedConsumerId: string | null = null;
+  async getConsumerId(): Promise<string | null> {
+    if (this.cachedConsumerId) return this.cachedConsumerId;
+    try {
+      if (!this.context) return null;
+      const cookies = await this.context.cookies(['https://www.doordash.com']);
+      const idCookie = cookies.find(c => c.name === 'ajs_user_id');
+      if (idCookie?.value) {
+        this.cachedConsumerId = idCookie.value;
+        return idCookie.value;
+      }
+    } catch { /* fall through */ }
+    return null;
+  }
+
+  /**
+   * Get the DoorDash CSRF token from the csrf_token cookie.
+   * Some GraphQL queries (notably itemPage) require this as an
+   * x-csrftoken header for double-submit validation.
+   */
+  async getCsrfToken(): Promise<string | null> {
+    try {
+      if (!this.context) return null;
+      const cookies = await this.context.cookies(['https://www.doordash.com']);
+      const tok = cookies.find(c => c.name === 'csrf_token');
+      return tok?.value || null;
+    } catch { return null; }
   }
 
   /** Check auth state WITHOUT navigating or creating pages.

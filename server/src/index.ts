@@ -24,6 +24,7 @@ import { setupWebSocket } from './services/ws-server.js';
 import type { PlatformAdapter } from './adapters/types.js';
 import { SeamlessAdapter } from './adapters/seamless/adapter.js';
 import { DoorDashAdapter } from './adapters/doordash/adapter.js';
+import { getActiveLock } from './utils/process-lock.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -90,33 +91,35 @@ setupWebSocket(server, authManager);
 // Initialize platform adapters in background (don't block server startup)
 async function initAdapters(): Promise<void> {
   if (process.env.DOORDASH_EMAIL) {
-    try {
-      const doordash = new DoorDashAdapter();
-      await doordash.initialize({ email: process.env.DOORDASH_EMAIL });
-      adapters.set('doordash', doordash);
-      authManager.registerPlatform('doordash', doordash.getBrowser(), doordash.getStatus(), async () => {
-        doordash.setStatus('authenticated');
-      });
-      console.log(`[Kortana] DoorDash adapter registered (${doordash.getStatus()}).`);
-    } catch (err) {
-      console.error('[Kortana] DoorDash adapter failed to initialize:', err);
-      console.log('[Kortana] Continuing without DoorDash live adapter (will use DB estimates).');
+    // Skip if a populate script is actively holding a lock. Stale locks
+    // (owning PID is dead) are cleaned up automatically by getActiveLock.
+    const ddLock = getActiveLock('doordash-populate');
+    if (ddLock) {
+      console.log(`[Kortana] DoorDash populate script running (pid ${ddLock.pid}, started ${ddLock.startedAt}) — skipping adapter to avoid interference.`);
+    } else {
+      try {
+        const doordash = new DoorDashAdapter();
+        await doordash.initialize({ email: process.env.DOORDASH_EMAIL });
+        adapters.set('doordash', doordash);
+        authManager.registerPlatform('doordash', doordash.getBrowser(), doordash.getStatus(), async () => {
+          doordash.setStatus('authenticated');
+        });
+        console.log(`[Kortana] DoorDash adapter registered (${doordash.getStatus()}).`);
+      } catch (err) {
+        console.error('[Kortana] DoorDash adapter failed to initialize:', err);
+        console.log('[Kortana] Continuing without DoorDash live adapter (will use DB estimates).');
+      }
     }
   } else {
     console.log('[Kortana] DOORDASH_EMAIL not set — skipping DoorDash adapter.');
   }
 
   if (process.env.SEAMLESS_EMAIL) {
-    // Check if another process (populate script) already owns Chrome on the Seamless CDP port.
-    // Two Playwright instances on the same Chrome causes page interference.
-    let seamlessCdpBusy = false;
-    try {
-      const resp = await fetch('http://localhost:9223/json/version');
-      seamlessCdpBusy = resp.ok;
-    } catch {}
-
-    if (seamlessCdpBusy) {
-      console.log('[Kortana] Seamless Chrome already in use (populate script?) — skipping adapter to avoid interference.');
+    // Skip if a Seamless populate script is actively holding a lock.
+    // Stale Chrome on port 9223 no longer blocks init — only an active populate does.
+    const slLock = getActiveLock('seamless-populate');
+    if (slLock) {
+      console.log(`[Kortana] Seamless populate script running (pid ${slLock.pid}, started ${slLock.startedAt}) — skipping adapter to avoid interference.`);
     } else {
       try {
         const seamless = new SeamlessAdapter();

@@ -27,6 +27,7 @@ import { db } from '../db/client.js';
 import { SeamlessAdapter } from '../adapters/seamless/adapter.js';
 import { upsertMenu } from '../services/menu-upsert.js';
 import { matchMenuItems, validateMatches } from '../services/matching.js';
+import { acquireLock } from '../utils/process-lock.js';
 
 // --- CLI args ---
 const args = process.argv.slice(2);
@@ -79,6 +80,16 @@ function saveProgress(state: ProgressState): void {
 async function main() {
   console.log('=== Seamless Menu Bulk Population ===\n');
   if (dryRun) console.log('*** DRY RUN — no DB writes ***\n');
+
+  // Acquire the populate lock so the dev server (and any other tools) know
+  // to skip initializing the Seamless adapter while we're running.
+  // Cleanup on exit is registered automatically.
+  try {
+    acquireLock('seamless-populate', { script: 'populate-seamless-menus.ts' });
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+  }
 
   // Build query for target restaurants
   const conditions: string[] = [

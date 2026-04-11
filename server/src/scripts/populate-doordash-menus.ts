@@ -34,6 +34,7 @@ import { DoorDashAdapter } from '../adapters/doordash/adapter.js';
 import { upsertMenu } from '../services/menu-upsert.js';
 import { matchMenuItems, validateMatches } from '../services/matching.js';
 import { findChromePath, getProfileDir, getChromeArgs, cleanProfileLocks } from '../utils/chrome.js';
+import { acquireLock } from '../utils/process-lock.js';
 import type { PlatformMenu } from '../adapters/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -243,6 +244,16 @@ async function checkSessionHealth(adapter: DoorDashAdapter): Promise<boolean> {
 async function main() {
   console.log('=== DoorDash Menu Bulk Population ===\n');
   if (dryRun) console.log('*** DRY RUN — no DB writes ***\n');
+
+  // Acquire the populate lock so the dev server (and any other tools) know
+  // to skip initializing the DoorDash adapter while we're running.
+  // Cleanup on exit is registered automatically.
+  try {
+    acquireLock('doordash-populate', { script: 'populate-doordash-menus.ts' });
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+  }
 
   // Build query for target restaurants
   const conditions: string[] = [

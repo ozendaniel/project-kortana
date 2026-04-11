@@ -439,12 +439,13 @@ export class DoorDashAdapter implements PlatformAdapter {
 
           // Cart was cleared before adding items — subtotal is accurate
           if (cartSubtotal > 0 && cartTotal > 0) {
-            // Derive fees from totalBeforeDiscountsAndCredits when lineItems are empty.
-            // Fall back to cartTotal if totalBeforeDiscountsAndCredits isn't populated
-            // (some account types / restaurants only populate preview.total).
-            const derivationTotal = totalBeforeDiscounts > cartSubtotal ? totalBeforeDiscounts : cartTotal;
-            if (serviceFee === 0 && deliveryFee === 0 && taxAmount === 0 && derivationTotal > cartSubtotal) {
-              const totalFees = derivationTotal - cartSubtotal;
+            // Derive fees from cartTotal (the amount actually charged) when lineItems
+            // are empty. This is important for DashPass users: cartTotal already
+            // reflects DashPass discounts, so the derived breakdown matches what the
+            // user sees at checkout. If a discount exists, record it separately from
+            // the totalBeforeDiscountsAndCredits delta.
+            if (serviceFee === 0 && deliveryFee === 0 && taxAmount === 0 && cartTotal > cartSubtotal) {
+              const totalFees = cartTotal - cartSubtotal;
               // Allocate in order: tax (NYC 8.875%) → service (~15%) → delivery (residual)
               const estimatedTax = Math.round(cartSubtotal * 0.08875);
               const estimatedService = Math.round(cartSubtotal * DOORDASH_SERVICE_FEE_RATE);
@@ -458,15 +459,19 @@ export class DoorDashAdapter implements PlatformAdapter {
                   smallOrderFee = deliveryFee - DOORDASH_DELIVERY_FEE_CENTS;
                   deliveryFee = DOORDASH_DELIVERY_FEE_CENTS;
                 }
+              } else if (totalFees >= estimatedTax) {
+                // Enough for tax but not full service; split the rest into service
+                taxAmount = estimatedTax;
+                serviceFee = totalFees - estimatedTax;
               } else {
-                // Not enough fees for full tax+service split; attribute everything to service
-                // (most ambiguous line item, avoids misrepresenting fixed components)
+                // Tiny fees (e.g. DashPass zero delivery + reduced service).
+                // Attribute everything to service — it's the most variable line item.
                 serviceFee = totalFees;
               }
-              console.log(`[DoorDash] getFees derived from ${totalBeforeDiscounts > cartSubtotal ? 'totalBeforeDiscounts' : 'cartTotal'}: delivery=${deliveryFee}, service=${serviceFee}, smallOrder=${smallOrderFee}, tax=${taxAmount}`);
+              console.log(`[DoorDash] getFees derived from cartTotal: delivery=${deliveryFee}, service=${serviceFee}, smallOrder=${smallOrderFee}, tax=${taxAmount}, totalFees=${totalFees}`);
             }
 
-            // Derive discount from totalBeforeDiscountsAndCredits - total
+            // Record DashPass / promo discount if the pre-discount total exists
             if (discountCents === 0 && totalBeforeDiscounts > cartTotal) {
               discountCents = totalBeforeDiscounts - cartTotal;
             }

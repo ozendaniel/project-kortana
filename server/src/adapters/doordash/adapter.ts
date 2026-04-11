@@ -439,16 +439,31 @@ export class DoorDashAdapter implements PlatformAdapter {
 
           // Cart was cleared before adding items — subtotal is accurate
           if (cartSubtotal > 0 && cartTotal > 0) {
-            // Derive fees from totalBeforeDiscountsAndCredits when lineItems are empty
-            if (serviceFee === 0 && deliveryFee === 0 && totalBeforeDiscounts > cartSubtotal) {
-              const totalFees = totalBeforeDiscounts - cartSubtotal;
-              // DoorDash service fee is typically ~15%, delivery varies
-              serviceFee = Math.round(cartSubtotal * DOORDASH_SERVICE_FEE_RATE);
-              deliveryFee = Math.max(0, totalFees - serviceFee);
-              if (deliveryFee > 1000) {
-                deliveryFee = DOORDASH_DELIVERY_FEE_CENTS;
-                serviceFee = totalFees - deliveryFee;
+            // Derive fees from totalBeforeDiscountsAndCredits when lineItems are empty.
+            // Fall back to cartTotal if totalBeforeDiscountsAndCredits isn't populated
+            // (some account types / restaurants only populate preview.total).
+            const derivationTotal = totalBeforeDiscounts > cartSubtotal ? totalBeforeDiscounts : cartTotal;
+            if (serviceFee === 0 && deliveryFee === 0 && taxAmount === 0 && derivationTotal > cartSubtotal) {
+              const totalFees = derivationTotal - cartSubtotal;
+              // Allocate in order: tax (NYC 8.875%) → service (~15%) → delivery (residual)
+              const estimatedTax = Math.round(cartSubtotal * 0.08875);
+              const estimatedService = Math.round(cartSubtotal * DOORDASH_SERVICE_FEE_RATE);
+
+              if (totalFees >= estimatedTax + estimatedService) {
+                taxAmount = estimatedTax;
+                serviceFee = estimatedService;
+                deliveryFee = totalFees - estimatedTax - estimatedService;
+                // Sanity: if derived delivery is implausibly high, probably a small-order fee
+                if (deliveryFee > 1500 && cartSubtotal < 1500) {
+                  smallOrderFee = deliveryFee - DOORDASH_DELIVERY_FEE_CENTS;
+                  deliveryFee = DOORDASH_DELIVERY_FEE_CENTS;
+                }
+              } else {
+                // Not enough fees for full tax+service split; attribute everything to service
+                // (most ambiguous line item, avoids misrepresenting fixed components)
+                serviceFee = totalFees;
               }
+              console.log(`[DoorDash] getFees derived from ${totalBeforeDiscounts > cartSubtotal ? 'totalBeforeDiscounts' : 'cartTotal'}: delivery=${deliveryFee}, service=${serviceFee}, smallOrder=${smallOrderFee}, tax=${taxAmount}`);
             }
 
             // Derive discount from totalBeforeDiscountsAndCredits - total

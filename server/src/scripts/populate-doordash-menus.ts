@@ -109,6 +109,9 @@ interface FetchMenuResult {
   address?: StoreAddress;
   phone?: string;
   fees?: import('../services/fees.js').CachedFees;
+  menuPlatformId?: string;
+  /** Set of platform_item_ids that need itemPage fetch for modifier capture */
+  itemsNeedingModifiers: string[];
 }
 
 function saveProgress(state: ProgressState): void {
@@ -162,6 +165,9 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Fet
             state: string;
           };
         };
+        menuBook?: {
+          id?: string | null;
+        } | null;
         itemLists: Array<{
           name: string;
           items: Array<{
@@ -170,6 +176,9 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Fet
             description?: string;
             displayPrice: string;
             imageUrl?: string;
+            quickAddContext?: {
+              isEligible?: boolean;
+            } | null;
           }>;
         }>;
       };
@@ -211,22 +220,42 @@ async function fetchMenu(adapter: DoorDashAdapter, storeId: string): Promise<Fet
     if (extracted) fees = extracted;
   }
 
+  // Extract menu ID (needed for addCartItem + itemPage cursor)
+  const menuPlatformId = store?.menuBook?.id || undefined;
+
   if (!store?.itemLists) {
-    return { menu: { categories: [] }, address, phone, fees };
+    return { menu: { categories: [] }, address, phone, fees, menuPlatformId, itemsNeedingModifiers: [] };
   }
+
+  // Track items that are NOT quick-add eligible — they have required
+  // customizations and need itemPage fetches to capture modifier_groups.
+  // De-dupe since the same item can appear in multiple carousels.
+  const needsModifiers = new Set<string>();
 
   const categories = store.itemLists.map(cat => ({
     name: cat.name,
-    items: cat.items.map(item => ({
-      platformItemId: item.id,
-      name: item.name,
-      description: item.description || undefined,
-      priceCents: parsePriceToCents(item.displayPrice || '$0.00'),
-      imageUrl: item.imageUrl || undefined,
-    })),
+    items: cat.items.map(item => {
+      if (item.quickAddContext && item.quickAddContext.isEligible === false) {
+        needsModifiers.add(item.id);
+      }
+      return {
+        platformItemId: item.id,
+        name: item.name,
+        description: item.description || undefined,
+        priceCents: parsePriceToCents(item.displayPrice || '$0.00'),
+        imageUrl: item.imageUrl || undefined,
+      };
+    }),
   }));
 
-  return { menu: { categories }, address, phone, fees };
+  return {
+    menu: { categories },
+    address,
+    phone,
+    fees,
+    menuPlatformId,
+    itemsNeedingModifiers: Array.from(needsModifiers),
+  };
 }
 
 /**
@@ -456,7 +485,7 @@ async function main() {
     try {
       console.log(`[${i + 1}/${restaurants.length}] ${rest.canonical_name} (DD:${rest.doordash_id})...`);
 
-      const { menu, address, phone, fees } = await fetchMenu(adapter, rest.doordash_id);
+      const { menu, address, phone, fees, menuPlatformId, itemsNeedingModifiers } = await fetchMenu(adapter, rest.doordash_id);
       const itemCount = menu.categories.reduce((a, c) => a + c.items.length, 0);
 
       // Enrich address if we got one and the restaurant has placeholder/missing data
@@ -506,6 +535,43 @@ async function main() {
       } else {
         const count = await upsertMenu(rest.id, 'doordash', menu);
         await db.query('UPDATE restaurants SET last_synced_at = NOW() WHERE id = $1', [rest.id]);
+
+        // Store menu_platform_id on all items in this restaurant's DD menu
+        // (needed by the adapter's addCartItem call for live fee lookups).
+        if (menuPlatformId) {
+          await db.query(
+            `UPDATE menu_items SET menu_platform_id = $1
+             WHERE restaurant_id = $2 AND platform = 'doordash'`,
+            [menuPlatformId, rest.id]
+          );
+        }
+
+        // Fetch modifier_groups for any items that need customization.
+        // Rate-limited to avoid DD 429s; skipped for items that already have
+        // modifier_groups from a previous run (check by platform_item_id).
+        if (itemsNeedingModifiers.length > 0) {
+          console.log(`  🎨 ${itemsNeedingModifiers.length} items need modifier capture`);
+          let modFetched = 0;
+          for (const platformItemId of itemsNeedingModifiers) {
+            try {
+              const groups = await adapter.fetchItemModifiers(rest.doordash_id, platformItemId, menuPlatformId);
+              if (groups.length > 0) {
+                await db.query(
+                  `UPDATE menu_items SET modifier_groups = $1::jsonb
+                   WHERE restaurant_id = $2 AND platform = 'doordash' AND platform_item_id = $3`,
+                  [JSON.stringify(groups), rest.id, platformItemId]
+                );
+                modFetched++;
+              }
+            } catch (mErr) {
+              const msg = mErr instanceof Error ? mErr.message : String(mErr);
+              console.warn(`    modifier fetch ${platformItemId} failed: ${msg.substring(0, 80)}`);
+            }
+            // Rate-limit between itemPage calls (DD 429s aggressive)
+            await sleep(2000 + Math.random() * 1500);
+          }
+          console.log(`  🎨 captured modifiers for ${modFetched}/${itemsNeedingModifiers.length}`);
+        }
 
         const elapsed = ((Date.now() - restStart) / 1000).toFixed(1);
         console.log(`  → ${count} items (${menu.categories.length} categories) — ${elapsed}s`);

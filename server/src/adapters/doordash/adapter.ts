@@ -270,6 +270,79 @@ export class DoorDashAdapter implements PlatformAdapter {
   }
 
   /**
+   * Fetch full modifier structure for a single item via the itemPage GraphQL
+   * query. Returns normalized ModifierGroup[] (empty if the item has no
+   * customization or the fetch fails). Used by the populate script to cache
+   * modifier_groups for items where storepageFeed's quickAddContext.isEligible
+   * is false (i.e. items that require customization before adding to cart).
+   *
+   * menuId can be passed if known (from storepageFeed.menuBook.id) — improves
+   * the cursor context DoorDash uses to route the query. Optional.
+   */
+  async fetchItemModifiers(
+    storeId: string,
+    itemId: string,
+    menuId?: string,
+  ): Promise<import('../../services/modifiers.js').ModifierGroup[]> {
+    this.ensureAuthenticated();
+    await this.browser.ensureConnected();
+
+    try {
+      const query = loadQuery('itemPage.graphql');
+      // Build a minimal cursor — we don't have categoryId but DoorDash accepts
+      // nulls for optional fields in the cursor blob.
+      const cursorPayload = {
+        dm_id: 'item_1',
+        dm_type: 'item',
+        dm_version: 2,
+        cursor_version: 'ITEM_PAGE',
+        itemId: Number(itemId),
+        optionId: null,
+        selectedOrderItemId: null,
+        storeLiteData: null,
+        is_homegrown_loyalty: false,
+        page_stack_trace: [],
+        storeId: Number(storeId),
+        menuId: menuId ? Number(menuId) : null,
+        categoryId: null,
+        businessId: null,
+        verticalId: 0,
+        is_meal_manager_entry: false,
+      };
+      const itemCursor = Buffer.from(JSON.stringify(cursorPayload)).toString('base64');
+
+      const result = await this.browser.mainTabGraphqlQuery<any>(
+        'itemPage',
+        query,
+        {
+          itemId,
+          storeId,
+          isMerchantPreview: false,
+          isNested: false,
+          shouldFetchPresetCarousels: false,
+          fulfillmentType: 'Delivery',
+          cursorContext: { itemCursor },
+          shouldFetchStoreLiteData: false,
+        },
+        1, // maxRetries — fail fast, caller handles retries / rate limiting
+      );
+
+      const optionLists = result?.data?.itemPage?.optionLists;
+      if (!optionLists) {
+        console.warn(`[DoorDash] fetchItemModifiers ${itemId}: no optionLists in response`);
+        return [];
+      }
+
+      const { extractDoorDashModifiers } = await import('../../services/modifiers.js');
+      return extractDoorDashModifiers(optionLists);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[DoorDash] fetchItemModifiers ${itemId} failed: ${msg.substring(0, 120)}`);
+      return [];
+    }
+  }
+
+  /**
    * Clear existing DoorDash cart for a store so we get a clean fee preview.
    * Uses listCarts to find existing cart, then deleteCart to wipe it entirely.
    */

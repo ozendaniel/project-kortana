@@ -169,6 +169,11 @@ function parseStoresFromFeed(feed: any): Array<{
         if (clickData?.uri) platformUrl = `https://www.doordash.com/${clickData.uri}`;
       } catch { /* use default */ }
 
+      // Skip convenience/retail stores — out of scope for food delivery comparison.
+      // These have URLs like /convenience/store/{id}/ (Wegmans, Target, Staples, DSW, etc.)
+      // Their menus use a different response shape (carousels/menuBook instead of itemLists).
+      if (platformUrl.includes('/convenience/store/')) continue;
+
       const textCustomMap: Record<string, string> = {};
       if (Array.isArray(facet.text?.custom)) {
         for (const kv of facet.text.custom) {

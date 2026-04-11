@@ -4,7 +4,7 @@ import { cleanRestaurantName, cleanItemName } from '../utils/nameCleaner.js';
 import { haversineDistance } from '../utils/geocode.js';
 
 // --- Constants ---
-const AUTO_MERGE_THRESHOLD = 0.80;
+const AUTO_MERGE_THRESHOLD = 0.88;
 const REVIEW_THRESHOLD = 0.60;
 const GEO_CUTOFF_METERS = 400;
 const NAME_ONLY_MIN_SIMILARITY = 0.85;

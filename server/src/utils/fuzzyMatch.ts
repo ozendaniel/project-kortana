@@ -65,10 +65,13 @@ export function computeMatchConfidence(params: {
   // Phone match alone is near-certain
   if (phoneMatch) return 0.95;
 
-  // Very high name similarity + reasonably close
-  if (nameSimilarity >= 0.90 && distanceMeters <= 300) return 0.90;
+  // Very high name similarity + close (same physical location, tolerating geocoding drift)
+  // 100m→150m on 2026-04-11: DD and SL coordinates for the same address often differ by
+  // 100-130m even at the same street number (one platform geocodes street number, the
+  // other block-center). 150m still excludes multi-location chains at different storefronts.
+  if (nameSimilarity >= 0.90 && distanceMeters <= 150) return 0.90;
 
-  // High name similarity + very close
+  // High name similarity + close (same reason as above)
   if (nameSimilarity >= 0.85 && distanceMeters <= 150) return 0.88;
 
   // Good name + close + menu overlap

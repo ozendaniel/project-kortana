@@ -16,40 +16,36 @@ const API_BASE = 'https://api-gtm.grubhub.com';
  *   "15 East 30th Street, New York, NY 10016"
  *   "383 W 31st St #070, New York, NY 10001, USA"
  *   "606 2nd Ave, New York NY 10016-4859, United States"
- * Falls back to safe NYC defaults if parsing fails.
+ *
+ * Street is returned as-is (mixed case). Grubhub's prior working payload used
+ * mixed case for street and upper case for locality, so we match that format.
  */
 function parseUsAddress(address: string): { street: string; city: string; state: string; postalCode: string } {
   const parts = address.split(',').map(p => p.trim()).filter(p => p && p.toLowerCase() !== 'usa' && p.toLowerCase() !== 'united states');
 
-  // Attempt to pull state + zip from the last non-street part
-  // Common shapes: "New York NY 10001-4859" | "NY 10016" | "New York, NY 10016"
+  // Defaults matching the prior hardcoded values
   let state = 'NY';
   let postalCode = '10001';
-  let city = 'New York';
-  let street = address;
+  let city = 'NEW YORK';
+  let street = parts[0] || address;
 
+  // Grubhub's prior payload uppercased the locality — keep that.
   const zipRe = /\b(\d{5})(?:-\d{4})?\b/;
   const stateRe = /\b([A-Z]{2})\b/;
 
   if (parts.length >= 2) {
-    street = parts[0];
     // Scan the remaining parts for state + zip (may be split "New York", "NY 10016")
     const tail = parts.slice(1).join(' ');
     const zipMatch = tail.match(zipRe);
     if (zipMatch) postalCode = zipMatch[1];
     const stateMatch = tail.match(stateRe);
     if (stateMatch) state = stateMatch[1];
-    // City: everything before the state token in the tail
+    // City: everything before the state token in the tail, upper-cased
     const cityMatch = tail.replace(zipRe, '').replace(stateRe, '').trim().replace(/,$/, '');
-    if (cityMatch) city = cityMatch;
+    if (cityMatch) city = cityMatch.toUpperCase();
   }
 
-  return {
-    street: street.toUpperCase(),   // Grubhub likes upper case for street
-    city: city.toUpperCase(),
-    state,
-    postalCode,
-  };
+  return { street, city, state, postalCode };
 }
 
 export class SeamlessAdapter implements PlatformAdapter {

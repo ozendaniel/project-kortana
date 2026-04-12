@@ -102,6 +102,35 @@ export class SeamlessAdapter implements PlatformAdapter {
     console.log(`[Seamless] Tokens refreshed. Auth token: ${this.authToken ? 'found' : 'missing'}`);
   }
 
+  /**
+   * Force-refresh auth by navigating to seamless.com so the SPA issues a new token.
+   * Use when refreshTokens() keeps returning the same expired token.
+   */
+  async forceRefreshSession(): Promise<void> {
+    console.log('[Seamless] Force-refreshing session via page navigation...');
+    try {
+      const page = await this.browser.ensurePage();
+      await page.goto('https://www.seamless.com/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await new Promise(r => setTimeout(r, 5000)); // wait for SPA to hydrate + refresh token
+      this.authToken = await this.browser.getAuthToken();
+      this.sessionCookie = await this.browser.getSessionCookies();
+      this.perimeterXToken = await this.browser.getPerimeterXToken();
+      console.log(`[Seamless] Session force-refreshed. Auth token: ${this.authToken ? 'found' : 'missing'}`);
+    } catch (err) {
+      console.warn(`[Seamless] Force-refresh failed: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
+      // Try reconnecting Chrome as last resort
+      try {
+        await this.browser.ensureConnected();
+        this.authToken = await this.browser.getAuthToken();
+        this.sessionCookie = await this.browser.getSessionCookies();
+        this.perimeterXToken = await this.browser.getPerimeterXToken();
+        console.log(`[Seamless] Reconnected. Auth token: ${this.authToken ? 'found' : 'missing'}`);
+      } catch {
+        console.error('[Seamless] Reconnection also failed');
+      }
+    }
+  }
+
   async isSessionValid(): Promise<boolean> {
     return this.browser.checkSession();
   }
@@ -343,7 +372,10 @@ export class SeamlessAdapter implements PlatformAdapter {
       const resp = await this.apiCall<any>(`/restaurants/${restaurantPlatformId}/menu_items/${itemPlatformId}`);
       return resp?.choice_category_list || null;
     } catch (err) {
-      console.warn(`[Seamless] fetchItemModifiers ${itemPlatformId}: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      // Re-throw 401s so callers can detect auth expiration and refresh
+      if (msg.includes('401')) throw err;
+      console.warn(`[Seamless] fetchItemModifiers ${itemPlatformId}: ${msg.substring(0, 80)}`);
       return null;
     }
   }
@@ -568,9 +600,15 @@ export class SeamlessAdapter implements PlatformAdapter {
 
       // Collect before scroll
       for (const item of await extractVisible()) {
-        if (!collectedItems.has(item.key)) {
+        {
           const { key: _, ...rest } = item;
-          collectedItems.set(item.key, rest);
+          const existing = collectedItems.get(item.key);
+          if (!existing) {
+            collectedItems.set(item.key, rest);
+          } else if (existing.platformItemId.startsWith('sl-') && /^\d+$/.test(rest.platformItemId)) {
+            // Prefer real numeric ID over synthetic sl-Menu-* ID
+            collectedItems.set(item.key, rest);
+          }
         }
       }
 
@@ -811,9 +849,15 @@ export class SeamlessAdapter implements PlatformAdapter {
       }, SKIP_CATS);
 
       for (const item of items) {
-        if (!collectedItems.has(item.key)) {
+        {
           const { key: _, ...rest } = item;
-          collectedItems.set(item.key, rest);
+          const existing = collectedItems.get(item.key);
+          if (!existing) {
+            collectedItems.set(item.key, rest);
+          } else if (existing.platformItemId.startsWith('sl-') && /^\d+$/.test(rest.platformItemId)) {
+            // Prefer real numeric ID over synthetic sl-Menu-* ID
+            collectedItems.set(item.key, rest);
+          }
         }
       }
 

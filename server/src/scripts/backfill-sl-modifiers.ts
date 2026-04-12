@@ -110,11 +110,14 @@ async function main() {
 
     console.log(`${progress} ${rest.canonical_name}: ${items.length} items to fetch modifiers`);
     let restModCount = 0;
+    let consecutive401s = 0;
 
     for (let ii = 0; ii < items.length; ii++) {
       const item = items[ii];
       try {
         const choiceCategories = await adapter.fetchItemModifiers(rest.seamless_id, item.platform_item_id);
+
+        consecutive401s = 0; // Reset on success
 
         if (!choiceCategories || choiceCategories.length === 0) {
           // No modifiers — store empty array to mark as processed
@@ -146,6 +149,39 @@ async function main() {
       } catch (err) {
         totalErrors++;
         const msg = err instanceof Error ? err.message.substring(0, 80) : String(err);
+
+        // Detect auth expiration: 401 errors on real numeric IDs
+        if (msg.includes('401') && /^\d+$/.test(item.platform_item_id)) {
+          consecutive401s++;
+          if (consecutive401s >= 3 && consecutive401s <= 5) {
+            // First attempt: re-read token from localStorage
+            console.log('  Auth token appears expired — refreshing...');
+            try {
+              await adapter.refreshTokens();
+              consecutive401s = 0;
+              console.log('  Token refreshed. Retrying...');
+              ii--;
+              await sleep(2000);
+              continue;
+            } catch { /* fall through to force refresh */ }
+          }
+          if (consecutive401s > 5) {
+            // localStorage token is stale — force-navigate to get a new one
+            console.log('  Simple refresh failed — force-refreshing session via page navigation...');
+            try {
+              await adapter.forceRefreshSession();
+              consecutive401s = 0;
+              console.log('  Session force-refreshed. Retrying...');
+              ii--;
+              await sleep(3000);
+              continue;
+            } catch (refreshErr) {
+              console.error('  Force-refresh failed. Skipping rest of this restaurant.');
+              break;
+            }
+          }
+        }
+
         // Log but continue — don't let one item kill the whole run
         if (totalErrors <= 10 || totalErrors % 50 === 0) {
           console.warn(`  Error on ${item.original_name} (${item.platform_item_id}): ${msg}`);

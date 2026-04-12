@@ -374,6 +374,31 @@ async function mapItemsToPlatform(
     );
 
     const row = result.rows[0];
+    let selections = item.modifierSelections || [];
+
+    // Cross-platform modifier translation: the frontend picks modifiers using
+    // DD option IDs (since we show DD modifiers in the UI). When building a SL
+    // cart, translate those DD selections to SL option IDs by name matching.
+    if (platform === 'seamless' && selections.length > 0 && row?.modifier_groups) {
+      const { translateModifierSelections } = await import('./modifiers.js');
+      // Fetch the DD modifier groups for the source item
+      const ddResult = await db.query(
+        `SELECT mi.modifier_groups FROM menu_items mi
+         WHERE mi.restaurant_id = $1 AND mi.platform = 'doordash'
+           AND (mi.id = $2 OR mi.matched_item_id = $2)
+           AND mi.modifier_groups IS NOT NULL
+         LIMIT 1`,
+        [restaurantId, item.itemId]
+      );
+      const ddGroups = ddResult.rows[0]?.modifier_groups;
+      if (ddGroups && Array.isArray(ddGroups)) {
+        const translated = translateModifierSelections(ddGroups, row.modifier_groups, selections);
+        if (translated.length > 0) {
+          selections = translated;
+        }
+      }
+    }
+
     mapped.push({
       itemId: item.itemId,
       name: row?.original_name || 'Unknown item',
@@ -383,7 +408,7 @@ async function mapItemsToPlatform(
       menuPlatformId: row?.menu_platform_id || null,
       modifierGroups: row?.modifier_groups || null,
       quantity: item.quantity,
-      modifierSelections: item.modifierSelections || [],
+      modifierSelections: selections,
     });
   }
 

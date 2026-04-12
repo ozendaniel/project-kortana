@@ -100,6 +100,125 @@ export function extractDoorDashModifiers(optionLists: any[] | undefined | null):
   return groups;
 }
 
+// --- Seamless extractors ---
+
+/**
+ * Parse a Seamless/Grubhub menu item's choice_category_list[] into ModifierGroup[].
+ * Seamless structure:
+ *   choice_category_list[]: { id, name, min_choice_options, max_choice_options,
+ *     choice_option_list[]: { id, label, description, price.amount, defaulted,
+ *       quantity_settings: { default_units, maximum_units },
+ *       choice_category_list: [...] (nested) } }
+ */
+export function extractSeamlessModifiers(choiceCategoryList: any[] | undefined | null): ModifierGroup[] {
+  if (!Array.isArray(choiceCategoryList)) return [];
+  const groups: ModifierGroup[] = [];
+
+  for (const cat of choiceCategoryList) {
+    if (!cat || typeof cat !== 'object') continue;
+
+    const min = cat.min_choice_options ?? 0;
+    const max = cat.max_choice_options ?? 0;
+    const options: ModifierOption[] = Array.isArray(cat.choice_option_list)
+      ? cat.choice_option_list.map((opt: any) => ({
+          id: String(opt.id ?? ''),
+          name: String(opt.label || opt.description || ''),
+          description: opt.description || opt.label || undefined,
+          priceDeltaCents: opt.price?.amount ?? opt.delivery_price?.amount ?? 0,
+          isDefault: opt.defaulted === true || (opt.quantity_settings?.default_units ?? 0) > 0,
+          defaultQuantity: opt.quantity_settings?.default_units ?? 0,
+          nestedGroups: Array.isArray(opt.choice_category_list) && opt.choice_category_list.length
+            ? extractSeamlessModifiers(opt.choice_category_list)
+            : undefined,
+        }))
+      : [];
+
+    if (!options.length) continue;
+
+    groups.push({
+      id: String(cat.id ?? ''),
+      name: String(cat.name ?? ''),
+      minSelection: min,
+      maxSelection: max || options.length,
+      selectionMode: max === 1 ? 'single_select' : 'multi_select',
+      isOptional: min === 0,
+      options,
+    });
+  }
+
+  return groups;
+}
+
+/**
+ * Build Seamless cart line `options` array from modifier groups + selections.
+ * Seamless expects: [{ choice_option_id: "<id>", quantity: 1 }]
+ */
+export function buildSeamlessOptions(
+  selections: ModifierSelection[],
+): Array<{ choice_option_id: string; quantity: number }> {
+  const options: Array<{ choice_option_id: string; quantity: number }> = [];
+  for (const sel of selections) {
+    for (const optionId of sel.optionIds) {
+      options.push({ choice_option_id: optionId, quantity: 1 });
+    }
+  }
+  return options;
+}
+
+/**
+ * Translate modifier selections from one platform's IDs to another's
+ * by matching option names within groups of the same name.
+ * Returns selections using the target platform's option IDs.
+ *
+ * Used when the user picks modifiers from the DD UI but we need to
+ * pass them to SL's cart API (or vice versa).
+ */
+export function translateModifierSelections(
+  sourceGroups: ModifierGroup[],
+  targetGroups: ModifierGroup[],
+  sourceSelections: ModifierSelection[],
+): ModifierSelection[] {
+  // Build lookup: source group name → target group
+  const targetByName = new Map<string, ModifierGroup>();
+  for (const g of targetGroups) {
+    targetByName.set(g.name.toLowerCase().trim(), g);
+  }
+
+  const translated: ModifierSelection[] = [];
+
+  for (const sel of sourceSelections) {
+    // Find the source group to get the selected option names
+    const sourceGroup = sourceGroups.find(g => g.id === sel.groupId);
+    if (!sourceGroup) continue;
+
+    // Find matching target group by name
+    const targetGroup = targetByName.get(sourceGroup.name.toLowerCase().trim());
+    if (!targetGroup) continue;
+
+    // Translate each selected option by name matching
+    const targetOptionIds: string[] = [];
+    for (const srcOptId of sel.optionIds) {
+      const srcOpt = sourceGroup.options.find(o => o.id === srcOptId);
+      if (!srcOpt) continue;
+
+      // Try exact name match first, then fuzzy
+      const srcName = srcOpt.name.toLowerCase().trim();
+      const targetOpt = targetGroup.options.find(o => o.name.toLowerCase().trim() === srcName)
+        || targetGroup.options.find(o => o.name.toLowerCase().includes(srcName) || srcName.includes(o.name.toLowerCase()));
+
+      if (targetOpt) {
+        targetOptionIds.push(targetOpt.id);
+      }
+    }
+
+    if (targetOptionIds.length > 0) {
+      translated.push({ groupId: targetGroup.id, optionIds: targetOptionIds });
+    }
+  }
+
+  return translated;
+}
+
 // --- Default-selection helpers ---
 
 /**

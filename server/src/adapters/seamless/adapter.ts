@@ -333,6 +333,21 @@ export class SeamlessAdapter implements PlatformAdapter {
     }
   }
 
+  /**
+   * Fetch modifier/choice data for a single menu item via /restaurants/{id}/menu_items/{item_id}.
+   * Returns the raw choice_category_list for parsing by extractSeamlessModifiers().
+   */
+  async fetchItemModifiers(restaurantPlatformId: string, itemPlatformId: string): Promise<any[] | null> {
+    this.ensureAuthenticated();
+    try {
+      const resp = await this.apiCall<any>(`/restaurants/${restaurantPlatformId}/menu_items/${itemPlatformId}`);
+      return resp?.choice_category_list || null;
+    } catch (err) {
+      console.warn(`[Seamless] fetchItemModifiers ${itemPlatformId}: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
+      return null;
+    }
+  }
+
   async getMenu(
     platformRestaurantId: string,
     location?: { lat: number; lng: number; address?: string },
@@ -961,7 +976,12 @@ export class SeamlessAdapter implements PlatformAdapter {
 
   async getFees(params: {
     platformRestaurantId: string;
-    items: Array<{ platformItemId: string; quantity: number }>;
+    items: Array<{
+      platformItemId: string;
+      quantity: number;
+      modifierGroups?: import('../../services/modifiers.js').ModifierGroup[];
+      modifierSelections?: import('../../services/modifiers.js').ModifierSelection[];
+    }>;
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees> {
     try {
@@ -1005,8 +1025,17 @@ export class SeamlessAdapter implements PlatformAdapter {
         }),
       });
 
-      // 3. Add each item to cart
+      // 3. Add each item to cart (with modifier options if available)
       for (const item of params.items) {
+        // Build SL options from modifier selections
+        let cartOptions: Array<{ choice_option_id: string; quantity: number }> = [];
+        if (item.modifierSelections && item.modifierSelections.length > 0) {
+          const { buildSeamlessOptions, fillDefaultSelections } = await import('../../services/modifiers.js');
+          const groups = item.modifierGroups || [];
+          const filled = fillDefaultSelections(groups, item.modifierSelections);
+          cartOptions = buildSeamlessOptions(filled);
+        }
+
         await this.apiCall(`/carts/${cartId}/lines`, {
           method: 'POST',
           body: JSON.stringify({
@@ -1015,7 +1044,7 @@ export class SeamlessAdapter implements PlatformAdapter {
             experiments: ['LINEOPTION_ENHANCEMENTS'],
             quantity: item.quantity,
             special_instructions: '',
-            options: [],
+            options: cartOptions,
             restaurant_id: params.platformRestaurantId,
           }),
         });

@@ -559,28 +559,131 @@ export class SeamlessAdapter implements PlatformAdapter {
         }
       }
 
-      // Scroll and collect incrementally
-      let lastHeight = 0;
-      let stableCount = 0;
-      for (let i = 0; i < 200; i++) {
-        await scrapePage.evaluate((y) => window.scrollTo(0, y), (i + 1) * 400);
-        await new Promise(r => setTimeout(r, 350));
+      // Scroll and collect incrementally.
+      // Outer loop handles "View more items" buttons that expand additional
+      // category sections. Inner loop scrolls through the currently-visible content.
+      // Without clicking these buttons, the scroll height stabilizes after the first
+      // batch of categories and we miss the rest of the menu.
+      let viewMoreClicks = 0;
+      const MAX_VIEW_MORE = 10;
+      let scrollStartY = 0;
 
-        for (const item of await extractVisible()) {
-          if (!collectedItems.has(item.key)) {
-            const { key: _, ...rest } = item;
-            collectedItems.set(item.key, rest);
+      for (let pass = 0; pass <= MAX_VIEW_MORE; pass++) {
+        let lastHeight = 0;
+        let stableCount = 0;
+        let noNewItemsCount = 0;
+        const startOffset = Math.max(0, scrollStartY - 200); // start slightly above where we left off
+
+        for (let i = 0; i < 300; i++) {
+          const scrollY = startOffset + (i + 1) * 400;
+          await scrapePage.evaluate((y) => window.scrollTo(0, y), scrollY);
+          await new Promise(r => setTimeout(r, 350));
+
+          const sizeBefore = collectedItems.size;
+          for (const item of await extractVisible()) {
+            if (!collectedItems.has(item.key)) {
+              const { key: _, ...rest } = item;
+              collectedItems.set(item.key, rest);
+            }
+          }
+          const newItems = collectedItems.size - sizeBefore;
+
+          const currentHeight = await scrapePage.evaluate(() => document.body.scrollHeight);
+          const heightStable = currentHeight === lastHeight;
+          if (!heightStable) {
+            stableCount = 0;
+            lastHeight = currentHeight;
+          } else {
+            stableCount++;
+          }
+
+          // Track whether we're finding new items (handles true virtualization
+          // where scrollHeight is constant but items swap in/out of the DOM)
+          if (newItems === 0) {
+            noNewItemsCount++;
+          } else {
+            noNewItemsCount = 0;
+          }
+
+          // Only break when BOTH height is stable AND no new items found for
+          // several consecutive scrolls. This prevents early termination on
+          // virtualized menus where scrollHeight doesn't grow.
+          if (stableCount >= 6 && noNewItemsCount >= 6) {
+            scrollStartY = scrollY;
+            break;
+          }
+
+          // Safety: if we've scrolled well past the page height with no new
+          // items, we're done even if height keeps changing
+          if (noNewItemsCount >= 12) {
+            scrollStartY = scrollY;
+            break;
           }
         }
 
-        const currentHeight = await scrapePage.evaluate(() => document.body.scrollHeight);
-        if (currentHeight === lastHeight) {
-          stableCount++;
-          if (stableCount >= 6) break;
-        } else {
-          stableCount = 0;
-          lastHeight = currentHeight;
+        // Look for "View more items" / "See more" buttons that expand additional categories.
+        // Seamless uses various text patterns: "View X more items", "View more items",
+        // "See full menu", etc. Match broadly.
+        const viewMoreBtn = await scrapePage.evaluate(() => {
+          const candidates = [
+            ...document.querySelectorAll('button'),
+            ...document.querySelectorAll('a'),
+            ...document.querySelectorAll('[role="button"]'),
+          ];
+          for (const el of candidates) {
+            const text = el.textContent?.trim().toLowerCase() || '';
+            if (
+              (text.includes('view') && text.includes('more') && text.includes('item')) ||
+              (text.includes('see') && text.includes('full') && text.includes('menu')) ||
+              (text.includes('view more') && text.length < 50)
+            ) {
+              // Make sure it's visible and clickable
+              const rect = el.getBoundingClientRect();
+              if (rect.width > 0 && rect.height > 0) {
+                // Scroll it into view and return its position for clicking
+                el.scrollIntoView({ block: 'center' });
+                return { found: true, text: el.textContent?.trim() || '' };
+              }
+            }
+          }
+          return { found: false, text: '' };
+        });
+
+        if (!viewMoreBtn.found) break; // no more "View more" buttons — menu fully loaded
+
+        viewMoreClicks++;
+        console.log(`[Seamless] Clicking "${viewMoreBtn.text}" (#${viewMoreClicks})`);
+
+        // Click the button (use Playwright's click which handles scrollIntoView + click)
+        try {
+          // Re-find and click via Playwright selector (more reliable than evaluate click)
+          const btn = await scrapePage.$('button:has-text("View more"), a:has-text("View more"), button:has-text("See full menu")');
+          if (btn) {
+            await btn.click();
+          } else {
+            // Fallback: click via evaluate (the button was found by evaluate above)
+            await scrapePage.evaluate(() => {
+              const btns = [...document.querySelectorAll('button'), ...document.querySelectorAll('a')];
+              for (const el of btns) {
+                const t = el.textContent?.trim().toLowerCase() || '';
+                if ((t.includes('view') && t.includes('more')) || (t.includes('see') && t.includes('full'))) {
+                  (el as HTMLElement).click();
+                  break;
+                }
+              }
+            });
+          }
+        } catch (err) {
+          console.warn(`[Seamless] View more click failed: ${err instanceof Error ? err.message.substring(0, 80) : err}`);
+          break;
         }
+
+        // Wait for new content to render after button click
+        await new Promise(r => setTimeout(r, 2500));
+      }
+
+      if (viewMoreClicks > 0) {
+        console.log(`[Seamless] Expanded menu ${viewMoreClicks} times via "View more" buttons`);
       }
 
       // Step 6: Build PlatformMenu from collected items

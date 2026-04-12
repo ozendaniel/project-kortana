@@ -49,6 +49,7 @@ router.get('/search', async (req: Request, res: Response) => {
       WHERE r.lat BETWEEN $1 AND $2 AND r.lng BETWEEN $3 AND $4
         AND mi.canonical_name ILIKE $5
         AND mi.available = true
+        AND (r.platform_status->>'excluded' IS NULL)
     `;
     const params: unknown[] = [
       geo.lat - latDelta, geo.lat + latDelta,

@@ -30,6 +30,7 @@ router.get('/search', async (req: Request, res: Response) => {
              doordash_id, seamless_id, doordash_url, seamless_url
       FROM restaurants
       WHERE lat IS NOT NULL AND lng IS NOT NULL
+        AND (platform_status->>'excluded' IS NULL)
     `;
     const params: unknown[] = [];
 

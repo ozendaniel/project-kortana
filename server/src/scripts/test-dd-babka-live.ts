@@ -19,8 +19,20 @@
  */
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') });
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const QUERIES_DIR = path.join(__dirname, '..', 'adapters', 'doordash', 'queries');
+
+function loadQuery(filename: string): string {
+  const raw = fs.readFileSync(path.join(QUERIES_DIR, filename), 'utf-8');
+  const lines = raw.split('\n');
+  const queryStart = lines.findIndex(l => !l.startsWith('#') && l.trim() !== '');
+  return lines.slice(queryStart).join('\n');
+}
 
 import { db } from '../db/client.js';
 import { DoorDashAdapter } from '../adapters/doordash/adapter.js';
@@ -126,13 +138,7 @@ async function main() {
   if (!skipBackfill && (!item.menu_platform_id || !item.modifier_groups)) {
     console.log('\n→ Running backfill for HH Bagels...');
     // Fetch storepageFeed to get menuId + identify needy items
-    const storeQuery = (await import('fs')).readFileSync(
-      path.join(path.dirname(new URL(import.meta.url).pathname).replace(/^\//, ''), '..', 'adapters', 'doordash', 'queries', 'storepageFeed.graphql'),
-      'utf-8'
-    );
-    const queryLines = storeQuery.split('\n');
-    const start = queryLines.findIndex(l => !l.startsWith('#') && l.trim() !== '');
-    const cleanQuery = queryLines.slice(start).join('\n');
+    const cleanQuery = loadQuery('storepageFeed.graphql');
 
     const browser = adapter.getBrowser();
     const feedResult = await browser.mainTabGraphqlQuery<any>('storepageFeed', cleanQuery, {

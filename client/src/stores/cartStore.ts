@@ -1,10 +1,24 @@
 import { create } from 'zustand';
+import type { ModifierSelection } from '../api/client';
 
 export interface CartItem {
+  /** Unique key for this cart line. itemId for simple items, itemId#hash for modified items */
+  cartLineId: string;
   itemId: string;
   name: string;
   quantity: number;
   platforms: Record<string, { priceCents: number; available: boolean }>;
+  modifierSelections?: ModifierSelection[];
+  /** Human-readable summary like "Chocolate, Large" */
+  modifierSummary?: string;
+}
+
+/** Build a stable cart line key from itemId + selections */
+function cartLineKey(itemId: string, selections?: ModifierSelection[]): string {
+  if (!selections || selections.length === 0) return itemId;
+  const sorted = [...selections].sort((a, b) => a.groupId.localeCompare(b.groupId));
+  const key = sorted.map(s => `${s.groupId}:${s.optionIds.slice().sort().join(',')}`).join('|');
+  return `${itemId}#${key}`;
 }
 
 interface CartState {
@@ -15,9 +29,9 @@ interface CartState {
 
   setRestaurant: (id: string, name: string) => void;
   setDeliveryAddress: (address: { lat: number; lng: number; address: string }) => void;
-  addItem: (item: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
+  addItem: (item: Omit<CartItem, 'quantity' | 'cartLineId'>) => void;
+  removeItem: (cartLineId: string) => void;
+  updateQuantity: (cartLineId: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: () => number;
 }
@@ -34,29 +48,30 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   addItem: (item) =>
     set((state) => {
-      const existing = state.items.find((i) => i.itemId === item.itemId);
+      const lineId = cartLineKey(item.itemId, item.modifierSelections);
+      const existing = state.items.find((i) => i.cartLineId === lineId);
       if (existing) {
         return {
           items: state.items.map((i) =>
-            i.itemId === item.itemId ? { ...i, quantity: i.quantity + 1 } : i
+            i.cartLineId === lineId ? { ...i, quantity: i.quantity + 1 } : i
           ),
         };
       }
-      return { items: [...state.items, { ...item, quantity: 1 }] };
+      return { items: [...state.items, { ...item, cartLineId: lineId, quantity: 1 }] };
     }),
 
-  removeItem: (itemId) =>
+  removeItem: (cartLineId) =>
     set((state) => ({
-      items: state.items.filter((i) => i.itemId !== itemId),
+      items: state.items.filter((i) => i.cartLineId !== cartLineId),
     })),
 
-  updateQuantity: (itemId, quantity) =>
+  updateQuantity: (cartLineId, quantity) =>
     set((state) => {
       if (quantity <= 0) {
-        return { items: state.items.filter((i) => i.itemId !== itemId) };
+        return { items: state.items.filter((i) => i.cartLineId !== cartLineId) };
       }
       return {
-        items: state.items.map((i) => (i.itemId === itemId ? { ...i, quantity } : i)),
+        items: state.items.map((i) => (i.cartLineId === cartLineId ? { ...i, quantity } : i)),
       };
     }),
 

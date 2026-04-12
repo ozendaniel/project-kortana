@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getMenu } from '../api/client';
+import { getMenu, type ModifierSelection, type UnifiedMenuItem } from '../api/client';
 import { useCartStore } from '../stores/cartStore';
 import CartPanel from './CartPanel';
+import ModifierModal from './ModifierModal';
 
 function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
@@ -18,6 +19,9 @@ export default function MenuView() {
   const addItem = useCartStore((s) => s.addItem);
   const restaurantId = useCartStore((s) => s.restaurantId);
   const setRestaurant = useCartStore((s) => s.setRestaurant);
+
+  // Modifier modal state
+  const [modifierItem, setModifierItem] = useState<UnifiedMenuItem | null>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['menu', id],
@@ -49,7 +53,11 @@ export default function MenuView() {
 
   const { restaurant, menu } = data;
 
-  const handleAddItem = (item: { id: string; name: string; platforms: Record<string, { priceCents: number; available: boolean }> }) => {
+  const handleAddItem = (item: UnifiedMenuItem) => {
+    if (item.hasModifiers) {
+      setModifierItem(item);
+      return;
+    }
     addItem({
       itemId: item.id,
       name: item.name,
@@ -57,6 +65,20 @@ export default function MenuView() {
         Object.entries(item.platforms).map(([p, v]) => [p, { priceCents: v.priceCents, available: v.available }])
       ),
     });
+  };
+
+  const handleModifierConfirm = (selections: ModifierSelection[], summary: string) => {
+    if (!modifierItem) return;
+    addItem({
+      itemId: modifierItem.id,
+      name: modifierItem.name,
+      platforms: Object.fromEntries(
+        Object.entries(modifierItem.platforms).map(([p, v]) => [p, { priceCents: v.priceCents, available: v.available }])
+      ),
+      modifierSelections: selections,
+      modifierSummary: summary,
+    });
+    setModifierItem(null);
   };
 
   return (
@@ -110,6 +132,11 @@ export default function MenuView() {
                         <h3 className="text-sm font-medium text-text-primary truncate">
                           {item.name}
                         </h3>
+                        {item.hasModifiers && (
+                          <span className="shrink-0 text-[10px] font-mono text-amber-accent tracking-wide">
+                            CUSTOM
+                          </span>
+                        )}
                         {priceDiff > 0 && (
                           <span className="shrink-0 text-[10px] font-mono text-lime/60">
                             {formatCents(priceDiff)} diff
@@ -137,7 +164,7 @@ export default function MenuView() {
 
                     {/* Add button */}
                     <button
-                      onClick={() => handleAddItem({ id: item.id, name: item.name, platforms: item.platforms })}
+                      onClick={() => handleAddItem(item)}
                       className="opacity-0 group-hover:opacity-100 shrink-0 w-7 h-7 flex items-center justify-center text-sm font-mono font-bold text-lime bg-lime/10 border border-lime/20 rounded-sm hover:bg-lime/20 transition-all"
                     >
                       +
@@ -157,6 +184,16 @@ export default function MenuView() {
 
       {/* Mobile cart bar */}
       <MobileCartBar onCompare={() => navigate('/compare')} />
+
+      {/* Modifier modal */}
+      {modifierItem && (
+        <ModifierModal
+          itemId={modifierItem.id}
+          itemName={modifierItem.name}
+          onConfirm={handleModifierConfirm}
+          onClose={() => setModifierItem(null)}
+        />
+      )}
     </div>
   );
 }

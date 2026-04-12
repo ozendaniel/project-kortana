@@ -14,12 +14,16 @@ export default function ComparisonView() {
   const effectiveAddress = deliveryAddress || { lat: 40.7359, lng: -73.9911, address: 'New York, NY' };
 
   const { data: comparison, isLoading, error } = useQuery({
-    queryKey: ['compare', restaurantId, items],
+    queryKey: ['compare', restaurantId, items.map(i => `${i.cartLineId}:${i.quantity}`)],
     queryFn: () =>
       compareOrder(
         restaurantId!,
         effectiveAddress,
-        items.map((i) => ({ itemId: i.itemId, quantity: i.quantity }))
+        items.map((i) => ({
+          itemId: i.itemId,
+          quantity: i.quantity,
+          modifierSelections: i.modifierSelections,
+        }))
       ),
     enabled: !!restaurantId && items.length > 0,
   });

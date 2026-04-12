@@ -43,9 +43,12 @@ export default function CartPanel({ onCompare }: CartPanelProps) {
       {/* Items */}
       <div className="px-5 py-3 space-y-3 max-h-80 overflow-y-auto">
         {items.map((item) => (
-          <div key={item.itemId} className="flex items-start justify-between gap-2">
+          <div key={item.cartLineId} className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <p className="text-sm text-text-primary truncate">{item.name}</p>
+              {item.modifierSummary && (
+                <p className="text-[10px] text-amber-accent mt-0.5 truncate">{item.modifierSummary}</p>
+              )}
               <div className="flex gap-2 mt-0.5">
                 {Object.entries(item.platforms).sort(([a], [b]) => (a === 'doordash' ? -1 : b === 'doordash' ? 1 : 0)).map(([p, v]) => (
                   <span key={p} className={`price text-[10px] ${p === 'doordash' ? 'text-dd' : 'text-sl'}`}>
@@ -56,20 +59,20 @@ export default function CartPanel({ onCompare }: CartPanelProps) {
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <button
-                onClick={() => updateQuantity(item.itemId, item.quantity - 1)}
+                onClick={() => updateQuantity(item.cartLineId, item.quantity - 1)}
                 className="w-5 h-5 flex items-center justify-center text-xs font-mono text-text-muted bg-base rounded-sm hover:text-text-primary transition-colors"
               >
                 &minus;
               </button>
               <span className="price text-xs w-4 text-center text-text-primary">{item.quantity}</span>
               <button
-                onClick={() => updateQuantity(item.itemId, item.quantity + 1)}
+                onClick={() => updateQuantity(item.cartLineId, item.quantity + 1)}
                 className="w-5 h-5 flex items-center justify-center text-xs font-mono text-text-muted bg-base rounded-sm hover:text-text-primary transition-colors"
               >
                 +
               </button>
               <button
-                onClick={() => removeItem(item.itemId)}
+                onClick={() => removeItem(item.cartLineId)}
                 className="w-5 h-5 flex items-center justify-center text-xs text-text-muted hover:text-coral transition-colors ml-1"
               >
                 &times;

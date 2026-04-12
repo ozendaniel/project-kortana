@@ -4,6 +4,7 @@ export interface UnifiedMenuItem {
   description?: string;
   category: string;
   platforms: Record<string, { itemId: string; priceCents: number; available: boolean }>;
+  hasModifiers?: boolean;
 }
 
 export interface MenuCategory {
@@ -63,12 +64,19 @@ export function mergeMatchedItems(
   for (const [root, members] of groups) {
     const representative = members.find(r => !SKIP_CATEGORIES.has(r.category as string)) || members[0];
 
+    // Check if any member has modifier_groups
+    const anyModifiers = members.some(r => {
+      const mg = r.modifier_groups;
+      return mg && (Array.isArray(mg) ? mg.length > 0 : true);
+    });
+
     const unified: UnifiedMenuItem = {
       id: root,
       name: representative.original_name as string,
       description: representative.description as string | undefined,
       category: representative.category as string,
       platforms: {},
+      hasModifiers: anyModifiers || undefined,
     };
 
     for (const row of members) {

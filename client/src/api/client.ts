@@ -24,6 +24,32 @@ export interface UnifiedMenuItem {
   description?: string;
   category: string;
   platforms: Record<string, { itemId: string; priceCents: number; available: boolean }>;
+  hasModifiers?: boolean;
+}
+
+export interface ModifierOption {
+  id: string;
+  name: string;
+  description?: string;
+  priceDeltaCents: number;
+  isDefault: boolean;
+  defaultQuantity: number;
+}
+
+export interface ModifierGroup {
+  id: string;
+  name: string;
+  minSelection: number;
+  maxSelection: number;
+  selectionMode: 'single_select' | 'multi_select';
+  isOptional: boolean;
+  options: ModifierOption[];
+  subtitle?: string;
+}
+
+export interface ModifierSelection {
+  groupId: string;
+  optionIds: string[];
 }
 
 export interface MenuCategory {
@@ -86,10 +112,15 @@ export async function getMenu(restaurantId: string): Promise<{ restaurant: { id:
   return data;
 }
 
+export async function getItemModifiers(itemId: string): Promise<ModifierGroup[]> {
+  const { data } = await api.get(`/menus/items/${itemId}/modifiers`);
+  return data.modifierGroups || [];
+}
+
 export async function compareOrder(
   restaurantId: string,
   address: { lat: number; lng: number; address: string },
-  items: Array<{ itemId: string; quantity: number }>
+  items: Array<{ itemId: string; quantity: number; modifierSelections?: ModifierSelection[] }>
 ): Promise<ComparisonResult> {
   const { data } = await api.post('/compare', { restaurantId, address, items });
   return data.comparison;

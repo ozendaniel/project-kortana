@@ -80,15 +80,25 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - Seamless portal login fully working on Railway (2026-04-02): Google OAuth via popup handled by screencast switching (auth-manager detects popup, switches CDP screencast + input routing to it, reverts on close). Xvfb virtual display in Docker so Chrome runs headful (Google blocks headless OAuth). Stripped unnecessary automation Chrome flags (--disable-extensions, --disable-sync, etc.) to reduce bot detection. Race condition fix: finishLogin guards against re-entry so stop_login from component unmount doesn't override successful auth.
 - Both DoorDash and Seamless sessions authenticated on Railway via persistent volume.
 
-**What's next:**
-1. **Restart Seamless DOM scraping** — use `--concurrency 4 --resume --sustained --skip-match` (safe on 32GB desktop). ~4,050 restaurants remaining. **Must run in a real terminal** (cmd/PowerShell), NOT Claude Code background task (10-min timeout). Command: `cd C:\Users\ozend\dev\project-kortana\server && npx tsx src/scripts/populate-seamless-menus.ts --concurrency 4 --resume --sustained --skip-match`. If Railway DB gives ECONNRESET on startup, wait a few minutes and retry — connection pool recovers. Monitor via DB: `SELECT COUNT(DISTINCT mi.restaurant_id) FROM menu_items mi JOIN restaurants r ON r.id = mi.restaurant_id WHERE mi.platform = 'seamless' AND mi.created_at > NOW() - INTERVAL '24 hours'`.
-2. **Fix Dim Sum Palace DOM scraping** — "View More Items" button not handled, causing incomplete menus on complex restaurants.
-3. **Tune dedup scoring for geo matches** — current 0.80 auto-merge threshold produces ~30-40% false positives with real geo data in dense NYC. Options: raise threshold to 0.88-0.90, require menu item overlap as signal, or add address string similarity. Dry run results in `server/data/dedup-dryrun-2026-04-04.txt`.
-4. **Re-run dedup** after scoring is tuned — 1,496 DD-only restaurants now have real addresses for geo matching against 5,574 SL-only restaurants.
-5. Run cross-platform item matching after both menus are populated and dedup is finalized
-6. Implement savings tracking (log comparisons/orders to DB)
-7. **Create pg_trgm index** when Railway disk has space: `CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_menu_items_name_trgm ON menu_items USING gin (canonical_name gin_trgm_ops)` — accelerates menu item search ILIKE queries.
-8. **Monitor Railway Postgres storage** — check: `SELECT pg_size_pretty(pg_database_size(current_database()))`
+**Completed 2026-04-11/12:**
+- **Migrated to new Postgres-bFIw** (Pro/50GB). DD discovery (1,849) + populate (1,562 menus, 150K items) + address enrichment (99.9%) all done.
+- **Dedup tuned**: AUTO_MERGE_THRESHOLD 0.80→0.88, distance 300m→150m. 299 matched, 42 flagged. Manual merges for 9 geocoding-drift pairs.
+- **Retail/non-food exclusion**: 245 `/convenience/store/` + 68 flower shops marked `platform_status.excluded='non-food'`, filtered from search routes.
+- **Cross-platform item matching**: 20,324 items matched via 4-tier algorithm (T1-T3 deterministic + T4 GPT-4o-mini). LLM switched from Gemini Flash (rate-limited) to GPT-4o-mini (~$0.03 per full batch, instant).
+- **DoorDash live fee comparison working**: Option A Phase 1 proven end-to-end — modifier capture via `itemPage` query + real cart simulation via `addCartItem` + `detailedCartItems`. DashPass honored via `DOORDASH_HAS_DASHPASS` env flag. Tested: HH Bagels Babka Loaf → $24.29 matching live DD exactly.
+- **DoorDash GraphQL URL routing discovered**: All DD operations require `/graphql/{operationName}?operation={operationName}` (not plain `/graphql`). Also requires `x-csrftoken`, `apollographql-client-name`, `x-channel-id` headers for restricted operations like `itemPage`. See `project_doordash_graphql_quirks.md` in Claude memory.
+- **Lockfile protocol**: Populate scripts acquire `~/.kortana/{platform}-populate.lock` with PID. Server checks `getActiveLock()` before adapter init — stale locks auto-cleaned via PID liveness check. Replaces the old "fetch port 9223" guard that blocked on stale Chrome.
+- **Cached per-restaurant fee structure** (Option D): Migration 008 adds `restaurants.platform_fees JSONB`. Extracted from DD `storepageFeed.deliveryFeeLayout` + SL `/restaurants/{id}.delivery_fees[]`. Comparison engine uses `computeFeesFromCache()` as primary fallback when live cart fails.
+- **Modifier schema**: Migration 009 adds `menu_items.modifier_groups JSONB` + `menu_platform_id TEXT`. DD `fetchItemModifiers()` calls `itemPage` query, parses `optionLists[]` into normalized `ModifierGroup[]`. `fillDefaultSelections()` auto-picks defaults for required groups. `buildDoorDashNestedOptions()` serializes to the exact JSON string format `addCartItem` expects.
+- **Seamless virtualization fix**: DOM scraper now uses dual termination (height stable AND no new items) instead of height-only. Also clicks "View more items" buttons between scroll passes. Fixed Elenis (19→126 items), Bond 45 (26→135), Burgerology (30→232).
+
+**What's next (prioritized):**
+1. **Frontend modifier UI** (Option A Phase 2) — Modal for users to pick flavors/sizes/options. Backend plumbing ready. ~4-8h frontend work.
+2. **Seamless modifier port** (Option A Phase 3) — Same pattern as DD but with SL's `/menu_items/{id}` endpoint + different cart options format. ~8-12h.
+3. **Expand DD modifier coverage** to all 1,604 restaurants (backfill script exists, just needs to run).
+4. **DD modifier backfill for matched restaurants** — currently running (~31% done as of 2026-04-12).
+5. **Railway frontend DATABASE_URL** — kortana-web service still points to old crashed Postgres.
+6. **pg_trgm index** — `CREATE INDEX CONCURRENTLY idx_menu_items_name_trgm ON menu_items USING gin (canonical_name gin_trgm_ops)`
 
 ## Architecture Decisions
 

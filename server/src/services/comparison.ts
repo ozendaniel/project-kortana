@@ -5,6 +5,7 @@ import { computeFeesFromCache, type CachedFees, type PlatformFeesMap } from './f
 interface CartItem {
   itemId: string;  // canonical menu_item id
   quantity: number;
+  modifierSelections?: Array<{ groupId: string; optionIds: string[] }>;
 }
 
 interface PlatformComparison {
@@ -382,9 +383,7 @@ async function mapItemsToPlatform(
       menuPlatformId: row?.menu_platform_id || null,
       modifierGroups: row?.modifier_groups || null,
       quantity: item.quantity,
-      // Modifier selections come from the cart (frontend passes them through)
-      // — placeholder for now, Phase 2 wires the frontend selection UI.
-      modifierSelections: (item as any).modifierSelections || [],
+      modifierSelections: item.modifierSelections || [],
     });
   }
 

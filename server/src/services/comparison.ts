@@ -160,6 +160,46 @@ async function fetchLiveFees(
     deliveryAddress,
   });
 
+  // Modifier price delta fallback: when the user selected modifiers but this
+  // platform has no modifier data (e.g. chain restaurants on SL where the API
+  // returns null), apply the DD modifier price deltas to the subtotal so the
+  // comparison isn't artificially skewed.
+  let modifierDeltaCents = 0;
+  for (const item of availableItems) {
+    const hasUserSelections = item.modifierSelections && item.modifierSelections.length > 0;
+    const platformHasNoMods = !item.modifierGroups || (Array.isArray(item.modifierGroups) && item.modifierGroups.length === 0);
+    if (hasUserSelections && platformHasNoMods) {
+      // Look up DD modifier groups to calculate the price delta
+      const ddResult = await db.query(
+        `SELECT mi.modifier_groups FROM menu_items mi
+         WHERE mi.restaurant_id = $1 AND mi.platform = 'doordash'
+           AND (mi.id = $2 OR mi.matched_item_id = $2)
+           AND mi.modifier_groups IS NOT NULL AND jsonb_array_length(mi.modifier_groups) > 0
+         LIMIT 1`,
+        [restaurantId, item.itemId]
+      );
+      const ddGroups = ddResult.rows[0]?.modifier_groups;
+      if (ddGroups && Array.isArray(ddGroups)) {
+        for (const sel of item.modifierSelections!) {
+          const group = ddGroups.find((g: any) => g.id === sel.groupId);
+          if (!group) continue;
+          for (const optId of sel.optionIds) {
+            const opt = group.options?.find((o: any) => o.id === optId);
+            if (opt?.priceDeltaCents) modifierDeltaCents += opt.priceDeltaCents * item.quantity;
+          }
+        }
+      }
+    }
+  }
+  if (modifierDeltaCents > 0) {
+    fees.subtotalCents += modifierDeltaCents;
+    // Recalculate total with the adjusted subtotal (service fee is percentage-based)
+    const servicePct = fees.subtotalCents > 0 ? fees.serviceFeeCents / (fees.subtotalCents - modifierDeltaCents) : 0.15;
+    fees.serviceFeeCents = Math.round(fees.subtotalCents * servicePct);
+    fees.totalCents = fees.subtotalCents + fees.deliveryFeeCents + fees.serviceFeeCents + fees.smallOrderFeeCents + fees.taxCents - fees.discountCents;
+    console.log(`[Compare] Applied modifier price delta: +${modifierDeltaCents}c to ${platform} subtotal (no platform modifiers available)`);
+  }
+
   const tipCents = Math.round(fees.subtotalCents * 0.05); // optional 5% tip
 
   return {

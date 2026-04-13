@@ -111,6 +111,7 @@ async function main() {
     console.log(`${progress} ${rest.canonical_name}: ${items.length} items to fetch modifiers`);
     let restModCount = 0;
     let consecutive401s = 0;
+    let simpleRefreshAttempts = 0;
 
     for (let ii = 0; ii < items.length; ii++) {
       const item = items[ii];
@@ -118,6 +119,7 @@ async function main() {
         const choiceCategories = await adapter.fetchItemModifiers(rest.seamless_id, item.platform_item_id);
 
         consecutive401s = 0; // Reset on success
+        simpleRefreshAttempts = 0;
 
         if (!choiceCategories || choiceCategories.length === 0) {
           // No modifiers — store empty array to mark as processed
@@ -153,27 +155,28 @@ async function main() {
         // Detect auth expiration: 401 errors on real numeric IDs
         if (msg.includes('401') && /^\d+$/.test(item.platform_item_id)) {
           consecutive401s++;
-          if (consecutive401s >= 3 && consecutive401s <= 5) {
-            // First attempt: re-read token from localStorage
-            console.log('  Auth token appears expired — refreshing...');
-            try {
-              await adapter.refreshTokens();
-              consecutive401s = 0;
-              console.log('  Token refreshed. Retrying...');
-              ii--;
-              await sleep(2000);
-              continue;
-            } catch { /* fall through to force refresh */ }
-          }
-          if (consecutive401s > 5) {
-            // localStorage token is stale — force-navigate to get a new one
-            console.log('  Simple refresh failed — force-refreshing session via page navigation...');
+          if (consecutive401s >= 3) {
+            if (simpleRefreshAttempts < 2) {
+              // First 2 attempts: re-read token from localStorage
+              simpleRefreshAttempts++;
+              console.log(`  Auth token expired — simple refresh attempt ${simpleRefreshAttempts}...`);
+              try {
+                await adapter.refreshTokens();
+                consecutive401s = 0;
+                ii--;
+                await sleep(2000);
+                continue;
+              } catch { /* fall through to force refresh */ }
+            }
+            // Simple refresh didn't help — force-navigate to seamless.com
+            console.log('  Simple refresh ineffective — force-refreshing via page navigation...');
             try {
               await adapter.forceRefreshSession();
               consecutive401s = 0;
+              simpleRefreshAttempts = 0;
               console.log('  Session force-refreshed. Retrying...');
               ii--;
-              await sleep(3000);
+              await sleep(5000);
               continue;
             } catch (refreshErr) {
               console.error('  Force-refresh failed. Skipping rest of this restaurant.');

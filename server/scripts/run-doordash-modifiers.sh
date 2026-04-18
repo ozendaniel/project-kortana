@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-# Unattended Seamless modifier backfill wrapper.
-# Auto-restarts with --resume on failure (auth expiry, Chrome crash, etc).
+# Unattended DoorDash modifier backfill wrapper.
+# Auto-restarts with --resume on failure (Chrome crash, 429s, etc).
 #
 # Usage:
-#   bash server/scripts/run-seamless-modifiers.sh
+#   bash server/scripts/run-doordash-modifiers.sh
 #
 # Run from project root (C:\Users\ozend\dev\project-kortana).
-# Logs to server/data/seamless-modifiers-YYYYMMDD-HHMMSS.log
+# Logs to server/data/doordash-modifiers-YYYYMMDD-HHMMSS.log
 
 set -u
 
@@ -16,12 +16,13 @@ SERVER_DIR="$(dirname "$SCRIPT_DIR")"
 DATA_DIR="$SERVER_DIR/data"
 mkdir -p "$DATA_DIR"
 
-LOGFILE="$DATA_DIR/seamless-modifiers-$(date +%Y%m%d-%H%M%S).log"
-COOLDOWN_SECS=60
-MAX_RESTARTS=30
+LOGFILE="$DATA_DIR/doordash-modifiers-$(date +%Y%m%d-%H%M%S).log"
+COOLDOWN_SECS=90
+MAX_RESTARTS=50
+
 restart_count=0
 
-echo "=== Seamless Modifier Backfill Wrapper ===" | tee "$LOGFILE"
+echo "=== DoorDash Modifier Backfill Wrapper ===" | tee "$LOGFILE"
 echo "Log: $LOGFILE" | tee -a "$LOGFILE"
 echo "Max restarts: $MAX_RESTARTS" | tee -a "$LOGFILE"
 echo "Started: $(date)" | tee -a "$LOGFILE"
@@ -30,7 +31,7 @@ echo "" | tee -a "$LOGFILE"
 while [ $restart_count -lt $MAX_RESTARTS ]; do
   echo "[$(date)] Run #$((restart_count + 1)) starting..." | tee -a "$LOGFILE"
 
-  cd "$SERVER_DIR" && npx tsx src/scripts/backfill-sl-modifiers.ts \
+  cd "$SERVER_DIR" && npx tsx src/scripts/backfill-dd-modifiers.ts \
     --all --resume \
     2>&1 | tee -a "$LOGFILE"
 
@@ -45,6 +46,9 @@ while [ $restart_count -lt $MAX_RESTARTS ]; do
   restart_count=$((restart_count + 1))
   echo "" | tee -a "$LOGFILE"
   echo "[$(date)] Script exited with code $EXIT_CODE. Restart #$restart_count in ${COOLDOWN_SECS}s..." | tee -a "$LOGFILE"
+
+  # Kill stale Chrome on port 9224 before restart
+  npx kill-port 9224 2>/dev/null || true
 
   sleep $COOLDOWN_SECS
 done

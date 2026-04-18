@@ -10,7 +10,9 @@
  *   4. Fetches modifiers for newly-fixed items
  *
  * Usage:
- *   npx tsx src/scripts/fix-synthetic-ids.ts
+ *   npx tsx src/scripts/fix-synthetic-ids.ts              # Matched restaurants only
+ *   npx tsx src/scripts/fix-synthetic-ids.ts --all        # All SL restaurants
+ *   npx tsx src/scripts/fix-synthetic-ids.ts --resume     # Skip restaurants with 0 synthetic IDs left
  */
 import dotenv from 'dotenv';
 import path from 'path';
@@ -19,6 +21,11 @@ dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') });
 import { db } from '../db/client.js';
 import { SeamlessAdapter } from '../adapters/seamless/adapter.js';
 import { extractSeamlessModifiers, type ModifierGroup } from '../services/modifiers.js';
+import { acquireLock, releaseLock } from '../utils/process-lock.js';
+
+const args = process.argv.slice(2);
+const allRestaurants = args.includes('--all');
+const resume = args.includes('--resume');
 
 function sleep(ms: number): Promise<void> {
   return new Promise(r => setTimeout(r, ms));
@@ -32,7 +39,16 @@ function normName(name: string): string {
 async function main() {
   console.log('=== Fix Synthetic Seamless Item IDs ===\n');
 
+  // Acquire lock so modifier backfill doesn't run simultaneously
+  try {
+    await acquireLock('seamless-populate', { script: 'fix-synthetic-ids' });
+  } catch {
+    console.error('Could not acquire seamless-populate lock. Is another SL script running?');
+    process.exit(1);
+  }
+
   // 1. Find all synthetic-ID items grouped by restaurant
+  const matchedFilter = allRestaurants ? '' : 'AND r.doordash_id IS NOT NULL';
   const { rows: syntheticItems } = await db.query(`
     SELECT mi.id, mi.original_name, mi.platform_item_id, mi.restaurant_id,
            r.seamless_id, r.canonical_name
@@ -40,7 +56,8 @@ async function main() {
     JOIN restaurants r ON r.id = mi.restaurant_id
     WHERE mi.platform = 'seamless'
       AND mi.platform_item_id LIKE 'sl-%'
-      AND r.doordash_id IS NOT NULL AND r.seamless_id IS NOT NULL
+      AND r.seamless_id IS NOT NULL
+      ${matchedFilter}
       AND (r.platform_status->>'excluded' IS NULL)
     ORDER BY r.canonical_name, mi.original_name
   `);
@@ -75,7 +92,16 @@ async function main() {
     try {
       // 3. Fetch restaurant menu from API to get real item IDs
       // Use enhanced_feed to get category list, then per-category items
-      const categories = await fetchMenuItemIds(adapter, seamlessId);
+      let categories = await fetchMenuItemIds(adapter, seamlessId);
+
+      if (categories.size === 0) {
+        // Try force-refreshing session and retry once
+        console.log('  No items — force-refreshing session...');
+        try {
+          await adapter.forceRefreshSession();
+          categories = await fetchMenuItemIds(adapter, seamlessId);
+        } catch { /* ignore */ }
+      }
 
       if (categories.size === 0) {
         console.log('  No items returned from API — skipping');
@@ -175,6 +201,7 @@ async function main() {
   console.log(`Not found in API: ${totalNotFound}`);
   console.log(`Modifiers fetched: ${totalModifiers}`);
 
+  releaseLock('seamless-populate');
   await db.pool.end();
   process.exit(0);
 }
@@ -229,4 +256,8 @@ async function fetchMenuItemIds(
   return nameToId;
 }
 
-main().catch(err => { console.error('Fatal:', err); process.exit(1); });
+main().catch(err => {
+  console.error('Fatal:', err);
+  releaseLock('seamless-populate');
+  process.exit(1);
+});

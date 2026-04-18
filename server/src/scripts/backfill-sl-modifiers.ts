@@ -30,6 +30,7 @@ const singleRid = ridIdx !== -1 ? args[ridIdx + 1] : null;
 const limitIdx = args.indexOf('--limit');
 const limit = limitIdx !== -1 ? parseInt(args[limitIdx + 1], 10) : 0;
 const resume = args.includes('--resume');
+const allRestaurants = args.includes('--all');
 
 function sleep(ms: number): Promise<void> {
   return new Promise(r => setTimeout(r, ms));
@@ -48,11 +49,19 @@ async function main() {
 
   // Target: matched restaurants with SL menu items
   const conditions: string[] = [
-    'r.doordash_id IS NOT NULL',
     'r.seamless_id IS NOT NULL',
     `(r.platform_status->>'excluded' IS NULL)`,
     `EXISTS (SELECT 1 FROM menu_items mi WHERE mi.restaurant_id = r.id AND mi.platform = 'seamless')`,
   ];
+  if (!allRestaurants) {
+    conditions.push('r.doordash_id IS NOT NULL');
+  }
+  // Resume mode: skip restaurants where ALL real SL items already have modifier_groups set
+  if (resume) {
+    conditions.push(
+      `EXISTS (SELECT 1 FROM menu_items mi WHERE mi.restaurant_id = r.id AND mi.platform = 'seamless' AND mi.modifier_groups IS NULL AND mi.platform_item_id NOT LIKE 'sl-%')`
+    );
+  }
   const params: unknown[] = [];
   if (singleRid) {
     params.push(singleRid);
@@ -66,7 +75,7 @@ async function main() {
   if (limit > 0) q += ` LIMIT ${limit}`;
 
   const { rows: restaurants } = await db.query(q, params);
-  console.log(`Target: ${restaurants.length} matched restaurants\n`);
+  console.log(`Target: ${restaurants.length} ${allRestaurants ? 'total' : 'matched'} restaurants\n`);
 
   // Initialize Seamless adapter (connects to existing Chrome on port 9223)
   const adapter = new SeamlessAdapter();
@@ -97,6 +106,7 @@ async function main() {
        FROM menu_items mi
        WHERE mi.restaurant_id = $1 AND mi.platform = 'seamless'
          AND mi.platform_item_id IS NOT NULL
+         AND mi.platform_item_id NOT LIKE 'sl-%'
          ${resumeFilter}
        ORDER BY mi.original_name`,
       [rest.id]
@@ -194,6 +204,13 @@ async function main() {
       // Rate limit: 1-2s between API calls
       await sleep(1000 + Math.random() * 1000);
     }
+
+    // Mark any remaining NULL items as [] so this restaurant is skipped on future --resume
+    await db.query(
+      `UPDATE menu_items SET modifier_groups = '[]'::jsonb
+       WHERE restaurant_id = $1 AND platform = 'seamless' AND modifier_groups IS NULL`,
+      [rest.id]
+    );
 
     totalRestaurants++;
     console.log(`  Done: ${restModCount}/${items.length} items have modifiers`);

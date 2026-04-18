@@ -10,6 +10,7 @@
  *
  * Usage:
  *   npx tsx src/scripts/backfill-dd-modifiers.ts                    # All matched restaurants
+ *   npx tsx src/scripts/backfill-dd-modifiers.ts --all              # All DD restaurants (not just matched)
  *   npx tsx src/scripts/backfill-dd-modifiers.ts --restaurant-id X  # Single
  *   npx tsx src/scripts/backfill-dd-modifiers.ts --limit 10
  *   npx tsx src/scripts/backfill-dd-modifiers.ts --resume           # Skip items that already have modifier_groups
@@ -36,6 +37,7 @@ const singleRid = ridIdx !== -1 ? args[ridIdx + 1] : null;
 const limitIdx = args.indexOf('--limit');
 const limit = limitIdx !== -1 ? parseInt(args[limitIdx + 1], 10) : 0;
 const resume = args.includes('--resume');
+const allRestaurants = args.includes('--all');
 
 function loadQuery(filename: string): string {
   const raw = fs.readFileSync(path.join(QUERIES_DIR, filename), 'utf-8');
@@ -51,12 +53,20 @@ function sleep(ms: number): Promise<void> {
 async function main() {
   console.log('=== Backfill DoorDash modifier_groups ===\n');
 
-  // Target: matched restaurants with DD menu items
+  // Target: matched restaurants with DD menu items (or all DD restaurants with --all)
   const conditions: string[] = [
     'r.doordash_id IS NOT NULL',
-    'r.seamless_id IS NOT NULL',
     `EXISTS (SELECT 1 FROM menu_items mi WHERE mi.restaurant_id = r.id AND mi.platform = 'doordash')`,
   ];
+  if (!allRestaurants) {
+    conditions.push('r.seamless_id IS NOT NULL');
+  }
+  // Resume mode: skip restaurants where ALL DD items already have modifier_groups set
+  if (resume) {
+    conditions.push(
+      `EXISTS (SELECT 1 FROM menu_items mi WHERE mi.restaurant_id = r.id AND mi.platform = 'doordash' AND mi.modifier_groups IS NULL)`
+    );
+  }
   const params: unknown[] = [];
   if (singleRid) {
     params.push(singleRid);
@@ -70,7 +80,7 @@ async function main() {
   if (limit > 0) q += ` LIMIT ${limit}`;
 
   const { rows: restaurants } = await db.query(q, params);
-  console.log(`Target: ${restaurants.length} matched restaurants\n`);
+  console.log(`Target: ${restaurants.length} ${allRestaurants ? 'total' : 'matched'} restaurants\n`);
 
   // Pre-spawn Chrome headful
   const CDP_PORT = 9224;
@@ -174,6 +184,12 @@ async function main() {
       }
 
       if (needed.size === 0) {
+        // Mark all items as [] so restaurant is skipped on future --resume
+        await db.query(
+          `UPDATE menu_items SET modifier_groups = '[]'::jsonb
+           WHERE restaurant_id = $1 AND platform = 'doordash' AND modifier_groups IS NULL`,
+          [rest.id]
+        );
         console.log(`${progress} ${rest.canonical_name}: 0 items need modifiers, menuId=${menuPlatformId}`);
         restaurantsSkipped++;
         await sleep(2000 + Math.random() * 1000);
@@ -225,6 +241,13 @@ async function main() {
         }
         await sleep(2500 + Math.random() * 1500);
       }
+      // Mark all remaining DD items for this restaurant as [] (no modifiers needed)
+      // so the restaurant is skipped entirely on future --resume runs
+      await db.query(
+        `UPDATE menu_items SET modifier_groups = '[]'::jsonb
+         WHERE restaurant_id = $1 AND platform = 'doordash' AND modifier_groups IS NULL`,
+        [rest.id]
+      );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`${progress} ${rest.canonical_name}: storepageFeed failed — ${msg.substring(0, 150)}`);

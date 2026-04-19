@@ -389,6 +389,18 @@ export class AuthManager {
     }
   }
 
+  /** Mark a platform's session as expired and notify any connected clients.
+   *  Called by adapters when an API request returns 401/403 — catches the gap
+   *  where checkSession() passes (localStorage/cookies present) but the token
+   *  is stale. */
+  markExpired(platform: string): void {
+    const state = this.platforms.get(platform);
+    if (!state || state.status !== 'authenticated') return;
+    console.log(`[AuthManager] ${platform} marked expired after API auth failure`);
+    state.status = 'expired';
+    this.broadcast({ type: 'session_expired', platform });
+  }
+
   private broadcast(message: object): void {
     const data = JSON.stringify(message);
     for (const ws of this.wsClients) {

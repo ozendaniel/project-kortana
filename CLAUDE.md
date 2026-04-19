@@ -92,13 +92,15 @@ Dan Ozen — building solo with Claude Code. PE background (O3 Industries). NYC-
 - **Modifier schema**: Migration 009 adds `menu_items.modifier_groups JSONB` + `menu_platform_id TEXT`. DD `fetchItemModifiers()` calls `itemPage` query, parses `optionLists[]` into normalized `ModifierGroup[]`. `fillDefaultSelections()` auto-picks defaults for required groups. `buildDoorDashNestedOptions()` serializes to the exact JSON string format `addCartItem` expects.
 - **Seamless virtualization fix**: DOM scraper now uses dual termination (height stable AND no new items) instead of height-only. Also clicks "View more items" buttons between scroll passes. Fixed Elenis (19→126 items), Bond 45 (26→135), Burgerology (30→232).
 
+**Completed 2026-04-19:**
+- **DD + SL modifier backfills**: both complete — DD 1,506 restaurants / 143K items, SL 3,072 restaurants / 507K items. Full modifier coverage across both platforms.
+- **Railway frontend DATABASE_URL pointed at new Postgres-bFIw** (port 24990). kortana-web was still on the old crashed Postgres (port 26962); live site now reads the new DB.
+- **Option B — 401/403 auto-expires session**: `checkSession()` only verifies localStorage/cookies exist, so stale tokens left `/api/auth/status` reporting "authenticated" even when live fee calls failed with 401. Fixed: `AuthManager.markExpired(platform)` public method flips state + broadcasts `session_expired`. Seamless `apiCall` detects `API 401/403` → invokes `onAuthExpired`. DoorDash `getFees` detects `GraphQL 401/403` in cart failure → invokes `onAuthExpired`. Wiring in `server/src/index.ts` after each `registerPlatform`. (Pre-existing TS error in `matching.ts:119` fixed as a side-effect — was blocking Railway builds silently.)
+
 **What's next (prioritized):**
-1. **Frontend modifier UI** (Option A Phase 2) — Modal for users to pick flavors/sizes/options. Backend plumbing ready. ~4-8h frontend work.
-2. **Seamless modifier port** (Option A Phase 3) — Same pattern as DD but with SL's `/menu_items/{id}` endpoint + different cart options format. ~8-12h.
-3. **Expand DD modifier coverage** to all 1,604 restaurants (backfill script exists, just needs to run).
-4. **DD modifier backfill for matched restaurants** — currently running (~31% done as of 2026-04-12).
-5. **Railway frontend DATABASE_URL** — kortana-web service still points to old crashed Postgres.
-6. **pg_trgm index** — `CREATE INDEX CONCURRENTLY idx_menu_items_name_trgm ON menu_items USING gin (canonical_name gin_trgm_ops)`
+1. **Post-backfill QA — 0% modifier restaurants**: audit which restaurants have items but zero modifier coverage (expected vs. missing).
+2. **Seamless 404 restaurants — DOM scraping fallback** — Restaurants in `server/data/seamless-404-list.md` return 404 from the Seamless `fetchItemModifiers` API, blocking menu item ID + modifier population. Need to use Seamless DOM scraping (or another mechanism) to populate menus + modifiers for these restaurants in the database.
+3. **pg_trgm index** — `CREATE INDEX CONCURRENTLY idx_menu_items_name_trgm ON menu_items USING gin (canonical_name gin_trgm_ops)`
 
 ## Architecture Decisions
 

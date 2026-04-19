@@ -116,7 +116,7 @@ export async function matchMenuItems(restaurantId: string): Promise<{
   );
 
   if (ddResult.rows.length === 0 || slResult.rows.length === 0) {
-    return { matched: 0, unmatched: ddResult.rows.length };
+    return { matched: 0, unmatched: ddResult.rows.length, matchRate: 0, shouldRefetch: false };
   }
 
   // Clear ALL existing matches for this restaurant

@@ -56,6 +56,8 @@ export class SeamlessAdapter implements PlatformAdapter {
   private perimeterXToken = '';
   private authToken = '';
   private activeScrapePages = new Set<import('playwright').Page>();
+  /** Invoked when an API call returns 401/403. Wired in index.ts to flip AuthManager state. */
+  onAuthExpired?: () => void;
 
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
@@ -157,29 +159,39 @@ export class SeamlessAdapter implements PlatformAdapter {
 
     // Use browser fetch to inherit cookies and bypass bot detection
     const page = await this.browser.ensurePage();
-    const result = await page.evaluate(
-      async ({ url, method, headers, body }) => {
-        const response = await fetch(url, {
-          method,
+    try {
+      const result = await page.evaluate(
+        async ({ url, method, headers, body }) => {
+          const response = await fetch(url, {
+            method,
+            headers,
+            body: body || undefined,
+            credentials: 'include',
+          });
+          const text = await response.text();
+          if (!response.ok) {
+            throw new Error(`API ${response.status}: ${text.substring(0, 500)}`);
+          }
+          return text ? JSON.parse(text) : null;
+        },
+        {
+          url: `${API_BASE}${endpoint}`,
+          method: options.method || 'GET',
           headers,
-          body: body || undefined,
-          credentials: 'include',
-        });
-        const text = await response.text();
-        if (!response.ok) {
-          throw new Error(`API ${response.status}: ${text.substring(0, 500)}`);
+          body: options.body as string | null || null,
         }
-        return text ? JSON.parse(text) : null;
-      },
-      {
-        url: `${API_BASE}${endpoint}`,
-        method: options.method || 'GET',
-        headers,
-        body: options.body as string | null || null,
-      }
-    );
+      );
 
-    return result as T;
+      return result as T;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      // Token expired — flip status so the Settings page prompts re-login.
+      if (/\bAPI (401|403)\b/.test(msg)) {
+        this.authStatus = 'expired';
+        this.onAuthExpired?.();
+      }
+      throw err;
+    }
   }
 
   async searchRestaurants(params: {

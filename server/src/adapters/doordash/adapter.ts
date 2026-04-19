@@ -37,6 +37,8 @@ export class DoorDashAdapter implements PlatformAdapter {
   private authStatus: AuthStatus = 'not_configured';
   private lastRequestTime = 0;
   private static MIN_REQUEST_GAP_MS = 5000; // minimum 5s between comparisons to avoid 429
+  /** Invoked when a GraphQL call returns 401/403. Wired in index.ts to flip AuthManager state. */
+  onAuthExpired?: () => void;
 
   async initialize(credentials: PlatformCredentials): Promise<void> {
     await this.browser.launch();
@@ -625,6 +627,12 @@ export class DoorDashAdapter implements PlatformAdapter {
       }
     } catch (err) {
       console.error('[DoorDash] getFees cart approach failed:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      // Token / cookies stale — flip status so the Settings page prompts re-login.
+      if (/\bGraphQL (401|403)\b/.test(msg)) {
+        this.authStatus = 'expired';
+        this.onAuthExpired?.();
+      }
     }
 
     // Step 2: Full fallback — throw so comparison service uses DB pricing (no API calls)

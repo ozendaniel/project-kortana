@@ -104,6 +104,7 @@ async function initAdapters(): Promise<void> {
         authManager.registerPlatform('doordash', doordash.getBrowser(), doordash.getStatus(), async () => {
           doordash.setStatus('authenticated');
         });
+        doordash.onAuthExpired = () => authManager.markExpired('doordash');
         console.log(`[Kortana] DoorDash adapter registered (${doordash.getStatus()}).`);
       } catch (err) {
         console.error('[Kortana] DoorDash adapter failed to initialize:', err);
@@ -132,6 +133,7 @@ async function initAdapters(): Promise<void> {
           seamless.setStatus('authenticated');
           await seamless.refreshTokens();
         });
+        seamless.onAuthExpired = () => authManager.markExpired('seamless');
         console.log(`[Kortana] Seamless adapter registered (${seamless.getStatus()}).`);
       } catch (err) {
         console.error('[Kortana] Seamless adapter failed to initialize:', err);

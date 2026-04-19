@@ -32,75 +32,9 @@ export interface CachedFees {
 /** Map of platform name to cached fees for a single restaurant. */
 export type PlatformFeesMap = Partial<Record<'doordash' | 'seamless', CachedFees>>;
 
-export interface ComputedFees {
-  subtotalCents: number;
-  deliveryFeeCents: number;
-  serviceFeeCents: number;
-  smallOrderFeeCents: number;
-  serviceTollCents: number;
-  taxCents: number;
-  discountCents: number;
-  totalCents: number;
-}
-
-const NYC_TAX_RATE = 0.08875;
-
-/**
- * Compute fees for a given subtotal using cached fee structure.
- * Tax is applied to (subtotal + delivery + service + service_toll + small_order)
- * which matches the observed Seamless bill structure in real invoices.
- *
- * If dashpass=true AND the cached fees are DoorDash-shaped, delivery is zeroed
- * and service rate is reduced to 5% (DashPass terms, per DoorDash's fee disclosure).
- */
-export function computeFeesFromCache(
-  subtotalCents: number,
-  fees: CachedFees,
-  options: { platform: 'doordash' | 'seamless'; dashpass?: boolean } = { platform: 'seamless' }
-): ComputedFees {
-  const isDD = options.platform === 'doordash';
-  const applyDashpass = isDD && options.dashpass === true;
-
-  // Delivery fee: zero if DashPass is active on DD
-  const deliveryFeeCents = applyDashpass ? 0 : fees.deliveryFeeCents;
-
-  // Service fee: rate applied to subtotal, bounded by min/max
-  const effectiveRate = applyDashpass ? 0.05 : fees.serviceFeeRate;
-  const rawService = Math.round(subtotalCents * effectiveRate);
-  let serviceFeeCents = rawService;
-  if (fees.serviceFeeMinCents > 0 && serviceFeeCents < fees.serviceFeeMinCents) {
-    serviceFeeCents = fees.serviceFeeMinCents;
-  }
-  if (fees.serviceFeeMaxCents > 0 && serviceFeeCents > fees.serviceFeeMaxCents) {
-    serviceFeeCents = fees.serviceFeeMaxCents;
-  }
-
-  // Service toll (flat "other fees" that Seamless charges separately)
-  const serviceTollCents = fees.serviceTollCents || 0;
-
-  // Small order fee: flat if subtotal below threshold
-  const smallOrderFeeCents =
-    fees.smallOrderFeeCents > 0 && fees.smallOrderThresholdCents > 0 && subtotalCents < fees.smallOrderThresholdCents
-      ? fees.smallOrderFeeCents
-      : 0;
-
-  // Tax on the full pre-tax amount (matches observed SL bill structure)
-  const taxableBase = subtotalCents + deliveryFeeCents + serviceFeeCents + serviceTollCents + smallOrderFeeCents;
-  const taxCents = Math.round(taxableBase * NYC_TAX_RATE);
-
-  const totalCents = taxableBase + taxCents;
-
-  return {
-    subtotalCents,
-    deliveryFeeCents,
-    serviceFeeCents,
-    smallOrderFeeCents,
-    serviceTollCents,
-    taxCents,
-    discountCents: 0,
-    totalCents,
-  };
-}
+// computeFeesFromCache() removed 2026-04-19 — comparison engine is live-only.
+// CachedFees and the extract* helpers below are retained so the platform_fees
+// column stays populated for analytics / future offline pricing work.
 
 /**
  * Parse a DoorDash fee string like "$1.99 delivery fee" into cents.

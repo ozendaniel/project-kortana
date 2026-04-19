@@ -7,6 +7,7 @@ import type {
   PlatformFees,
   AuthStatus,
 } from '../types.js';
+import { LiveFeeError } from '../types.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -69,6 +70,38 @@ export class DoorDashAdapter implements PlatformAdapter {
 
   async isSessionValid(): Promise<boolean> {
     return this.browser.checkSession();
+  }
+
+  /**
+   * Return saved addresses on the logged-in DD account. Used by preflight
+   * so the frontend can show which address live fees will be calculated for.
+   */
+  async getAccountAddresses(): Promise<Array<{ id: string; address: string; lat: number; lng: number }>> {
+    this.ensureAuthenticated();
+    await this.browser.ensureConnected();
+    const query = loadQuery('getAvailableAddresses.graphql');
+    try {
+      const result = await this.browser.graphqlQuery<{
+        data: {
+          getAvailableAddresses: Array<{
+            id: string;
+            printableAddress: string;
+            lat: number;
+            lng: number;
+          }>;
+        };
+      }>('getAvailableAddresses', query);
+      const addrs = result.data?.getAvailableAddresses || [];
+      return addrs.map((a) => ({
+        id: a.id,
+        address: a.printableAddress,
+        lat: a.lat,
+        lng: a.lng,
+      }));
+    } catch (err) {
+      console.warn('[DoorDash] getAccountAddresses failed:', err instanceof Error ? err.message : err);
+      return [];
+    }
   }
 
   /** Fetch saved addresses and set the closest one as default */
@@ -460,6 +493,16 @@ export class DoorDashAdapter implements PlatformAdapter {
     // Clear cart, add items, get preview — subtotal comes from the clean cart itself
     let estimatedDeliveryTime: string | undefined;
     try {
+      // Snap DD account's default delivery address to the closest saved address
+      // for the requested lat/lng so live fees reflect the right delivery zone.
+      // If the user's Kortana address isn't near any saved DD address, this
+      // falls back to the nearest one (preflight warns the user beforehand).
+      try {
+        await this.setDeliveryAddress(params.deliveryAddress.lat, params.deliveryAddress.lng);
+      } catch (addrErr) {
+        console.warn('[DoorDash] setDeliveryAddress in getFees failed:', addrErr instanceof Error ? addrErr.message : addrErr);
+      }
+
       console.log(`[DoorDash] getFees: navigating to store ${params.platformRestaurantId}...`);
       await this.browser.navigateToStore(params.platformRestaurantId);
 
@@ -632,12 +675,19 @@ export class DoorDashAdapter implements PlatformAdapter {
       if (/\bGraphQL (401|403)\b/.test(msg)) {
         this.authStatus = 'expired';
         this.onAuthExpired?.();
+        throw new LiveFeeError('doordash', 'session_expired', 'DoorDash session expired — reconnect required.', true);
       }
+      if (/does not deliver|out of (delivery )?range|delivery zone|not available at this address|beyond (the )?delivery/i.test(msg)) {
+        throw new LiveFeeError('doordash', 'out_of_delivery_range', 'DoorDash does not deliver to this address.', false);
+      }
+      if (/unavailable|out of stock|86'?d|not available|sold out|item.*unavailable/i.test(msg)) {
+        throw new LiveFeeError('doordash', 'item_unavailable', `DoorDash: item unavailable. ${msg.substring(0, 140)}`, false);
+      }
+      throw new LiveFeeError('doordash', 'unknown', `DoorDash live cart failed: ${msg.substring(0, 180)}`, true);
     }
 
-    // Step 2: Full fallback — throw so comparison service uses DB pricing (no API calls)
-    // Calling estimateFees here would trigger another getMenu() call that also gets 429'd
-    throw new Error('[DoorDash] getFees: live cart approach failed');
+    // Reached only if the cart loop produced no cartId or no preview — treat as unknown live failure.
+    throw new LiveFeeError('doordash', 'unknown', 'DoorDash live cart produced no preview.', true);
   }
 
   /** Fallback: estimate fees from live menu prices + known DoorDash fee rates */

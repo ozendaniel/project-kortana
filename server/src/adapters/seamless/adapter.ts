@@ -7,6 +7,7 @@ import type {
   PlatformFees,
   AuthStatus,
 } from '../types.js';
+import { LiveFeeError } from '../types.js';
 
 const API_BASE = 'https://api-gtm.grubhub.com';
 
@@ -1152,7 +1153,22 @@ export class SeamlessAdapter implements PlatformAdapter {
       };
     } catch (err) {
       console.error('[Seamless] getFees error:', err);
-      throw new Error(`[Seamless] getFees failed: ${err instanceof Error ? err.message : err}`);
+      if (err instanceof LiveFeeError) throw err;
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/API 401|API 403/.test(msg)) {
+        // apiCall already invoked onAuthExpired; surface as typed error
+        throw new LiveFeeError('seamless', 'session_expired', 'Seamless session expired — reconnect required.', true);
+      }
+      if (/delivery_info/i.test(msg) && /\b4\d\d\b/.test(msg)) {
+        throw new LiveFeeError('seamless', 'out_of_delivery_range', 'Seamless does not deliver to this address.', false);
+      }
+      if (/out of range|not deliver|delivery zone|outside.*delivery/i.test(msg)) {
+        throw new LiveFeeError('seamless', 'out_of_delivery_range', 'Seamless does not deliver to this address.', false);
+      }
+      if (/\/lines\b.*\b4\d\d\b|unavailable|out of stock|86'?d|sold out/i.test(msg)) {
+        throw new LiveFeeError('seamless', 'item_unavailable', `Seamless: item unavailable. ${msg.substring(0, 140)}`, false);
+      }
+      throw new LiveFeeError('seamless', 'unknown', `Seamless live cart failed: ${msg.substring(0, 180)}`, true);
     }
   }
 }

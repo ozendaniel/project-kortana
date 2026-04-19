@@ -13,7 +13,7 @@ import helmet from 'helmet';
 
 import restaurantsRouter from './routes/restaurants.js';
 import menusRouter from './routes/menus.js';
-import compareRouter, { setAdapters } from './routes/compare.js';
+import compareRouter, { setAdapters, setAuthManager as setCompareAuthManager } from './routes/compare.js';
 import ordersRouter from './routes/orders.js';
 import savingsRouter from './routes/savings.js';
 import authRouter, { setAuthManager } from './routes/auth.js';
@@ -144,8 +144,9 @@ async function initAdapters(): Promise<void> {
     console.log('[Kortana] SEAMLESS_EMAIL not set — skipping Seamless adapter.');
   }
 
-  // Inject adapters into comparison route
+  // Inject adapters + auth manager into comparison route
   setAdapters(adapters);
+  setCompareAuthManager(authManager);
 
   // Schedule daily sync
   scheduleDailySync(adapters);

@@ -58,6 +58,7 @@ export interface MenuCategory {
 }
 
 export interface PlatformComparison {
+  kind: 'ok';
   available: boolean;
   itemSubtotalCents: number;
   deliveryFeeCents: number;
@@ -73,11 +74,47 @@ export interface PlatformComparison {
   orderUrl: string;
 }
 
+export type LiveFeeReason =
+  | 'session_expired'
+  | 'adapter_unavailable'
+  | 'out_of_delivery_range'
+  | 'item_unavailable'
+  | 'address_mismatch_doordash'
+  | 'unknown';
+
+export interface PlatformError {
+  kind: 'error';
+  reason: LiveFeeReason;
+  message: string;
+  canRetry: boolean;
+  orderUrl: string;
+}
+
+export type PlatformResult = PlatformComparison | PlatformError;
+
 export interface ComparisonResult {
-  doordash?: PlatformComparison;
-  seamless?: PlatformComparison;
+  doordash?: PlatformResult;
+  seamless?: PlatformResult;
   cheapest: string | null;
   savingsCents: number;
+}
+
+export interface PreflightAddress {
+  id: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
+
+export interface PreflightPlatformStatus {
+  ready: boolean;
+  reason?: 'adapter_unavailable' | 'session_expired';
+  accountAddresses?: PreflightAddress[];
+}
+
+export interface PreflightResponse {
+  restaurantId?: string;
+  platforms: Record<string, PreflightPlatformStatus>;
 }
 
 export interface SavingsData {
@@ -120,10 +157,26 @@ export async function getItemModifiers(itemId: string): Promise<ModifierGroup[]>
 export async function compareOrder(
   restaurantId: string,
   address: { lat: number; lng: number; address: string },
-  items: Array<{ itemId: string; quantity: number; modifierSelections?: ModifierSelection[] }>
+  items: Array<{ itemId: string; quantity: number; modifierSelections?: ModifierSelection[] }>,
+  options?: { forceRefresh?: boolean; onlyPlatforms?: Array<'doordash' | 'seamless'> }
 ): Promise<ComparisonResult> {
-  const { data } = await api.post('/compare', { restaurantId, address, items });
+  const { data } = await api.post('/compare', {
+    restaurantId,
+    address,
+    items,
+    forceRefresh: options?.forceRefresh ?? false,
+    onlyPlatforms: options?.onlyPlatforms,
+  });
   return data.comparison;
+}
+
+export async function preflightCompare(restaurantId: string): Promise<PreflightResponse> {
+  const { data } = await api.get(`/compare/preflight?restaurantId=${encodeURIComponent(restaurantId)}`);
+  return data;
+}
+
+export async function refreshFeeCache(restaurantId?: string): Promise<void> {
+  await api.post('/compare/refresh', { restaurantId });
 }
 
 export async function getSavings(): Promise<SavingsData> {

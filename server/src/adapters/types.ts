@@ -55,6 +55,13 @@ export interface PlatformAdapter {
     deliveryAddress: { lat: number; lng: number; address: string };
   }): Promise<PlatformFees>;
 
+  /**
+   * Return saved delivery addresses on the logged-in account (if the platform exposes them).
+   * Used by /api/compare/preflight so the UI can warn when the user's compare-time address
+   * doesn't match any address on the connected account.
+   */
+  getAccountAddresses?(): Promise<Array<{ id: string; address: string; lat: number; lng: number }>>;
+
   /** Phase 2: Build cart and checkout */
   placeOrder?(params: {
     platformRestaurantId: string;
@@ -113,4 +120,26 @@ export interface PlatformOrderConfirmation {
   orderId: string;
   estimatedDeliveryTime: string;
   totalChargedCents: number;
+}
+
+export type LiveFeeErrorReason =
+  | 'session_expired'
+  | 'adapter_unavailable'
+  | 'out_of_delivery_range'
+  | 'item_unavailable'
+  | 'address_mismatch_doordash'
+  | 'unknown';
+
+export class LiveFeeError extends Error {
+  reason: LiveFeeErrorReason;
+  platform: Platform;
+  canRetry: boolean;
+
+  constructor(platform: Platform, reason: LiveFeeErrorReason, message: string, canRetry = true) {
+    super(message);
+    this.name = 'LiveFeeError';
+    this.platform = platform;
+    this.reason = reason;
+    this.canRetry = canRetry;
+  }
 }

@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getAuthStatus } from '../api/client';
 import BrowserView from './BrowserView';
 
@@ -22,6 +23,8 @@ const STATUS_CONFIG: Record<string, { dot: string; label: string; labelColor: st
 
 export default function SettingsPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loginPlatform, setLoginPlatform] = useState<string | null>(null);
 
   const { data: authStatus, isLoading } = useQuery({
@@ -30,12 +33,31 @@ export default function SettingsPage() {
     refetchInterval: 10000,
   });
 
+  const reconnectParam = searchParams.get('reconnect');
+
+  useEffect(() => {
+    if (!reconnectParam) return;
+    if (reconnectParam !== 'doordash' && reconnectParam !== 'seamless') return;
+    const status = authStatus?.[reconnectParam as keyof typeof authStatus];
+    if (status === 'authenticated') return;
+    if (loginPlatform) return;
+    setLoginPlatform(reconnectParam);
+  }, [reconnectParam, authStatus, loginPlatform]);
+
   const handleLoginComplete = useCallback(() => {
     setTimeout(() => {
+      const returning = reconnectParam;
       setLoginPlatform(null);
       queryClient.invalidateQueries({ queryKey: ['authStatus'] });
+      queryClient.invalidateQueries({ queryKey: ['preflight'] });
+      if (returning) {
+        const next = new URLSearchParams(searchParams);
+        next.delete('reconnect');
+        setSearchParams(next, { replace: true });
+        navigate('/compare');
+      }
     }, 1500);
-  }, [queryClient]);
+  }, [queryClient, reconnectParam, searchParams, setSearchParams, navigate]);
 
   const handleLoginError = useCallback((error: string) => {
     console.error('Login error:', error);

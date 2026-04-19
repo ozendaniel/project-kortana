@@ -11,6 +11,10 @@
  *   npx tsx src/scripts/populate-seamless-menus.ts --skip-match       # Don't run item matching after
  *   npx tsx src/scripts/populate-seamless-menus.ts --sustained        # Longer delays for multi-hour runs
  *   npx tsx src/scripts/populate-seamless-menus.ts --concurrency 2   # Scrape 2 restaurants at once
+ *   npx tsx src/scripts/populate-seamless-menus.ts --incomplete-ratio 0.7 --concurrency 3 --skip-match
+ *                                                                     # Repopulate only matched restaurants where
+ *                                                                     # SL item count < 0.7 * DD item count
+ *                                                                     # (DD baseline must be > 5 items)
  *
  * Requires an authenticated Seamless session (login via Settings page first).
  * Uses CDP port 9223 — can run alongside the server if server doesn't use Seamless browser.
@@ -31,7 +35,7 @@ import { acquireLock } from '../utils/process-lock.js';
 
 // --- CLI args ---
 const args = process.argv.slice(2);
-const matchedOnly = args.includes('--matched-only');
+let matchedOnly = args.includes('--matched-only');
 const dryRun = args.includes('--dry-run');
 const resume = args.includes('--resume');
 const skipMatch = args.includes('--skip-match');
@@ -42,6 +46,12 @@ const ridIdx = args.indexOf('--restaurant-id');
 const singleRestaurantId = ridIdx !== -1 ? args[ridIdx + 1] : null;
 const concurrencyIdx = args.indexOf('--concurrency');
 const concurrency = concurrencyIdx !== -1 ? parseInt(args[concurrencyIdx + 1], 10) : 1;
+const incompleteRatioIdx = args.indexOf('--incomplete-ratio');
+const incompleteRatio = incompleteRatioIdx !== -1 ? parseFloat(args[incompleteRatioIdx + 1]) : 0;
+if (incompleteRatio > 0) {
+  // --incomplete-ratio compares against DD counts; restrict to matched restaurants implicitly.
+  matchedOnly = true;
+}
 
 // --- Config (adjusted for sustained mode) ---
 const INTER_RESTAURANT_DELAY_MS = sustained ? 8000 : 5000;
@@ -111,6 +121,17 @@ async function main() {
     conditions.push(`(last_synced_at IS NULL OR last_synced_at < NOW() - INTERVAL '24 hours')`);
   }
 
+  if (incompleteRatio > 0) {
+    // Restrict to matched restaurants whose Seamless menu is suspiciously short vs. DoorDash.
+    // The ` > 5` DD-count guard avoids dragging in stub/empty DD baselines.
+    conditions.push(`
+      (SELECT COUNT(*) FROM menu_items mi WHERE mi.restaurant_id = restaurants.id AND mi.platform = 'seamless')
+      <
+      ${incompleteRatio} * (SELECT COUNT(*) FROM menu_items mi WHERE mi.restaurant_id = restaurants.id AND mi.platform = 'doordash')
+    `);
+    conditions.push(`(SELECT COUNT(*) FROM menu_items mi WHERE mi.restaurant_id = restaurants.id AND mi.platform = 'doordash') > 5`);
+  }
+
   let query = `SELECT id, canonical_name, seamless_id, doordash_id, last_synced_at
     FROM restaurants
     WHERE ${conditions.join(' AND ')}
@@ -140,6 +161,7 @@ async function main() {
   if (resume) console.log('  Mode: resume (skipping recently synced)');
   if (sustained) console.log('  Mode: sustained (longer delays, frequent keep-alive)');
   if (concurrency > 1) console.log(`  Mode: concurrent (${concurrency} workers)`);
+  if (incompleteRatio > 0) console.log(`  Mode: incomplete-ratio (SL count < ${incompleteRatio} * DD count, DD > 5)`);
   console.log();
 
   // Initialize adapter
